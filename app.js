@@ -294,7 +294,7 @@
       const ordem = pontos().map((p) => ({ p, km: posicao ? distanciaKm(posicao, p.coords) : null, l: lugarDo(p) }));
       if (posicao) ordem.sort((a, b) => a.km - b.km);
       return `<h1>Perto de você</h1>
-        <p class="lead">Veja o que há por perto e conheça a história de cada lugar. Funciona sem internet.</p>
+        <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
         <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
         <p class="gps-nota">${esc(estadoGps || "Sua localização fica só neste aparelho e é usada para ordenar a lista.")}</p>
         <div class="tabela">${ordem.map(({ p, km, l }) => `
