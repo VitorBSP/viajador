@@ -1,0 +1,165 @@
+:root {
+  --fundo: #f7f5ef;
+  --cartao: #ffffff;
+  --texto: #1b2433;
+  --suave: #5d6878;
+  --linha: #e5e1d6;
+  --celeste: #0b3d91;
+  --celeste-claro: #e6eefb;
+  --sol: #f2a900;
+  --sol-claro: #fff4d6;
+  --sombra: 0 1px 2px rgba(20, 30, 50, .06), 0 4px 16px rgba(20, 30, 50, .06);
+  --raio: 16px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #0f1420;
+    --cartao: #182030;
+    --texto: #eef1f6;
+    --suave: #9aa6b8;
+    --linha: #283247;
+    --celeste: #8fb6ff;
+    --celeste-claro: #1c2a47;
+    --sol: #ffc23d;
+    --sol-claro: #2e2614;
+    --sombra: 0 1px 2px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font: 16px/1.5 Inter, system-ui, sans-serif;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* Topo */
+.topo {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--celeste);
+  color: #fff;
+  padding: 12px 16px 0;
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+@media (prefers-color-scheme: dark) { .topo { background: #0b2a63; } }
+.topo-linha { display: flex; align-items: center; justify-content: space-between; max-width: 760px; margin: 0 auto; }
+.marca { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 22px Fraunces, Georgia, serif; }
+.sol {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--sol);
+  box-shadow: 0 0 0 4px rgba(242, 169, 0, .35);
+}
+.pais { font-size: 14px; opacity: .9; }
+.busca { display: block; max-width: 760px; margin: 12px auto 0; }
+.busca input {
+  width: 100%; border: 0; border-radius: 12px;
+  padding: 12px 14px; font-size: 16px;
+  background: #fff; color: #1b2433;
+}
+.busca input:focus { outline: 3px solid var(--sol); }
+.abas {
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  max-width: 760px; margin: 8px auto 0;
+}
+.abas::-webkit-scrollbar { display: none; }
+.abas a {
+  flex: none; padding: 10px 12px; text-decoration: none;
+  font-size: 14px; font-weight: 500; opacity: .8;
+  border-bottom: 3px solid transparent;
+}
+.abas a.ativa { opacity: 1; border-color: var(--sol); }
+
+/* Conteúdo */
+.conteudo { max-width: 760px; margin: 0 auto; padding: 20px 16px 80px; outline: none; }
+h1, h2, h3 { font-family: Fraunces, Georgia, serif; line-height: 1.2; margin: 0; }
+h1 { font-size: 26px; margin-bottom: 6px; }
+h2 { font-size: 20px; margin: 28px 0 12px; }
+.lead { color: var(--suave); margin: 0 0 20px; }
+.voltar { display: inline-block; margin-bottom: 12px; color: var(--celeste); text-decoration: none; font-weight: 500; }
+
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.categoria {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 16px; border-radius: var(--raio);
+  background: var(--cartao); box-shadow: var(--sombra);
+  text-decoration: none; transition: transform .15s;
+}
+.categoria:active { transform: scale(.97); }
+.categoria .emoji { font-size: 28px; }
+.categoria strong { font-weight: 600; }
+.categoria small { color: var(--suave); }
+
+.lista { display: grid; gap: 10px; }
+.frase {
+  background: var(--cartao); border-radius: var(--raio); box-shadow: var(--sombra);
+  padding: 14px 16px;
+}
+.frase-es { font-size: 19px; font-weight: 600; margin: 0; }
+.frase-pr {
+  display: inline-block; margin: 6px 0 4px;
+  background: var(--sol-claro); color: var(--texto);
+  padding: 2px 8px; border-radius: 6px;
+  font-size: 14px; letter-spacing: .02em;
+}
+.frase-pt { color: var(--suave); margin: 0; }
+.frase-dica { margin: 8px 0 0; font-size: 14px; padding-left: 10px; border-left: 3px solid var(--sol); }
+.frase-acoes { display: flex; gap: 8px; margin-top: 10px; }
+.btn {
+  border: 1px solid var(--linha); background: transparent;
+  border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { background: var(--celeste-claro); }
+.btn.on { background: var(--sol); border-color: var(--sol); color: #1b2433; }
+
+.intro {
+  background: var(--celeste-claro); border-radius: var(--raio);
+  padding: 14px 16px; margin-bottom: 20px; font-size: 15px;
+}
+
+.tabela { display: grid; gap: 10px; }
+.item { background: var(--cartao); border-radius: var(--raio); box-shadow: var(--sombra); padding: 14px 16px; }
+.item h3 { font-size: 18px; }
+.item p { margin: 4px 0 0; }
+.item .suave { color: var(--suave); font-size: 14px; }
+.item .ex { font-style: italic; font-size: 14px; color: var(--suave); }
+.alerta { color: #c0392b; }
+@media (prefers-color-scheme: dark) { .alerta { color: #ff8a7a; } }
+
+.lugar { margin-bottom: 14px; }
+.lugar-topo { display: flex; gap: 10px; align-items: baseline; }
+.lugar .lista { margin-top: 10px; }
+.lugar .frase { box-shadow: none; border: 1px solid var(--linha); }
+
+.vazio { text-align: center; color: var(--suave); padding: 40px 0; }
+
+/* Mostrar em tela cheia */
+.mostrar {
+  position: fixed; inset: 0; z-index: 50;
+  background: var(--celeste); color: #fff;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 32px 24px; text-align: center;
+}
+.mostrar[hidden] { display: none; }
+.mostrar-es { font: 700 clamp(32px, 9vw, 64px)/1.15 Fraunces, Georgia, serif; margin: 0; }
+.mostrar-pt { opacity: .8; margin-top: 20px; font-size: 18px; }
+.mostrar-fechar {
+  position: absolute; top: 16px; right: 16px;
+  width: 48px; height: 48px; border-radius: 50%; border: 0;
+  background: rgba(255, 255, 255, .15); color: #fff; font-size: 28px; cursor: pointer;
+}
+
+.aviso {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(40px);
+  background: var(--texto); color: var(--fundo);
+  padding: 10px 16px; border-radius: 999px; font-size: 14px;
+  opacity: 0; transition: .2s; pointer-events: none;
+}
+.aviso.visivel { opacity: 1; transform: translateX(-50%); }
