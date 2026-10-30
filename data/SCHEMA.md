@@ -50,14 +50,14 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `conversas[].passos[]` | `titulo`, `es` | | |
 | `etiqueta[]` | `titulo`, `texto` | | |
 | `checklist[]` | `id`, `texto` | `nota` | `id` |
-| `guia[]` | `id`, `lugar`, `coords`, `resumo`, `historia`, `reparar`, `fontes` | | `id` |
+| `guia[]` | `id`, `lugar`, `coords`, `revisado`, `resumo`, `historia`, `reparar`, `fontes` | | `id` |
 | `guia[].fontes[]` | `titulo`, `url` | | |
 
 - **`id` da situação:** só `a-z`, `0-9` e `-`, porque vai na URL (`#/s/comer`).
 - **`frases`:** pelo menos 1 em cada situação e em cada lugar.
 - **`girias[]`:** use `ex` ou `dica`. Se houver os dois, o app mostra só `ex`.
 - **`conversas[].passos[].es`:** lista de frases de `situacoes` ou `lugares`, citadas pelo texto exato de `es`. Citação inexistente é erro.
-- **`guia[]`:** `lugar` é o `nome` exato de um item de `lugares`, de onde vêm as frases. `coords` é `[latitude, longitude]`. `historia` é uma lista de parágrafos, e cada fato precisa estar nas `fontes`.
+- **`guia[]`:** `lugar` é o `nome` exato de um item de `lugares`, de onde vêm as frases. `coords` é `[latitude, longitude]`. `revisado` é o mês da última conferência (`AAAA-MM`). `historia` é uma lista de parágrafos, e cada fato precisa estar nas `fontes`.
 - **`falsosAmigos[].pt`:** começar com `⚠️` destaca o item como alerta (palavrão, por exemplo).
 - **`ditados[]` e `comidas[].pedir`:** não têm campo de pronúncia, e o app não mostra pronúncia neles.
 

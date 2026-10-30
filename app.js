@@ -292,6 +292,7 @@
           <h2>Frases para este lugar</h2>
           ${lista(l.frases)}
           <h2>Fontes</h2>
+          <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>
           <ul class="fontes">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
       }
       const ordem = pontos()
@@ -439,9 +440,16 @@
     busca(termo) {
       const t = normal(termo);
       const achou = todas.filter((f) => normal(f.es + " " + f.pt + " " + (f.dica || "") + " " + (f.ex || "")).includes(t));
+      const lugaresAchados = pontos().filter((g) => normal([g.lugar, g.resumo, ...g.historia].join(" ")).includes(t));
       return `<h1>Resultados para “${esc(termo)}”</h1>
-        <p class="lead">${achou.length} frase(s)</p>
-        ${achou.length ? lista(achou) : `<p class="vazio">Nada encontrado. Tente outra palavra, em português ou espanhol.</p>`}`;
+        <p class="lead">${achou.length} frase(s) · ${lugaresAchados.length} lugar(es)</p>
+        ${lugaresAchados.length ? `<div class="tabela">${lugaresAchados.map((g) => `
+          <a class="item ponto" href="#/guia/${g.id}">
+            <span class="emoji" aria-hidden="true">${lugarDo(g).icone}</span>
+            <span class="ponto-texto"><strong lang="es">${destacar(g.lugar)}</strong><small class="suave">${destacar(g.resumo)}</small></span>
+          </a>`).join("")}</div>` : ""}
+        ${achou.length ? lista(achou) : ""}
+        ${achou.length || lugaresAchados.length ? "" : `<p class="vazio">Nada encontrado. Tente outra palavra, em português ou espanhol.</p>`}`;
     },
   };
 
@@ -551,6 +559,6 @@
     if (primeiraVez) navigator.serviceWorker.ready.then(() => avisar("Pronto para usar sem internet"));
   }
 
-  $("#pais").textContent = `${pais.bandeira} ${pais.cidades.join(" · ")}`;
+  $("#pais").textContent = `${pais.bandeira} ${pais.nome}`;
   render();
 })();

@@ -8,7 +8,7 @@ window.VIAJADOR.paises.uy = {
   nome: "Uruguai",
   bandeira: "🇺🇾",
   voz: ["es-UY", "es-AR", "es-419", "es-ES", "es"],
-  cidades: ["Montevidéu", "Punta del Este"],
+  cidades: ["Montevidéu", "Punta del Este", "Arredores de Punta", "Piriápolis"],
   intro:
     "No Uruguai se fala o espanhol rioplatense: usa-se \"vos\" em vez de \"tú\", o \"ll\" e o \"y\" soam como o \"ch\" de \"chave\" e quase toda conversa tem um \"ta\" no meio.",
 
@@ -31,7 +31,7 @@ window.VIAJADOR.paises.uy = {
         { es: "Necesito cambiar plata", pt: "Preciso trocar dinheiro", pr: "ne-se-SI-to kam-BIAR PLA-ta" },
         { es: "¿Puedo comprar un chip acá?", pt: "Posso comprar um chip aqui?", pr: "PUE-do kom-PRAR un TCHIP a-KÁ?", dica: "Leve um documento: costumam pedir na compra." },
         { es: "¿Dónde se toma el ómnibus al centro?", pt: "Onde pego o ônibus para o centro?", pr: "DON-de se TO-ma el OM-ni-bus al SEN-tro?" },
-        { es: "¿Este ómnibus va a Punta del Este?", pt: "Este ônibus vai para Punta del Este?", pr: "ES-te OM-ni-bus BA a PUN-ta del ES-te?", dica: "Do aeroporto de Carrasco saem ônibus de COT e COPSA para Punta. Confira o horário." },
+        { es: "¿Este ómnibus va a Punta del Este?", pt: "Este ônibus vai para Punta del Este?", pr: "ES-te OM-ni-bus BA a PUN-ta del ES-te?", dica: "Do aeroporto de Carrasco passam ônibus de COT e COPSA para Punta. Confira o horário." },
         { es: "¿Dónde están los taxis?", pt: "Onde ficam os táxis?", pr: "DON-de es-TÁN los TAK-sis?" },
         { es: "¿Cuánto sale un taxi a Montevideo?", pt: "Quanto custa um táxi até Montevidéu?", pr: "KUAN-to SA-le un TAK-si a mon-te-bi-DE-o?" },
         { es: "¿Dónde retiro el auto alquilado?", pt: "Onde retiro o carro alugado?", pr: "DON-de rre-TI-ro el AU-to al-ki-LA-do?" },
@@ -104,7 +104,7 @@ window.VIAJADOR.paises.uy = {
         { es: "Para mí, la carne a punto", pt: "Pra mim, carne ao ponto", pr: "PA-ra MI, la KAR-ne a PUN-to", dica: "Mais mal passada = \"jugosa\"; bem passada = \"bien cocida\"." },
         { es: "Sin gluten, por favor", pt: "Sem glúten, por favor", pr: "sin GLU-ten, por fa-BOR", dica: "Procure o aviso \"apto celíacos\" no cardápio e nas embalagens." },
         { es: "Soy vegetariano / vegetariana", pt: "Sou vegetariano / vegetariana", pr: "SOI be-rre-ta-RIA-no / be-rre-ta-RIA-na", dica: "O \"g\" antes de e/i soa como \"rr\"." },
-        { es: "¿Me traés la sal?", pt: "Pode me trazer o sal?", pr: "me tra-ÉS la SAL?", dica: "Em Montevidéu, o saleiro não fica na mesa: é só pedir." },
+        { es: "¿Me traés la sal?", pt: "Pode me trazer o sal?", pr: "me tra-ÉS la SAL?", dica: "Se não houver saleiro na mesa, é só pedir." },
         { es: "Un agua sin gas / con gas", pt: "Uma água sem gás / com gás", pr: "un A-gua sin GAS / kon GAS" },
         { es: "Un cortado, por favor", pt: "Um café com um pouco de leite", pr: "un kor-TA-do, por fa-BOR" },
         { es: "Una cerveza bien fría", pt: "Uma cerveja bem gelada", pr: "U-na ser-BE-sa BIEN FRI-a", dica: "Peça \"una Patricia\" ou \"una Pilsen\", as clássicas uruguaias." },
@@ -305,7 +305,7 @@ window.VIAJADOR.paises.uy = {
         { es: "¿Cuánto le pongo?", pt: "Quanto coloco?", pr: "KUAN-to le PON-go?" },
         { es: "¿Lo lleno?", pt: "Encho o tanque?", pr: "lo SHE-no?" },
         { es: "Súper, por favor", pt: "Comum, por favor", pr: "SU-per, por fa-BOR" },
-        { es: "Llename el tanque, por favor", pt: "Enche o tanque, por favor", pr: "she-NA-me el TAN-ke, por fa-BOR", dica: "Frentista é \"pistero\". Se ninguém vier, pergunte como funciona a bomba." },
+        { es: "Llename el tanque, por favor", pt: "Enche o tanque, por favor", pr: "she-NA-me el TAN-ke, por fa-BOR", dica: "Se ninguém vier atender, pergunte como funciona a bomba." },
         { es: "Poneme mil pesos de súper", pt: "Coloca mil pesos de comum", pr: "po-NE-me MIL PE-sos de SU-per" },
         { es: "¿Qué nafta lleva este auto?", pt: "Que gasolina este carro usa?", pr: "KE NAF-ta SHE-ba ES-te AU-to?" },
         { es: "Este auto es a gasoil", pt: "Este carro é a diesel", pr: "ES-te AU-to ES a ga-SOIL" },
@@ -499,17 +499,17 @@ window.VIAJADOR.paises.uy = {
     { regra: "Ñ = NH e CH = TCH", ex: "baño → BA-nho · mañana → ma-NHA-na · leche → LE-tche" },
     { regra: "Não anasale as vogais", ex: "pan → PAN (não \"pã\") · bien → BIEN", dica: "Fale \"pan\" com o N bem marcado, sem soar como \"pão\"." },
     { regra: "E e O finais não viram I e U; T e D não chiam", ex: "tarde → TAR-de (não \"tardji\") · vino → BI-no (não \"vinu\")" },
-    { regra: "Use \"vos\" em vez de \"tú\"", ex: "vos tenés · vos podés · ¿vos querés?", dica: "A tônica vai pro final: te-NÉS, po-DÉS, ke-RÉS." },
+    { regra: "Use \"vos\" em vez de \"tú\"", ex: "vos tenés · vos podés · ¿vos querés?", dica: "A tônica vai pro final: te-NÉS, po-DÉS, ke-RÉS. Em Montevidéu, você também vai ouvir \"tú tenés\", e em partes de Maldonado e Rocha, o \"tú\" comum." },
   ],
 
   comidas: [
     { nome: "Chivito", desc: "Sanduíche (ou prato) com filé fino, presunto, queijo, ovo, alface e tomate. O prato nacional.", pedir: "Un chivito canadiense, por favor" },
     { nome: "Asado / Parrillada", desc: "Churrasco uruguaio na brasa de lenha. A parrillada vem com vários cortes e miúdos.", pedir: "Una parrillada para dos" },
-    { nome: "Medio y medio", desc: "Metade vinho branco espumante, metade vinho branco seco. Clássico do Mercado del Puerto.", pedir: "Un medio y medio, por favor" },
+    { nome: "Medio y medio", desc: "Mistura de vinho espumante doce com vinho branco seco. Clássico do Mercado del Puerto.", pedir: "Un medio y medio, por favor" },
     { nome: "Fainá", desc: "Massa fina de farinha de grão-de-bico. Come-se em cima da pizza (\"pizza a caballo\").", pedir: "Una muzza con fainá" },
     { nome: "Torta frita", desc: "Massa frita, clássica de dia de chuva, com mate.", pedir: "Dos tortas fritas" },
     { nome: "Bizcochos", desc: "Salgadinhos e doces de padaria, vendidos por peso. Companhia oficial do mate.", pedir: "Un cuarto de bizcochos, por favor" },
-    { nome: "Chajá", desc: "Sobremesa de pão de ló, merengue, creme, pêssego e chantilly. Nasceu em Paysandú.", pedir: "Una porción de chajá" },
+    { nome: "Chajá", desc: "Sobremesa de pão de ló, merengue, creme e pêssego ou morango. Nasceu em Paysandú, em 1927.", pedir: "Una porción de chajá" },
     { nome: "Milanesa", desc: "Bife à milanesa; \"napolitana\" vem com molho, presunto e queijo.", pedir: "Una milanesa napolitana con fritas" },
     { nome: "Alfajor & dulce de leche", desc: "Doce de leite está em tudo. O alfajor é o lanche oficial.", pedir: "¿Tenés alfajores de dulce de leche?" },
     { nome: "Mate", desc: "Mais uma companhia do que uma bebida: vai junto pra rua, pra praia e pro trabalho. Puxar assunto sobre ele costuma render boa conversa.", pedir: "¿Me enseñás a tomar mate?" },
@@ -673,6 +673,38 @@ window.VIAJADOR.paises.uy = {
           ],
         },
         {
+          nome: "Barrio Sur & Palermo",
+          icone: "🥁",
+          dica: "Em fevereiro, as Llamadas desfilam por aqui. Vá acompanhado à noite e pergunte sobre as ruas.",
+          frases: [
+            { es: "¿Dónde puedo escuchar candombe?", pt: "Onde posso ouvir candombe?", pr: "DON-de PUE-do es-ku-TCHAR kan-DOM-be?" },
+          ],
+        },
+        {
+          nome: "Museo Nacional de Artes Visuales",
+          icone: "🖼️",
+          dica: "Fica no Parque Rodó, então combine os dois. Confirme o horário.",
+          frases: [
+            { es: "¿Dónde está el Monumento Cósmico?", pt: "Onde está o Monumento Cósmico?", pr: "DON-de es-TÁ el mo-nu-MEN-to KOS-mi-ko?" },
+          ],
+        },
+        {
+          nome: "Museo Gurvich",
+          icone: "🖌️",
+          dica: "Fica na Peatonal Sarandí. Confirme os dias de abertura.",
+          frases: [
+            { es: "¿Hoy es gratis el museo?", pt: "O museu é grátis hoje?", pr: "OI ES GRA-tis el mu-SE-o?" },
+          ],
+        },
+        {
+          nome: "Hotel Carrasco",
+          icone: "🏨",
+          dica: "Fica na Rambla do bairro de Carrasco, longe do centro. Mesmo sem se hospedar, vale ver de fora.",
+          frases: [
+            { es: "¿Se puede entrar a conocer el hotel?", pt: "Dá pra entrar para conhecer o hotel?", pr: "se PUE-de en-TRAR a ko-no-SER el o-TEL?" },
+          ],
+        },
+        {
           nome: "Museo del Carnaval",
           icone: "🥁",
           dica: "Fica perto do porto e apresenta a murga e o candombe. Em janeiro e fevereiro, o carnaval toma conta dos \"tablados\", palcos populares pela cidade.",
@@ -758,6 +790,46 @@ window.VIAJADOR.paises.uy = {
           ],
         },
         {
+          nome: "Faro de Punta del Este",
+          icone: "🗼",
+          dica: "Fica no centro da península. Só dá para ver por fora.",
+          frases: [
+            { es: "¿Por dónde se llega al faro?", pt: "Por onde se chega ao farol?", pr: "por DON-de se SHE-ga al FA-ro?" },
+          ],
+        },
+        {
+          nome: "Iglesia de la Candelaria",
+          icone: "⛪",
+          dica: "Fica perto do farol. Por ser igreja em atividade, entre com discrição.",
+          frases: [
+            { es: "¿A qué hora es la misa?", pt: "Que horas é a missa?", pr: "a KE O-ra ES la MI-sa?" },
+          ],
+        },
+        {
+          nome: "Isla de Lobos",
+          icone: "🦭",
+          dica: "É área protegida, com desembarque restrito. O passeio é de barco, a partir do porto.",
+          frases: [
+            { es: "¿Hay paseos en barco a la Isla de Lobos?", pt: "Tem passeio de barco para a Isla de Lobos?", pr: "AI pa-SE-os en BAR-ko a la IS-la de LO-bos?" },
+          ],
+        },
+        {
+          nome: "Museo Ralli",
+          icone: "🏛️",
+          dica: "No bairro Beverly Hills, fora da península. A fonte indica entrada gratuita: confirme dias e horário.",
+          frases: [
+            { es: "¿La entrada es gratis?", pt: "A entrada é grátis?", pr: "la en-TRA-da ES GRA-tis?" },
+          ],
+        },
+        {
+          nome: "Punta Ballena",
+          icone: "🐋",
+          dica: "Na Ruta Panorámica, perto de Casapueblo. Baleias aparecem entre julho e outubro.",
+          frases: [
+            { es: "¿Se ven ballenas en esta época?", pt: "Dá pra ver baleias nesta época?", pr: "se BEN ba-SHE-nas en ES-ta E-po-ka?" },
+          ],
+        },
+        {
           nome: "Avenida Gorlero",
           icone: "🛍️",
           dica: "A principal rua de comércio da península, com lojas e restaurantes. Boa para resolver tudo a pé.",
@@ -780,6 +852,104 @@ window.VIAJADOR.paises.uy = {
           frases: [
             { es: "¿Cómo se llega al Arboretum Lussich?", pt: "Como se chega ao Arboretum Lussich?", pr: "KO-mo se SHE-ga al ar-bo-RE-tum LU-sitch?" },
             { es: "¿Hay senderos para caminar?", pt: "Tem trilhas para caminhar?", pr: "AI sen-DE-ros PA-ra ka-mi-NAR?" },
+          ],
+        },
+      ],
+    },
+    {
+      cidade: "Arredores de Punta",
+      itens: [
+        {
+          nome: "Faro de José Ignacio",
+          icone: "🗼",
+          dica: "José Ignacio fica a leste de Punta. Pergunte no local se a torre está aberta.",
+          frases: [
+            { es: "¿Se ve el faro desde la playa?", pt: "Dá pra ver o farol da praia?", pr: "se BE el FA-ro DES-de la PLA-sha?" },
+          ],
+        },
+        {
+          nome: "Puente de Laguna Garzón",
+          icone: "⭕",
+          dica: "Na Ruta 10, depois de José Ignacio. Dirija devagar e pare só em lugar seguro.",
+          frases: [
+            { es: "¿Dónde puedo dejar el auto para ver el puente?", pt: "Onde posso deixar o carro para ver a ponte?", pr: "DON-de PUE-do de-RRAR el AU-to PA-ra BER el PUEN-te?" },
+          ],
+        },
+        {
+          nome: "Fundación Atchugarry & MACA",
+          icone: "🗿",
+          dica: "Em Manantiales, na Ruta 104. A fonte indica entrada gratuita: confirme os dias.",
+          frases: [
+            { es: "¿Hay que reservar para visitar el parque?", pt: "Precisa reservar para visitar o parque?", pr: "AI ke rre-ser-BAR PA-ra bi-si-TAR el PAR-ke?" },
+          ],
+        },
+        {
+          nome: "Museo del Mar",
+          icone: "🐳",
+          dica: "Entre La Barra e El Tesoro. Confirme se está aberto antes de ir.",
+          frases: [
+            { es: "¿El Museo del Mar está abierto?", pt: "O Museo del Mar está aberto?", pr: "el mu-SE-o del MAR es-TÁ a-BIER-to?" },
+          ],
+        },
+        {
+          nome: "Laguna del Sauce",
+          icone: "🛶",
+          dica: "Bom para pesca e esportes sem motor. O aeroporto de Punta fica na margem.",
+          frases: [
+            { es: "¿Dónde puedo alquilar un kayak?", pt: "Onde posso alugar um caiaque?", pr: "DON-de PUE-do al-ki-LAR un ka-IAK?" },
+          ],
+        },
+        {
+          nome: "Catedral de San Fernando",
+          icone: "⛪",
+          dica: "Fica no centro da cidade de Maldonado, perto de Punta.",
+          frases: [
+            { es: "¿La catedral está abierta?", pt: "A catedral está aberta?", pr: "la ka-te-DRAL es-TÁ a-BIER-ta?" },
+          ],
+        },
+        {
+          nome: "Pueblo Garzón",
+          icone: "🌾",
+          dica: "Vilarejo no interior, a boa distância da costa. Vá de carro e reserve antes se quiser comer.",
+          frases: [
+            { es: "¿Cuánto falta para Garzón?", pt: "Quanto falta para Garzón?", pr: "KUAN-to FAL-ta PA-ra gar-SON?" },
+          ],
+        },
+      ],
+    },
+    {
+      cidade: "Piriápolis",
+      itens: [
+        {
+          nome: "Castillo de Piria",
+          icone: "🏰",
+          dica: "Fica na Ruta 37, fora do centro de Piriápolis. O andar de cima só é visitado com guia.",
+          frases: [
+            { es: "¿A qué hora es la visita al piso de arriba?", pt: "Que horas é a visita ao andar de cima?", pr: "a KE O-ra ES la bi-SI-ta al PI-so de a-RRI-ba?" },
+          ],
+        },
+        {
+          nome: "Argentino Hotel",
+          icone: "🏨",
+          dica: "Hotel e cassino em atividade, na beira-mar.",
+          frases: [
+            { es: "¿Se puede tomar un café acá sin estar alojado?", pt: "Dá pra tomar um café aqui sem estar hospedado?", pr: "se PUE-de to-MAR un ka-FÉ a-KÁ sin es-TAR a-lo-RRA-do?" },
+          ],
+        },
+        {
+          nome: "Rambla de los Argentinos",
+          icone: "🌊",
+          dica: "O eixo do balneário. Bom para caminhar no fim da tarde.",
+          frases: [
+            { es: "¿Hasta dónde llega la rambla?", pt: "Até onde vai a rambla?", pr: "AS-ta DON-de SHE-ga la RRAM-bla?" },
+          ],
+        },
+        {
+          nome: "Cerro Pan de Azúcar",
+          icone: "⛰️",
+          dica: "Pergunte antes se a trilha e o topo estão abertos. Leve água e calçado fechado.",
+          frases: [
+            { es: "¿Está abierto el camino hasta la cima?", pt: "O caminho até o topo está aberto?", pr: "es-TÁ a-BIER-to el ka-MI-no AS-ta la SI-ma?" },
           ],
         },
       ],
@@ -873,6 +1043,7 @@ window.VIAJADOR.paises.uy = {
       id: "teatro-solis",
       lugar: "Teatro Solís",
       coords: [-34.9079, -56.2010],
+      revisado: "2026-10",
       resumo: "O grande teatro do país, aberto em 1856 com uma ópera de Verdi.",
       historia: [
         "O Solís abriu em 25 de agosto de 1856, com a ópera Ernani, de Verdi. O nome homenageia Juan Díaz de Solís, o primeiro navegador espanhol a chegar ao Rio da Prata.",
@@ -890,6 +1061,7 @@ window.VIAJADOR.paises.uy = {
       id: "mercado-del-puerto",
       lugar: "Mercado del Puerto",
       coords: [-34.9056, -56.2117],
+      revisado: "2026-10",
       resumo: "Nasceu em 1868 para vender frutas e verduras e virou o salão das parrillas.",
       historia: [
         "O mercado foi inaugurado em 10 de outubro de 1868, por iniciativa do comerciante espanhol Pedro Sáenz de Zumarán.",
@@ -906,6 +1078,7 @@ window.VIAJADOR.paises.uy = {
       id: "estadio-centenario",
       lugar: "Estadio Centenario & Museo del Fútbol",
       coords: [-34.8945, -56.1527],
+      revisado: "2026-10",
       resumo: "Erguido às pressas para a primeira Copa do Mundo, em 1930.",
       historia: [
         "O estádio foi feito para a Copa de 1930, a primeira da história, e recebeu a final. A pedra fundamental é de 21 de julho de 1929, e a inauguração foi em 18 de julho de 1930, no centenário da Jura da Constituição. Daí o nome.",
@@ -923,6 +1096,7 @@ window.VIAJADOR.paises.uy = {
       id: "la-mano",
       lugar: "La Mano (Los Dedos) — Playa Brava",
       coords: [-34.9579, -54.9373],
+      revisado: "2026-10",
       resumo: "Feita em seis dias em 1982, e a única daquele verão que ficou na praia.",
       historia: [
         "A obra é do chileno Mario Irarrázabal. Ele a fez no verão de 1982, quando participou do primeiro Encontro Internacional de Escultura Moderna ao Ar Livre, em Punta del Este.",
@@ -938,6 +1112,7 @@ window.VIAJADOR.paises.uy = {
       id: "casapueblo",
       lugar: "Casapueblo (Punta Ballena)",
       coords: [-34.9088, -55.0446],
+      revisado: "2026-10",
       resumo: "Uma cabana de tábuas que virou a casa-escultura de Páez Vilaró.",
       historia: [
         "Carlos Páez Vilaró comprou o terreno em Punta Ballena em 1958. Começou com um abrigo feito de tábuas achadas na costa, chamado La Pionera, embora outra fonte fale em uma casinha de lata.",
@@ -955,6 +1130,7 @@ window.VIAJADOR.paises.uy = {
       id: "ciudad-vieja",
       lugar: "Ciudad Vieja & Peatonal Sarandí",
       coords: [-34.9066, -56.2035],
+      revisado: "2026-10",
       resumo: "A cidade murada de onde Montevidéu nasceu.",
       historia: [
         "Montevidéu nasceu aqui, em um processo de fundação que vai de 1724 a 1730. A cidade se chamava San Felipe y Santiago de Montevideo.",
@@ -972,6 +1148,7 @@ window.VIAJADOR.paises.uy = {
       id: "rambla",
       lugar: "Rambla",
       coords: [-34.9167, -56.1697],
+      revisado: "2026-10",
       resumo: "Cerca de 22 km de calçadão, feitos em etapas ao longo de décadas.",
       historia: [
         "A Rambla não foi feita de uma vez. Foi concebida por trechos nas primeiras décadas do século 20 e só foi concluída por completo em 1952.",
@@ -988,6 +1165,7 @@ window.VIAJADOR.paises.uy = {
       id: "plaza-independencia",
       lugar: "Plaza Independencia & Palacio Salvo",
       coords: [-34.9065, -56.1998],
+      revisado: "2026-10",
       resumo: "O coração cívico da cidade, com Artigas e um arranha-céu de 1928.",
       historia: [
         "A praça nasceu do plano de 1837 e é Monumento Histórico Nacional. No centro está a estátua equestre de bronze de José Artigas, o herói nacional, com 17 metros.",
@@ -1004,6 +1182,7 @@ window.VIAJADOR.paises.uy = {
       id: "tristan-narvaja",
       lugar: "Feria de Tristán Narvaja",
       coords: [-34.9019, -56.1776],
+      revisado: "2026-10",
       resumo: "A feira de domingo que chegou aqui em 1909.",
       historia: [
         "A feira nasceu como venda dominical de produtos agrícolas na Plaza Independencia, no fim do século 19.",
@@ -1021,6 +1200,7 @@ window.VIAJADOR.paises.uy = {
       id: "pocitos",
       lugar: "Pocitos",
       coords: [-34.9146, -56.1477],
+      revisado: "2026-10",
       resumo: "O nome vem dos pocinhos que as lavadeiras cavavam na areia.",
       historia: [
         "No início do século 19, as lavadeiras cavavam pequenos poços, os \"pocitos\", junto a um riacho de água doce, para lavar roupa. O riacho virou Arroyo de los Pocitos, e a praia herdou o nome.",
@@ -1037,6 +1217,7 @@ window.VIAJADOR.paises.uy = {
       id: "museo-carnaval",
       lugar: "Museo del Carnaval",
       coords: [-34.9053, -56.2122],
+      revisado: "2026-10",
       resumo: "Murga e candombe num antigo depósito de trens perto do porto.",
       historia: [
         "O museu abriu em 2006, num antigo depósito de trens reciclado, a poucos metros do Mercado del Puerto. As fontes divergem entre novembro e dezembro.",
@@ -1054,6 +1235,7 @@ window.VIAJADOR.paises.uy = {
       id: "el-prado",
       lugar: "El Prado",
       coords: [-34.8595, -56.2057],
+      revisado: "2026-10",
       resumo: "Uma quinta particular do século 19 que virou parque público.",
       historia: [
         "Nos anos 1860, o empresário José de Buschental construiu aqui a Quinta del Buen Retiro, com chalé, parque próprio e o primeiro moinho a vapor do país.",
@@ -1072,6 +1254,7 @@ window.VIAJADOR.paises.uy = {
       id: "tres-cruces",
       lugar: "Terminal Tres Cruces",
       coords: [-34.8939, -56.1665],
+      revisado: "2026-10",
       resumo: "A rodoviária de 1994, com shopping no mesmo prédio.",
       historia: [
         "Antes da Tres Cruces, a maioria dos ônibus partia da Plaza Cagancha.",
@@ -1088,6 +1271,7 @@ window.VIAJADOR.paises.uy = {
       id: "puerto-punta",
       lugar: "Puerto de Punta del Este",
       coords: [-34.961, -54.95],
+      revisado: "2026-10",
       resumo: "De barco militar e pescadores a marina, com lobos-marinhos.",
       historia: [
         "O porto se desenvolveu junto com a alfândega, em 1885, no governo de Máximo Santos. No começo, abrigava uma embarcação militar e pescadores.",
@@ -1104,6 +1288,7 @@ window.VIAJADOR.paises.uy = {
       id: "isla-gorriti",
       lugar: "Isla Gorriti",
       coords: [-34.9546, -54.9716],
+      revisado: "2026-10",
       resumo: "Ilha de praias calmas com ruínas de fortificações do século 18.",
       historia: [
         "O nome homenageia Francisco Gorriti, capitão de Montevidéu, espanhol de origem basca.",
@@ -1121,6 +1306,7 @@ window.VIAJADOR.paises.uy = {
       id: "mansa-brava",
       lugar: "Playa Mansa x Playa Brava",
       coords: [-34.9455, -54.9438],
+      revisado: "2026-10",
       resumo: "Dois mares, um de cada lado da mesma península.",
       historia: [
         "Punta del Este é uma península, e cada lado tem um temperamento. A Mansa fica a oeste, do lado do Rio da Prata. A Brava fica do outro lado, de frente para o Atlântico.",
@@ -1138,6 +1324,7 @@ window.VIAJADOR.paises.uy = {
       id: "la-barra",
       lugar: "La Barra & José Ignacio",
       coords: [-34.911, -54.8729],
+      revisado: "2026-10",
       resumo: "A ponte em ondas de um construtor que nunca se formou engenheiro.",
       historia: [
         "O símbolo de La Barra é a ponte ondulada sobre o Arroyo Maldonado. A obra começou em 1963 e foi inaugurada em 1965.",
@@ -1155,6 +1342,7 @@ window.VIAJADOR.paises.uy = {
       id: "gorlero",
       lugar: "Avenida Gorlero",
       coords: [-34.9608, -54.9416],
+      revisado: "2026-10",
       resumo: "A antiga rua 4, rebatizada em 1918 em homenagem a um pioneiro local.",
       historia: [
         "A avenida se chamava apenas rua 4 da península. Em 1918, recebeu o nome de Juan Gorlero, a quem se atribuía boa parte do progresso de Punta del Este.",
@@ -1172,6 +1360,7 @@ window.VIAJADOR.paises.uy = {
       id: "feria-artigas",
       lugar: "Feria de Artesanos — Plaza Artigas",
       coords: [-34.9631, -54.9438],
+      revisado: "2026-10",
       resumo: "A \"praça do tanque\" que virou a praça dos artesãos em 1967.",
       historia: [
         "Em 1932, a companhia de água construiu aqui um tanque de abastecimento, que funcionou até os anos 1970. Os moradores chamavam o lugar de \"plaza del Tanque\".",
@@ -1188,6 +1377,7 @@ window.VIAJADOR.paises.uy = {
       id: "arboretum-lussich",
       lugar: "Arboretum Lussich",
       coords: [-34.8703, -55.0288],
+      revisado: "2026-10",
       resumo: "Um poeta e empresário naval plantou uma floresta sobre as dunas.",
       historia: [
         "Antonio Lussich, empresário naval e poeta, autor de Los tres gauchos orientales, comprou estas terras em 1896. Eram cerca de 1.800 hectares, e as dunas dominavam a paisagem.",
@@ -1205,6 +1395,7 @@ window.VIAJADOR.paises.uy = {
       id: "plaza-matriz",
       lugar: "Plaza Matriz & Cabildo",
       coords: [-34.9066, -56.2035],
+      revisado: "2026-10",
       resumo: "A antiga praça principal, onde foi jurada a primeira Constituição.",
       historia: [
         "Foi a Plaza Mayor da cidade colonial. O nome oficial, Plaza de la Constitución, lembra a Constituição de Cádiz, de 1812.",
@@ -1221,6 +1412,7 @@ window.VIAJADOR.paises.uy = {
       id: "puerta-ciudadela",
       lugar: "Puerta de la Ciudadela",
       coords: [-34.9065, -56.2008],
+      revisado: "2026-10",
       resumo: "Muita gente acha que era a entrada da cidade. Não era.",
       historia: [
         "Este é o que sobrou da Ciudadela, a fortaleza espanhola cujas primeiras pedras são de 1741. Ela foi demolida na década de 1870.",
@@ -1237,6 +1429,7 @@ window.VIAJADOR.paises.uy = {
       id: "torres-garcia",
       lugar: "Museo Torres García",
       coords: [-34.9065, -56.2014],
+      revisado: "2026-10",
       resumo: "Criado pela família do artista, fechou na ditadura e renasceu na Sarandí.",
       historia: [
         "Depois da morte de Joaquín Torres García, em 1949, a viúva Manolita Piña e a família criaram o museu para guardar as obras e o arquivo. Ele abriu em 28 de julho de 1955.",
@@ -1252,6 +1445,7 @@ window.VIAJADOR.paises.uy = {
       id: "mapi",
       lugar: "Museo de Arte Precolombino e Indígena (MAPI)",
       coords: [-34.9072, -56.2101],
+      revisado: "2026-10",
       resumo: "Arte indígena num prédio feito para ser um spa que nunca abriu.",
       historia: [
         "O prédio foi construído entre 1883 e 1888 por Emilio Reus, para ser um estabelecimento de hidroterapia. Nunca abriu como tal, e depois abrigou ministérios. É Monumento Histórico Nacional desde 1986.",
@@ -1267,6 +1461,7 @@ window.VIAJADOR.paises.uy = {
       id: "cafe-brasilero",
       lugar: "Café Brasilero",
       coords: [-34.9057, -56.2047],
+      revisado: "2026-10",
       resumo: "Café de 1877 onde escreveram Onetti, Galeano e Benedetti.",
       historia: [
         "Foi fundado em 1877 por Correa y Pimentel, como diz a inscrição na soleira da porta.",
@@ -1282,6 +1477,7 @@ window.VIAJADOR.paises.uy = {
       id: "palacio-legislativo",
       lugar: "Palacio Legislativo",
       coords: [-34.8912, -56.1872],
+      revisado: "2026-10",
       resumo: "Seu arquiteto foi assassinado antes de saber que tinha vencido.",
       historia: [
         "Um concurso internacional recebeu 27 projetos em 1904. O vencedor foi o italiano Vittorio Meano, assassinado antes de saber do prêmio.",
@@ -1297,7 +1493,8 @@ window.VIAJADOR.paises.uy = {
       id: "la-carreta",
       lugar: "Monumento La Carreta",
       coords: [-34.8926, -56.1552],
-      resumo: "O carro de bois de bronze de José Belloni, perto do Centenario.",
+      revisado: "2026-10",
+      resumo: "O monumento de 1929 de José Belloni, perto do Centenario.",
       historia: [
         "A obra é de 1929, do escultor uruguaio José Belloni, nascido em Montevidéu em 1882.",
         "Fica no Parque Batlle, perto do Estadio Centenario. O parque já se chamou Campo Chivero, Parque Pereira e Parque de los Aliados, e ganhou o nome atual em 1930.",
@@ -1313,6 +1510,7 @@ window.VIAJADOR.paises.uy = {
       id: "parque-rodo",
       lugar: "Parque Rodó",
       coords: [-34.9101, -56.1698],
+      revisado: "2026-10",
       resumo: "O antigo Parque Urbano, com lago, brinquedos e arte na grama.",
       historia: [
         "O parque se chamava Parque Urbano e foi desenhado pelos franceses Carlos Thays e Carlos Racine. O lago foi feito em 1903 e 1904, e o primeiro carrossel é de 1903.",
@@ -1329,6 +1527,7 @@ window.VIAJADOR.paises.uy = {
       id: "faro-punta-brava",
       lugar: "Faro de Punta Brava (Punta Carretas)",
       coords: [-34.9277, -56.1591],
+      revisado: "2026-10",
       resumo: "O farol de 1876 que ainda orienta quem navega.",
       historia: [
         "O farol foi construído em 1876 e entrou em serviço em 1º de outubro daquele ano. Em 1907, passou para o Estado.",
@@ -1344,6 +1543,7 @@ window.VIAJADOR.paises.uy = {
       id: "fortaleza-cerro",
       lugar: "Fortaleza General Artigas (Cerro)",
       coords: [-34.8884, -56.2599],
+      revisado: "2026-10",
       resumo: "A última obra espanhola da região, no alto do Cerro.",
       historia: [
         "A obra começou em 1809, por ordem do governador Francisco Javier de Elío, e terminou em 1811. Foi a última construção espanhola na Banda Oriental, feita para proteger o farol e reforçar a defesa da cidade.",
@@ -1353,6 +1553,338 @@ window.VIAJADOR.paises.uy = {
       reparar: "Do alto, a 148 metros, olhe a baía inteira. A fortaleza aparece até no brasão nacional.",
       fontes: [
         { titulo: "Wikipédia: Fortaleza General Artigas", url: "https://es.wikipedia.org/wiki/Fortaleza_General_Artigas" },
+      ],
+    },
+    {
+      id: "barrio-sur",
+      lugar: "Barrio Sur & Palermo",
+      coords: [-34.912, -56.1913],
+      revisado: "2026-10",
+      resumo: "O berço do candombe, patrimônio da Unesco desde 2009.",
+      historia: [
+        "Depois da abolição, em 1842, muitos afro-uruguaios viveram em cortiços destes bairros. O mais famoso foi o Conventillo Mediomundo, de 1885, com 40 quartos ao redor de um pátio.",
+        "Em 3 de dezembro de 1978, os moradores foram despejados durante a ditadura, e o último toque de candombe aconteceu naquele dia. O prédio foi demolido dois dias depois. Hoje, 3 de dezembro é o Dia Nacional do Candombe.",
+        "O candombe, tocado com os tambores chico, repique e piano, é patrimônio imaterial da Unesco desde 2009. Em fevereiro, as Llamadas desfilam por estes bairros.",
+      ],
+      reparar: "Procure a placa no prédio da antiga rua Cuareim 1080 e ande pela Peatonal Curuguaty, com seu calçamento antigo.",
+      fontes: [
+        { titulo: "Wikipédia: Conventillo Mediomundo", url: "https://es.wikipedia.org/wiki/Conventillo_Mediomundo" },
+        { titulo: "Wikipédia: Candombe", url: "https://es.wikipedia.org/wiki/Candombe" },
+        { titulo: "Wikipédia: Barrio Sur", url: "https://es.wikipedia.org/wiki/Barrio_Sur_(Montevideo)" },
+      ],
+    },
+    {
+      id: "mnav",
+      lugar: "Museo Nacional de Artes Visuales",
+      coords: [-34.9138, -56.165],
+      revisado: "2026-10",
+      resumo: "A maior coleção pública de pintura e escultura do Uruguai.",
+      historia: [
+        "O museu foi criado por lei em 10 de dezembro de 1911, como Museo Nacional de Bellas Artes. Ocupou primeiro uma ala do Teatro Solís e depois um pavilhão no Parque Rodó.",
+        "O pavilhão foi remodelado nos anos 1970 pelo arquiteto Clorindo Testa, e o jardim é de Leandro Silva Delgado.",
+        "São cerca de 6.500 obras, com nomes como Blanes, Torres García e Figari, além de Picasso e Goya.",
+      ],
+      reparar: "Não saia sem ver o jardim, onde fica o Monumento Cósmico, de Torres García.",
+      fontes: [
+        { titulo: "Wikipédia: Museo Nacional de Artes Visuales", url: "https://es.wikipedia.org/wiki/Museo_Nacional_de_Artes_Visuales_(Uruguay)" },
+        { titulo: "Wikipédia: Joaquín Torres García", url: "https://es.wikipedia.org/wiki/Joaqu%C3%ADn_Torres_Garc%C3%ADa" },
+      ],
+    },
+    {
+      id: "gurvich",
+      lugar: "Museo Gurvich",
+      coords: [-34.9075, -56.2043],
+      revisado: "2026-10",
+      resumo: "O menino lituano que virou pintor em Montevidéu.",
+      historia: [
+        "José Gurvich nasceu na Lituânia em 1927 e chegou a Montevidéu em 1932. Em 1945, entrou no Taller Torres García. Morreu em Nova York, em 1974, aos 47 anos.",
+        "O museu abriu em 2005 na rua Ituzaingó, fechou em 2013 e reabriu no fim de 2015 neste prédio histórico da Peatonal Sarandí.",
+        "Em 2019, o Estado formalizou a compra do acervo. A Fundación Gurvich administra o museu em acordo com o Ministério da Educação e Cultura.",
+      ],
+      reparar: "Procure o mural de 1963 feito para o Frigorífico do Cerro.",
+      fontes: [
+        { titulo: "Wikipédia: Museo Gurvich", url: "https://es.wikipedia.org/wiki/Museo_Gurvich" },
+        { titulo: "Wikipédia: José Gurvich", url: "https://es.wikipedia.org/wiki/Jos%C3%A9_Gurvich" },
+      ],
+    },
+    {
+      id: "hotel-carrasco",
+      lugar: "Hotel Carrasco",
+      coords: [-34.8905, -56.0554],
+      revisado: "2026-10",
+      resumo: "O hotel de 1921 que recebeu Einstein e García Lorca.",
+      historia: [
+        "As obras começaram em 1912, com os arquitetos Gastón Mallet e Jacques Dunant, e pararam por causa da Primeira Guerra. A inauguração foi em 29 de janeiro de 1921. Os jardins são de Carlos Thays.",
+        "Entre os hóspedes estiveram Einstein, em 1925, e García Lorca, em 1934.",
+        "Fechou em 2009 para uma grande reforma e reabriu em 7 de março de 2013. Hoje funciona como Sofitel, com cassino, e é Monumento Histórico Nacional.",
+      ],
+      reparar: "Veja a fachada a partir da Rambla de Carrasco: é um dos cartões-postais do bairro.",
+      fontes: [
+        { titulo: "Wikipédia: Hotel Carrasco", url: "https://es.wikipedia.org/wiki/Hotel_Carrasco" },
+      ],
+    },
+    {
+      id: "faro-punta",
+      lugar: "Faro de Punta del Este",
+      coords: [-34.9689, -54.9516],
+      revisado: "2026-10",
+      resumo: "O farol de 1860 no centro da península. Não abre ao público.",
+      historia: [
+        "O farol foi construído em 1860 por Tomás Libarena e pertence à Armada Nacional.",
+        "A torre cilíndrica de alvenaria tem 25 metros e uma cúpula com faixas radiais brancas e vermelhas.",
+        "Não é permitido entrar. A visita é olhar de fora, e a Iglesia de la Candelaria fica quase ao lado.",
+      ],
+      reparar: "Repare na cúpula com faixas brancas e vermelhas.",
+      fontes: [
+        { titulo: "Wikipédia: Faro de Punta del Este", url: "https://es.wikipedia.org/wiki/Faro_de_Punta_del_Este" },
+      ],
+    },
+    {
+      id: "candelaria",
+      lugar: "Iglesia de la Candelaria",
+      coords: [-34.969, -54.9505],
+      revisado: "2026-10",
+      resumo: "A igreja da padroeira, que cresceu de capela em capela.",
+      historia: [
+        "Conta-se que Juan Díaz de Solís deu nome ao lugar em 2 de fevereiro de 1516, dia da Virgem da Candelária.",
+        "A primeira capela foi inaugurada em 1911. A segunda foi benzida em 1922. Em 1941, uma ampliação manteve só o pórtico e a torre dessa capela.",
+        "Virou paróquia em 1955. Uma imagem da Virgem de Luján chegou em 1965, vinda de um navio argentino encalhado perto da Playa del Emir.",
+      ],
+      reparar: "Olhe o pórtico e a torre: são o que resta da capela de 1922.",
+      fontes: [
+        { titulo: "Wikipédia: Iglesia de la Candelaria", url: "https://es.wikipedia.org/wiki/Iglesia_de_la_Candelaria_(Punta_del_Este)" },
+      ],
+    },
+    {
+      id: "isla-lobos",
+      lugar: "Isla de Lobos",
+      coords: [-35.0272, -54.8837],
+      revisado: "2026-10",
+      resumo: "A ilha dos lobos-marinhos virou área protegida em 2024.",
+      historia: [
+        "Juan Díaz de Solís a encontrou em 1516, e ela recebeu outros nomes de navegadores nas décadas seguintes.",
+        "O farol foi erguido em 1858 e reconstruído em 1906. Está automatizado desde 2001 e funciona com energia solar.",
+        "Em 2024, a ilha e o entorno submerso foram declarados área protegida, a primeira inteiramente oceânica do Uruguai. Abriga uma grande colônia de lobos-marinhos.",
+      ],
+      reparar: "De barco, tente ver os animais sobre as pedras e o farol ao fundo. Não dá pra descer por conta própria.",
+      fontes: [
+        { titulo: "Wikipédia: Isla de Lobos", url: "https://es.wikipedia.org/wiki/Isla_de_Lobos_(Uruguay)" },
+        { titulo: "Montevideo Portal: área protegida", url: "https://www.montevideo.com.uy/Noticias/Declaran-area-natural-protegida-a-Isla-de-Lobos-de-Punta-del-Este-y-a-su-entorno-sumergido-uc898076" },
+      ],
+    },
+    {
+      id: "ralli",
+      lugar: "Museo Ralli",
+      coords: [-34.9297, -54.927],
+      revisado: "2026-10",
+      resumo: "Museu de arte mantido por uma fundação, com obras de Dalí.",
+      historia: [
+        "Foi fundado por Harry e Martine Recanati, como instituição sem fins lucrativos. As datas divergem entre 1987 e 1988.",
+        "O acervo reúne arte latino-americana e europeia, com obras de Fernando Botero e Manuel Pailós, e peças de Salvador Dalí.",
+        "O prédio, de Marita Casciani e Manuel Quinteiro, fica no bairro Beverly Hills, com esculturas de bronze e mármore nos pátios.",
+      ],
+      reparar: "Não fique só nas salas: veja as esculturas nos pátios.",
+      fontes: [
+        { titulo: "Wikipédia: Museo Ralli (Punta del Este)", url: "https://es.wikipedia.org/wiki/Museo_Ralli_(Punta_del_Este)" },
+        { titulo: "Wikipédia: Museos Ralli", url: "https://es.wikipedia.org/wiki/Museos_Ralli" },
+      ],
+    },
+    {
+      id: "punta-ballena",
+      lugar: "Punta Ballena",
+      coords: [-34.8901, -55.0401],
+      revisado: "2026-10",
+      resumo: "Falésias sobre o mar, com baleias entre julho e outubro.",
+      historia: [
+        "É uma pequena península rochosa entre Punta del Este e Piriápolis. Em 1896, Antonio Lussich comprou estas terras. Em 1958, começou aqui a obra de Casapueblo.",
+        "As falésias são descritas como as únicas falésias rochosas da costa uruguaia. Entre julho e outubro, dá para avistar baleias-francas.",
+        "Em 2017, a Ruta Panorámica recebeu o nome de Carlos Páez Vilaró. No início de 2025, o Ministério do Ambiente rejeitou um projeto de 29 prédios aqui.",
+      ],
+      reparar: "Entre julho e outubro, olhe para o mar com calma: pode aparecer uma baleia.",
+      fontes: [
+        { titulo: "Wikipédia: Punta Ballena", url: "https://es.wikipedia.org/wiki/Punta_Ballena" },
+        { titulo: "Wikipedia: Punta Ballena", url: "https://en.wikipedia.org/wiki/Punta_Ballena" },
+      ],
+    },
+    {
+      id: "faro-jose-ignacio",
+      lugar: "Faro de José Ignacio",
+      coords: [-34.8463, -54.6328],
+      revisado: "2026-10",
+      resumo: "O farol de 1877, erguido para evitar naufrágios.",
+      historia: [
+        "O farol foi aceso em 1º de junho de 1877, na ponta rochosa da península, cercada de recifes, para evitar naufrágios.",
+        "Foi operado pela empresa Costa y Cía. até 1907, quando passou para o Estado. Pertence à Armada Nacional.",
+        "É automatizado desde 1983 e funciona com energia solar. Não encontrei a regra atual de acesso à torre.",
+      ],
+      reparar: "Veja os três anéis brancos da torre e as pedras em volta.",
+      fontes: [
+        { titulo: "Wikipédia: Faro de José Ignacio", url: "https://es.wikipedia.org/wiki/Faro_de_Jos%C3%A9_Ignacio" },
+        { titulo: "Wikipédia: José Ignacio", url: "https://es.wikipedia.org/wiki/Jos%C3%A9_Ignacio_(Uruguay)" },
+      ],
+    },
+    {
+      id: "puente-garzon",
+      lugar: "Puente de Laguna Garzón",
+      coords: [-34.8024, -54.5715],
+      revisado: "2026-10",
+      resumo: "Uma ponte redonda de propósito, para o carro ir devagar.",
+      historia: [
+        "A ponte é do arquiteto Rafael Viñoly e foi inaugurada em 22 de dezembro de 2015, na Ruta 10.",
+        "Substituiu uma pequena balsa para dois carros, usada na travessia até então.",
+        "O formato circular serve para reduzir a velocidade. Pedestres também podem usar o anel.",
+      ],
+      reparar: "Dê a volta a pé no anel e olhe a laguna dos dois lados.",
+      fontes: [
+        { titulo: "Wikipédia: Puente de Laguna Garzón", url: "https://es.wikipedia.org/wiki/Puente_de_Laguna_Garz%C3%B3n" },
+        { titulo: "Wikipédia: Laguna Garzón", url: "https://es.wikipedia.org/wiki/Laguna_Garz%C3%B3n" },
+      ],
+    },
+    {
+      id: "maca",
+      lugar: "Fundación Atchugarry & MACA",
+      coords: [-34.8655, -54.8211],
+      revisado: "2026-10",
+      resumo: "Esculturas ao ar livre e um museu em forma de proa.",
+      historia: [
+        "O escultor Pablo Atchugarry nasceu em Montevidéu em 1954 e vive na Itália desde 1982. Em 2007, criou esta fundação em Manantiales, com acesso gratuito.",
+        "O MACA, o museu de arte contemporânea do local, foi inaugurado em 8 de janeiro de 2022, com uma retrospectiva de Christo e Jeanne-Claude.",
+        "O prédio, do arquiteto Carlos Ott, tem cerca de 5 mil metros quadrados. O nome homenageia Alejandro Atchugarry, irmão do escultor.",
+      ],
+      reparar: "Olhe o prédio de fora: ele lembra a proa de um navio.",
+      fontes: [
+        { titulo: "Wikipédia: Museo de Arte Contemporáneo Atchugarry", url: "https://es.wikipedia.org/wiki/Museo_de_Arte_Contempor%C3%A1neo_Atchugarry" },
+        { titulo: "Wikipédia: Pablo Atchugarry", url: "https://es.wikipedia.org/wiki/Pablo_Atchugarry" },
+      ],
+    },
+    {
+      id: "museo-mar",
+      lugar: "Museo del Mar",
+      coords: [-34.9, -54.84],
+      revisado: "2026-10",
+      resumo: "Esqueletos de baleia e 5 mil peças reunidas por um colecionador.",
+      historia: [
+        "Foi inaugurado em 15 de janeiro de 1996 pelo colecionador autodidata Pablo Etchegaray.",
+        "Na verdade são cinco museus: do Mar, dos Balneários, das Lembranças, um insetário e um museu do livro.",
+        "São mais de 5 mil exemplares marinhos. Não encontrei o horário atual, e as referências da fonte são antigas: confirme antes de ir.",
+      ],
+      reparar: "Procure os esqueletos de baleia e a sala dos piratas.",
+      fontes: [
+        { titulo: "Wikipédia: Museo del Mar", url: "https://es.wikipedia.org/wiki/Museo_del_Mar_(Uruguay)" },
+      ],
+    },
+    {
+      id: "laguna-sauce",
+      lugar: "Laguna del Sauce",
+      coords: [-34.807, -55.0494],
+      revisado: "2026-10",
+      resumo: "A maior reserva de água doce de Maldonado.",
+      historia: [
+        "Fica a cerca de 15 km em linha reta de Punta del Este e é apresentada como a maior reserva de água doce do departamento.",
+        "Tem cerca de 12 km de comprimento e 6 km de largura. O aeroporto de Punta del Este fica na margem sul.",
+        "É usada para pesca e esportes náuticos sem motor.",
+      ],
+      reparar: "Se chegar de avião a Punta del Este, procure a laguna pela janela.",
+      fontes: [
+        { titulo: "Wikipédia: Laguna del Sauce", url: "https://es.wikipedia.org/wiki/Laguna_del_Sauce" },
+      ],
+    },
+    {
+      id: "catedral-maldonado",
+      lugar: "Catedral de San Fernando",
+      coords: [-34.9088, -54.959],
+      revisado: "2026-10",
+      resumo: "Quase um século de obras, interrompidas pelas invasões inglesas.",
+      historia: [
+        "A construção começou em 1801, parou com as invasões inglesas de 1806 e só terminou em 1895.",
+        "É neoclássica e virou catedral em 1966, com a criação da diocese. É Monumento Histórico Nacional.",
+        "Guarda uma imagem da Virgem do Carmo que veio do vapor Ciudad del Santander, naufragado perto da Isla de Lobos em 1829.",
+      ],
+      reparar: "Dentro, procure o altar de Antonio Veiga e a Virgem do naufrágio.",
+      fontes: [
+        { titulo: "Wikipédia: Catedral de Maldonado", url: "https://es.wikipedia.org/wiki/Catedral_de_San_Fernando_de_Maldonado" },
+      ],
+    },
+    {
+      id: "pueblo-garzon",
+      lugar: "Pueblo Garzón",
+      coords: [-34.6, -54.55],
+      revisado: "2026-10",
+      resumo: "Um vilarejo de menos de 200 pessoas que atrai pelo restaurante.",
+      historia: [
+        "É um pequeno povoado do interior de Maldonado, com 178 habitantes no censo de 2023. A data de fundação tem várias versões.",
+        "Teve moinho nos anos 1920 e estação de trem, depois decaiu.",
+        "Em 2004, o chef Francis Mallmann abriu aqui um hotel e restaurante, com o enólogo Manuel Mas. Em 2012, abriu a Galería Pueblo Garzón.",
+      ],
+      reparar: "Dê uma volta pela praça e veja a Capilla Nuestra Señora de la Merced.",
+      fontes: [
+        { titulo: "Wikipédia: Garzón (Uruguay)", url: "https://es.wikipedia.org/wiki/Garz%C3%B3n_(Uruguay)" },
+      ],
+    },
+    {
+      id: "castillo-piria",
+      lugar: "Castillo de Piria",
+      coords: [-34.8287, -55.2516],
+      revisado: "2026-10",
+      resumo: "O castelo do fundador de Piriápolis, chamado de alquimista.",
+      historia: [
+        "Francisco Piria, filho de imigrantes genoveses, comprou cerca de 2.700 hectares aqui em 1890. O castelo, sua residência, foi inaugurado em 17 de agosto de 1897.",
+        "Em 1975, foi vendido e chegou a funcionar como boate. A Intendência de Maldonado o comprou em 1980 e o restaurou.",
+        "Hoje é museu municipal. Piria é lembrado como alquimista, e o castelo tem simbolismo alquímico.",
+      ],
+      reparar: "No parque, procure a réplica em bronze de Mercúrio em descanso.",
+      fontes: [
+        { titulo: "Wikipédia: Castillo de Piria", url: "https://es.wikipedia.org/wiki/Castillo_de_Piria" },
+        { titulo: "Wikipédia: Francisco Piria", url: "https://es.wikipedia.org/wiki/Francisco_Piria" },
+      ],
+    },
+    {
+      id: "argentino-hotel",
+      lugar: "Argentino Hotel",
+      coords: [-34.8627, -55.2784],
+      revisado: "2026-10",
+      resumo: "O sonho final de Piria, aberto em 1930.",
+      historia: [
+        "O hotel foi projetado por Pierre Guichot para Francisco Piria. A pedra fundamental foi lançada em 1920, e a abertura foi em 24 de dezembro de 1930.",
+        "O Estado o comprou em 1942. Desde 2017, é administrado em regime de concessão, e o prédio pertence ao Ministério do Turismo.",
+        "Tem seis andares e cerca de 300 quartos, com referências esotéricas no desenho.",
+      ],
+      reparar: "Procure as estátuas da entrada e o vitral de 5 metros quadrados.",
+      fontes: [
+        { titulo: "Wikipédia: Argentino Hotel", url: "https://es.wikipedia.org/wiki/Argentino_Hotel" },
+      ],
+    },
+    {
+      id: "rambla-piriapolis",
+      lugar: "Rambla de los Argentinos",
+      coords: [-34.8583, -55.2872],
+      revisado: "2026-10",
+      resumo: "A rambla de pedra de Piria, Monumento Histórico desde 2021.",
+      historia: [
+        "A obra começou em 1910, como parte do sonho de Piria para o balneário. As fontes divergem sobre o final: concluída em 1915 ou inaugurada em 1916.",
+        "A pedra veio das pedreiras do Cerro Pan de Azúcar.",
+        "Em 2 de dezembro de 2021, foi declarada Monumento Histórico Nacional. As fachadas Art Déco dos anos 1930 também chamam atenção.",
+      ],
+      reparar: "Caminhe olhando as fachadas Art Déco do lado oposto ao mar.",
+      fontes: [
+        { titulo: "Montevideo Portal: Monumento Histórico", url: "https://www.montevideo.com.uy/Tiempo-libre/La-rambla-de-Piriapolis-fue-nombrada-Monumento-Historico-Nacional-uc805979" },
+        { titulo: "Wikipédia: Piriápolis", url: "https://es.wikipedia.org/wiki/Piri%C3%A1polis" },
+      ],
+    },
+    {
+      id: "pan-de-azucar",
+      lugar: "Cerro Pan de Azúcar",
+      coords: [-34.8102, -55.2587],
+      revisado: "2026-10",
+      resumo: "O morro de 389 metros com uma cruz de 35 metros no topo.",
+      historia: [
+        "Tem 389 metros, e o nome aparece já em 1717. Em uma encosta, Piria abriu a pedreira de granito para suas obras.",
+        "No topo há uma cruz de concreto de 35 metros, de 1933. O acesso ao cume estava fechado por risco de deslizamento, segundo a fonte: confirme antes de subir.",
+        "Abriga, desde 1980, uma estação de criação de fauna nativa, da Intendência de Maldonado.",
+      ],
+      reparar: "Mesmo de longe, procure a cruz no alto do morro.",
+      fontes: [
+        { titulo: "Wikipédia: Cerro Pan de Azúcar", url: "https://es.wikipedia.org/wiki/Cerro_Pan_de_Az%C3%BAcar_(Uruguay)" },
       ],
     },
   ],

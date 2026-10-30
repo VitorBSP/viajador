@@ -30,7 +30,7 @@ PAIS = {
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
 }
-GUIA = {"id": True, "lugar": True, "coords": True, "resumo": True, "historia": True, "reparar": True, "fontes": True}
+GUIA = {"id": True, "lugar": True, "coords": True, "revisado": True, "resumo": True, "historia": True, "reparar": True, "fontes": True}
 FONTE = {"titulo": True, "url": True}
 CONVERSA = {"id": True, "icone": True, "titulo": True, "passos": True}
 PASSO = {"titulo": True, "es": True}
