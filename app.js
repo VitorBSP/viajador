@@ -73,6 +73,18 @@
     escolherVoz();
     speechSynthesis.onvoiceschanged = escolherVoz;
   }
+  // Histórias do guia são lidas em português, um parágrafo por vez.
+  function narrar(paragrafos) {
+    if (!("speechSynthesis" in window)) return avisar("Seu navegador não tem voz");
+    speechSynthesis.cancel();
+    const vozPt = speechSynthesis.getVoices().find((v) => v.lang.replace("_", "-").toLowerCase().startsWith("pt"));
+    paragrafos.forEach((p) => {
+      const u = new SpeechSynthesisUtterance(p);
+      u.lang = vozPt ? vozPt.lang : "pt-BR";
+      if (vozPt) u.voice = vozPt;
+      speechSynthesis.speak(u);
+    });
+  }
   function falar(texto) {
     if (!("speechSynthesis" in window)) return avisar("Seu navegador não tem voz");
     speechSynthesis.cancel();
@@ -220,7 +232,82 @@
     return "";
   }
 
+  // Guia: a posição só é pedida ao tocar no botão, fica na memória e nunca sai do aparelho.
+  const pontos = () => pais.guia || [];
+  let posicao = null;
+  let estadoGps = "";
+  function distanciaKm(a, b) {
+    const rad = (g) => (g * Math.PI) / 180;
+    const dLat = rad(b[0] - a[0]);
+    const dLng = rad(b[1] - a[1]);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2;
+    return 6371 * 2 * Math.asin(Math.sqrt(h));
+  }
+  const formatarDist = (km) => (km < 1 ? `${Math.round(km * 100) * 10} m` : `${km < 10 ? km.toFixed(1).replace(".", ",") : Math.round(km)} km`);
+  function pedirPosicao() {
+    if (!("geolocation" in navigator)) {
+      estadoGps = "Este aparelho não informa a localização. Escolha um ponto na lista.";
+      return render();
+    }
+    estadoGps = "Procurando sua localização…";
+    render();
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        posicao = [p.coords.latitude, p.coords.longitude];
+        estadoGps = "";
+        render();
+      },
+      (erro) => {
+        estadoGps = erro.code === 1
+          ? "Sem permissão de localização. Escolha um ponto na lista, ou libere nas configurações do navegador."
+          : "Não consegui achar sua localização agora. Escolha um ponto na lista.";
+        render();
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+    );
+  }
+  const lugarDo = (g) => {
+    for (const c of pais.lugares) {
+      const l = c.itens.find((x) => x.nome === g.lugar);
+      if (l) return { ...l, cidade: c.cidade };
+    }
+    return null;
+  };
+
   const telas = {
+    guia(id) {
+      const g = pontos().find((x) => x.id === id);
+      if (g) {
+        const l = lugarDo(g);
+        return `<a class="voltar" href="#/guia">← Perto de você</a>
+          <h1 lang="es">${l.icone} ${esc(g.lugar)}</h1>
+          <p class="lead">${esc(l.cidade)}${posicao ? ` · a ${formatarDist(distanciaKm(posicao, g.coords))} de você` : ""}</p>
+          <div class="frase-acoes"><button class="btn" data-acao="narrar" data-guia="${esc(g.id)}"><span aria-hidden="true">🔊</span> Ouvir a história</button></div>
+          <div class="historia">${g.historia.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+          <p class="frase-dica"><strong>O que reparar:</strong> ${esc(g.reparar)}</p>
+          <p class="frase-dica"><strong>Dica:</strong> ${esc(l.dica)}</p>
+          <h2>Frases para este lugar</h2>
+          ${lista(l.frases)}
+          <h2>Fontes</h2>
+          <ul class="fontes">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
+      }
+      const ordem = pontos().map((p) => ({ p, km: posicao ? distanciaKm(posicao, p.coords) : null, l: lugarDo(p) }));
+      if (posicao) ordem.sort((a, b) => a.km - b.km);
+      return `<h1>Perto de você</h1>
+        <p class="lead">Veja o que há por perto e conheça a história de cada lugar. Funciona sem internet.</p>
+        <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
+        <p class="gps-nota">${esc(estadoGps || "Sua localização fica só neste aparelho e é usada para ordenar a lista.")}</p>
+        <div class="tabela">${ordem.map(({ p, km, l }) => `
+          <a class="item ponto" href="#/guia/${p.id}">
+            <span class="emoji" aria-hidden="true">${l.icone}</span>
+            <span class="ponto-texto">
+              <strong lang="es">${esc(p.lugar)}</strong>
+              <small class="suave">${esc(p.resumo)}</small>
+              <small class="ponto-dist">${esc(l.cidade)}${km === null ? "" : ` · ${formatarDist(km)}`}</small>
+            </span>
+          </a>`).join("")}
+        </div>`;
+    },
     inicio() {
       return `${rapidas()}
         <div class="intro">${esc(pais.intro)}</div>
@@ -289,6 +376,7 @@
             <section class="item lugar">
               <div class="lugar-topo"><span aria-hidden="true">${l.icone}</span><h3 lang="es">${esc(l.nome)}</h3></div>
               <p class="suave">${esc(l.dica)}</p>
+              ${pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("")}
               ${lista(l.frases)}
             </section>`).join("")}`).join("")}
         <h2>Comidas típicas</h2>
@@ -373,6 +461,8 @@
       render();
       return;
     }
+    if (b.dataset.acao === "gps") return pedirPosicao();
+    if (b.dataset.acao === "narrar") return narrar(pontos().find((g) => g.id === b.dataset.guia).historia);
     const f = vistas[+b.dataset.i];
     if (b.dataset.acao === "falar") falar(f.es);
     if (b.dataset.acao === "mostrar") mostrar(f, b);
@@ -404,6 +494,7 @@
 
   $("#busca").addEventListener("input", render);
   window.addEventListener("hashchange", () => {
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
     $("#busca").value = "";
     render();
     window.scrollTo(0, 0);

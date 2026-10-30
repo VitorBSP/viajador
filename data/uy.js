@@ -720,6 +720,95 @@ window.VIAJADOR.paises.uy = {
     },
   ],
 
+  // Guia por localização. `lugar` é o nome exato do item em `lugares`, de onde vêm as frases.
+  // História só com fatos das `fontes`. `coords` vem do OpenStreetMap: [latitude, longitude].
+  guia: [
+    {
+      id: "teatro-solis",
+      lugar: "Teatro Solís",
+      coords: [-34.9079, -56.2010],
+      resumo: "O grande teatro do país, aberto em 1856 com uma ópera de Verdi.",
+      historia: [
+        "O Solís abriu oficialmente em 25 de agosto de 1856, com a ópera Ernani, de Verdi. O nome homenageia Juan Díaz de Solís, navegador ligado à chegada dos europeus ao Rio da Prata.",
+        "O primeiro projeto foi do italiano Carlo Zucchi, mas era caro demais para a época. O espanhol Francisco Xavier Garmendia modificou o projeto.",
+        "As alas laterais vieram depois, projetadas por Victor Rabu e construídas entre 1869 e 1874.",
+      ],
+      reparar: "Olhe a fachada de frente e depois as alas: dá pra perceber que o conjunto foi crescendo em etapas.",
+      fontes: [
+        { titulo: "Wikipédia: Solís Theatre", url: "https://en.wikipedia.org/wiki/Sol%C3%ADs_Theatre" },
+        { titulo: "Montevideo Portal: a reforma do Solís", url: "https://www.montevideo.com.uy/Tiempo-libre/REFORMA-DEL-SOLIS-uc34293" },
+        { titulo: "UNIRIO: Teatro Solís", url: "https://www.unirio.br/espacoteatral/Teatro_Solis" },
+      ],
+    },
+    {
+      id: "mercado-del-puerto",
+      lugar: "Mercado del Puerto",
+      coords: [-34.9056, -56.2117],
+      resumo: "Nasceu em 1868 para vender comida e virou o salão das parrillas.",
+      historia: [
+        "O mercado foi inaugurado em 10 de outubro de 1868, ideia do comerciante espanhol Pedro Sáenz de Zumarán. Uma reportagem resume sua origem assim: capital espanhol e construção inglesa.",
+        "Durante muito tempo foi um mercado de verdade, de produtos frescos e carne. Com os anos, as bancas deram lugar aos restaurantes, e hoje quem vem aqui vem comer.",
+        "Em 2018, o prédio completou 150 anos como um dos símbolos da Ciudad Vieja.",
+      ],
+      reparar: "Antes de sentar, olhe pra cima: a estrutura de ferro do século 19 é o verdadeiro monumento.",
+      fontes: [
+        { titulo: "Wikipédia: Mercado del Puerto", url: "https://en.wikipedia.org/wiki/Mercado_del_Puerto" },
+        { titulo: "Montevideo Portal: 150 anos do mercado", url: "https://www.montevideo.com.uy/Tiempo-libre/Mercado-del-Puerto-celebro-este-fin-de-semana-sus-150-anos-uc705031" },
+        { titulo: "Distribución y Consumo: o mercado de 1868", url: "https://www.mapa.gob.es/ministerio/pags/Biblioteca/Revistas/pdf_DYC/DYC_2010_111_75_77.pdf" },
+      ],
+    },
+    {
+      id: "estadio-centenario",
+      lugar: "Estadio Centenario & Museo del Fútbol",
+      coords: [-34.8945, -56.1527],
+      resumo: "Erguido às pressas para a primeira Copa do Mundo, em 1930.",
+      historia: [
+        "O estádio foi feito para a primeira Copa do Mundo. A pedra fundamental é de 21 de julho de 1929, e a inauguração foi em 18 de julho de 1930, no centenário da Jura da Constituição uruguaia. Daí o nome.",
+        "A obra entrou para a lenda pela pressa. As fontes nem concordam no prazo: falam em seis, nove ou dez meses, conforme o que se conta como início.",
+        "O projeto é do arquiteto Juan Antonio Scasso. Hoje o estádio é Monumento Histórico Nacional do Uruguai.",
+      ],
+      reparar: "Procure a Torre de los Homenajes, a torre alta que é a marca do estádio.",
+      fontes: [
+        { titulo: "Estadio Centenario: história oficial", url: "https://www.estadiocentenario.com.uy/en/institutional/history/" },
+        { titulo: "Governo do Uruguai: 95 anos do estádio", url: "https://www.gub.uy/ministerio-educacion-cultura/comunicacion/noticias/95-aniversario-del-estadio-centenario" },
+        { titulo: "Governo do Uruguai: Monumento Histórico Nacional", url: "https://www.gub.uy/ministerio-educacion-cultura/comunicacion/noticias/estadio-centenario-fue-declarado-monumento-historico-nacional" },
+      ],
+    },
+    {
+      id: "la-mano",
+      lugar: "La Mano (Los Dedos) — Playa Brava",
+      coords: [-34.9579, -54.9373],
+      resumo: "Feita em seis dias em 1982, e a única daquele verão que ficou na praia.",
+      historia: [
+        "A obra é do escultor chileno Mario Irarrázabal. Ele a fez no verão de 1982, quando veio a Punta del Este para um encontro internacional de escultura moderna ao ar livre.",
+        "Tinha o verão inteiro para terminar, mas concluiu em seis dias, mesmo com atrasos causados pelo vento forte.",
+        "O nome original é \"Hombre emergiendo a la vida\" (homem emergindo para a vida). Vários escultores trabalharam na praia naquele verão, e só esta peça continua lá.",
+      ],
+      reparar: "Repare no tamanho dos dedos de perto, e em como a mão parece sair da areia em direção ao mar bravo.",
+      fontes: [
+        { titulo: "Wikipédia: La Mano de Punta del Este", url: "https://en.wikipedia.org/wiki/La_Mano_de_Punta_del_Este" },
+        { titulo: "Billiken: a história dos Dedos", url: "https://billiken.lat/interesante/cual-es-la-historia-de-los-famosos-dedos-de-punta-del-este/" },
+      ],
+    },
+    {
+      id: "casapueblo",
+      lugar: "Casapueblo (Punta Ballena)",
+      coords: [-34.9088, -55.0446],
+      resumo: "Uma cabana de tábuas que virou a casa-escultura de Páez Vilaró.",
+      historia: [
+        "Carlos Páez Vilaró se instalou em Punta Ballena em 1958. Começou com uma casinha de tábuas recolhidas na costa, chamada La Pionera. A partir de 1960, foi cobrindo tudo com cimento, e a obra não parou de crescer.",
+        "O filho dele, Carlos Miguel, estava no avião uruguaio que caiu nos Andes em 1972. Quando a busca oficial foi encerrada, o pai organizou suas próprias buscas no Chile.",
+        "Parte do conjunto virou hotel, e a cúpula principal guarda o museu e o ateliê. O artista morreu aqui em 2014, aos 90 anos.",
+      ],
+      reparar: "Olhe as formas curvas e brancas: nada parece reto, e foi tudo crescendo sem um plano rígido.",
+      fontes: [
+        { titulo: "Wikipédia: Casapueblo", url: "https://en.wikipedia.org/wiki/Casapueblo" },
+        { titulo: "Wikipédia: Carlos Páez Vilaró", url: "https://en.wikipedia.org/wiki/Carlos_P%C3%A1ez_Vilar%C3%B3" },
+        { titulo: "El Observador: Casapueblo", url: "https://www.elobservador.com.uy/casapueblo-la-escultura-habitable-que-nacio-planos-y-se-convirtio-un-icono-punta-del-este-n6030597" },
+      ],
+    },
+  ],
+
   etiqueta: [
     { titulo: "Cumprimentos", texto: "Entre conhecidos, é comum um beijo no rosto. Com desconhecidos, um \"buenas\" basta." },
     { titulo: "Roda de mate", texto: "Quem serve enche e passa. Tome até o fim e devolva pra essa pessoa. \"Gracias\" significa que você não quer mais, e não se mexe na bomba." },

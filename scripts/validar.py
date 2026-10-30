@@ -28,8 +28,10 @@ PAIS = {
     "codigo": True, "nome": True, "bandeira": True, "voz": True, "cidades": True, "intro": True,
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
     "pronuncia": True, "comidas": True, "lugares": True,
-    "conversas": False, "etiqueta": False, "checklist": False,
+    "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
 }
+GUIA = {"id": True, "lugar": True, "coords": True, "resumo": True, "historia": True, "reparar": True, "fontes": True}
+FONTE = {"titulo": True, "url": True}
 CONVERSA = {"id": True, "icone": True, "titulo": True, "passos": True}
 PASSO = {"titulo": True, "es": True}
 ETIQUETA = {"titulo": True, "texto": True}
@@ -356,6 +358,24 @@ def checar_pais(r, chave, p, esperado):
                 for es in lista_de(r, passo, "es", lugar, minimo=1):
                     if es not in vistas:
                         r.erro(passo.linha, lugar, f'frase citada não existe: "{es}"')
+    # Guia: cada ponto aponta para um lugar existente e precisa de fonte para a história.
+    guia = lista_de(r, p, "guia", "guia")
+    checar_unicos(r, guia, "id", "guia")
+    nomes = {l.get("nome") for c in lista_de(r, p, "lugares", "lugares") if isinstance(c, Obj)
+             for l in lista_de(r, c, "itens", "lugares") if isinstance(l, Obj)}
+    for n, g in enumerate(guia):
+        onde = f"guia[{n}]"
+        if not checar_campos(r, g, GUIA, onde, p.linha):
+            continue
+        if g.get("lugar") not in nomes:
+            r.erro(g.linha, onde, f'lugar não existe em "lugares": "{g.get("lugar")}"')
+        xy = g.get("coords")
+        if not (isinstance(xy, list) and len(xy) == 2 and -90 <= xy[0] <= 90 and -180 <= xy[1] <= 180):
+            r.erro(g.linha, onde, "coords deveria ser [latitude, longitude]")
+        lista_de(r, g, "historia", onde, minimo=1)
+        for m, f in enumerate(lista_de(r, g, "fontes", onde, minimo=1)):
+            if checar_campos(r, f, FONTE, f"{onde}.fontes[{m}]", g.linha) and not str(f.get("url")).startswith("https://"):
+                r.erro(f.linha, f"{onde}.fontes[{m}]", "url deveria começar com https://")
     for n, e in enumerate(lista_de(r, p, "etiqueta", "etiqueta")):
         checar_campos(r, e, ETIQUETA, f"etiqueta[{n}]", p.linha)
     itens = lista_de(r, p, "checklist", "checklist")
