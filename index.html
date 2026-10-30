@@ -5,14 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Viajador · Uruguai</title>
   <meta name="description" content="Guia de bolso de espanhol para brasileiros no Uruguai: frases, pronúncia, gírias e dicas para Montevidéu e Punta del Este.">
-  <meta name="theme-color" content="#0b3d91">
+  <meta name="theme-color" content="#0b3d91" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b2a63" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Viajador">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="topo">
+  <a class="pular" href="#conteudo" id="pular">Pular para o conteúdo</a>
+  <header class="topo" id="topo">
     <div class="topo-linha">
       <a href="#/" class="marca" aria-label="Início">
         <span class="sol" aria-hidden="true"></span>
@@ -24,7 +32,7 @@
       <span class="sr">Buscar frase</span>
       <input id="busca" type="search" placeholder="Buscar: banheiro, conta, foto…" autocomplete="off">
     </label>
-    <nav class="abas" id="abas">
+    <nav class="abas" id="abas" aria-label="Seções">
       <a href="#/" data-aba="">Situações</a>
       <a href="#/lugares" data-aba="lugares">Lugares</a>
       <a href="#/girias" data-aba="girias">Gírias</a>
@@ -37,9 +45,19 @@
   <main id="conteudo" class="conteudo" tabindex="-1"></main>
 
   <div class="mostrar" id="mostrar" hidden role="dialog" aria-modal="true" aria-label="Frase em tela cheia">
-    <button class="mostrar-fechar" id="mostrar-fechar" aria-label="Fechar">×</button>
-    <p class="mostrar-es" id="mostrar-es"></p>
-    <p class="mostrar-pt" id="mostrar-pt"></p>
+    <div class="mostrar-barra">
+      <button class="mostrar-btn" id="mostrar-menos" aria-label="Diminuir letra">A−</button>
+      <button class="mostrar-btn" id="mostrar-mais" aria-label="Aumentar letra">A+</button>
+      <button class="mostrar-btn" id="mostrar-girar" aria-label="Girar frase" aria-pressed="false"><span aria-hidden="true">⟳</span></button>
+      <button class="mostrar-btn" id="mostrar-ouvir" aria-label="Ouvir frase"><span aria-hidden="true">🔊</span></button>
+      <button class="mostrar-btn mostrar-fechar" id="mostrar-fechar" aria-label="Fechar"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="mostrar-texto" id="mostrar-texto">
+      <p class="mostrar-es" id="mostrar-es" lang="es"></p>
+      <p class="mostrar-pr" id="mostrar-pr"></p>
+      <p class="mostrar-pt" id="mostrar-pt"></p>
+    </div>
+    <p class="mostrar-acesa" id="mostrar-acesa" hidden><span aria-hidden="true">🔆</span> Tela fica acesa</p>
   </div>
 
   <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
