@@ -72,6 +72,59 @@ Ordem sugerida (demanda de turistas brasileiros × reaproveitamento do rioplaten
 
 **Critério de pronto:** testado em celular real em modo avião; qualquer frase em ≤3 toques ou 1 busca; Lighthouse PWA verde.
 
+## 5. Conteúdo que falta para o turista no Uruguai
+
+Hoje as situações cobrem o básico. Estas lacunas são as que mais geram atrito real. Cada item vira uma situação em `data/uy.js` (frases + dica) e, quando indicado, uma ferramenta. Prioridade: **A** = antes da viagem do usuário já fazer falta, **B** = bom ter.
+
+### Câmbio e dinheiro (A)
+- Frases: *¿A cuánto está el dólar / el real?* · *¿Cobran comisión?* · *¿Puedo cambiar reales?* · *Billetes chicos, por favor* · *¿Tiene cambio?* (troco)
+- Dicas: casas de cambio (*casa de cambio*) costumam dar melhor taxa que hotel/aeroporto; confira o valor *antes* de entregar a nota; dólar em espécie é aceito em muitos pontos turísticos, mas o troco vem em pesos.
+- Ferramenta: conversor BRL/USD ↔ UYU (item 3 do ranking) com "valor ÷ taxa" rápido.
+- Vocabulário de cédulas/moedas: *pesos, pila, luca* (mil), *mango*, *billete, moneda*.
+
+### Restaurante (A)
+- Frases: *¿Hay mesa afuera / adentro?* · *¿Qué me recomendás?* · *¿Es picante?* · *Sin cebolla / sin gluten* (restrições) · *Soy alérgico a…* · *¿Qué trae el chivito?* · *Para compartir* · *La cuenta, por favor* · *¿Podemos dividir la cuenta?* · *¿Está incluida la propina?*
+- Dicas: **cubierto** (couvert) é cobrado por pessoa e costuma ser pago à parte; **propina** é ~10%, não vem automática; *medio y medio*, *ensalada rusa*, *minuta* (prato do dia) e *menú del día* são o jeito barato de comer.
+- Ferramenta: glossário de cardápio pesquisável (substitui a câmera, item 10).
+
+### Compras e pagamento (A)
+- Frases: *¿Cuánto sale?* · *¿Tienen otro talle / color?* · *Me lo llevo* · *¿Puedo probármelo?* · *¿Aceptan tarjeta / dólares?* · *¿En cuotas?* · *Necesito la factura* · *Bolsa, por favor*
+- **Devolução de IVA ao turista** (hotel, restaurante, locação de carro, quando se paga com cartão estrangeiro) e *tax free* em lojas: explicar o que pedir (*¿Tienen descuento para turistas con tarjeta extranjera?*). **Verificar a regra vigente antes de publicar**, pois percentual e condições mudam.
+- Feira de artesanato, *free shops* e compras na fronteira (Chuy/Rivera): limites de cota alfandegária para o brasileiro.
+- Tamanhos: *talle* (roupa), *número* (calçado). Tabela de conversão BR ↔ UY.
+
+### Hotel e hospedagem (B)
+- *¿Puedo dejar las valijas?* · *¿A qué hora es el check-out?* · *El wifi no anda* · *No hay agua caliente* · *¿Pueden llamarme un taxi?* · *Necesito toallas* · *¿Dónde queda el desayuno?*
+
+### Transporte e deslocamento (A)
+- Frases: *¿Este ómnibus va a…?* (ônibus) · *¿Dónde bajo?* · *Una boleta/un boleto a…* · *Pare, por favor* · *¿Cuánto sale hasta…?* (táxi) · *Cabify / Uber* · *¿Tengo que tener tarjeta STM?*
+- Dicas: ônibus urbano em Montevidéu usa **cartão STM** ou aplicativo; Punta del Este tem ônibus interdepartamental (*Cut/COT*) e muita gente aluga carro/bike; *bondi* é ônibus, *ómnibus* é o intermunicipal.
+- Aluguel de carro: *¿Está incluido el seguro?* · *Tanque lleno* · *Nafta* (gasolina) · *Peaje* (pedágio — muito comum, pague em pesos).
+
+### Telefonia e internet (B)
+- *¿Dónde puedo comprar un chip?* · *¿Tienen wifi? ¿Cuál es la clave?* · *Se me acabó la batería*. Dica: chip local (Antel/Claro/Movistar) vs. roaming; WhatsApp resolve a maioria.
+
+### Saúde, farmácia e emergência (A)
+- Frases: *Necesito un médico* · *Me duele…* (cabeça/barriga/garganta) · *Soy alérgico a…* · *¿Tienen algo para…?* (dor, alergia, enjoo) · *Necesito una farmacia de turno* (plantão 24h).
+- Dicas: números de emergência (**confirmar**: 911 geral), seguro viagem, *emergencia móvil* (plano de saúde local), carteirinha de vacinação.
+- Ferramenta: cartão **"Emergência"** fixado no topo com alergias/tipo sanguíneo/contato, funcionando offline.
+
+### Alfândega, documentos e polícia (B)
+- *No tengo nada que declarar* · *Vengo de vacaciones* · *Perdí mi pasaporte / me robaron* · *Necesito hacer una denuncia* · *Consulado de Brasil*. Dica: brasileiros entram com RG ou passaporte (Mercosul) — **confirmar**.
+
+### Social, praia e passeios (B)
+- Praia: *¿Hay guardavidas?* · *Sombrilla / reposera* (guarda-sol/cadeira) · *¿Es seguro nadar acá?* · *Protector solar*.
+- Passeios: *¿A qué hora abre / cierra?* · *¿Cuánto sale la entrada?* · *¿Puedo sacar fotos?* · *¿Me sacás una foto?* · *¿Hay visita guiada en portugués?*
+- Mate: *¿Me regalás un poco de agua caliente?* · como se cebar o mate, a etiqueta de **não** agradecer ("gracias" encerra a roda).
+- Etiqueta geral: beijo no rosto ao cumprimentar, almoço tardio (13h–15h), jantar a partir das 21h, comércio fecha à tarde no interior, *siesta*.
+
+### Prioridade de implementação
+1. **Semana 1 do MVP**: Câmbio, Restaurante (cubierto/propina/cuenta), Compras/pagamento, Emergência (cartão offline).
+2. **Semana 2**: Transporte (STM/peaje/táxi), Hotel, Saúde/farmácia.
+3. **Depois**: Telefonia, alfândega/polícia, praia/passeios, mate, etiqueta (viram dicas dentro de "Lugares" e "Básico").
+
+**Atenção:** valores, regras de IVA, números de emergência e documentos mudam com o tempo. Cada dica dessas deve ter `atualizadoEm` e revisão antes de ir ao ar.
+
 ## Perguntas em aberto
 - A voz `es-UY` existe no Android/iOS dos usuários? Medir antes de investir em áudios gravados.
 - Fonte de taxa de câmbio sem custo (ex.: API pública) vs. só manual.
