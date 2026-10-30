@@ -236,6 +236,9 @@
   const pontos = () => pais.guia || [];
   let posicao = null;
   let estadoGps = "";
+  let filtroCidade = "";
+  let verTodos = false;
+  const LIMITE_PERTO = 10;
   function distanciaKm(a, b) {
     const rad = (g) => (g * Math.PI) / 180;
     const dLat = rad(b[0] - a[0]);
@@ -291,13 +294,21 @@
           <h2>Fontes</h2>
           <ul class="fontes">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
       }
-      const ordem = pontos().map((p) => ({ p, km: posicao ? distanciaKm(posicao, p.coords) : null, l: lugarDo(p) }));
+      const ordem = pontos()
+        .map((p) => ({ p, km: posicao ? distanciaKm(posicao, p.coords) : null, l: lugarDo(p) }))
+        .filter(({ l }) => !filtroCidade || l.cidade === filtroCidade);
       if (posicao) ordem.sort((a, b) => a.km - b.km);
+      // Com GPS só o entorno importa; a lista completa fica a um toque.
+      const visiveis = posicao && !verTodos ? ordem.slice(0, LIMITE_PERTO) : ordem;
+      const filtros = [["", "Todas"], ...pais.lugares.map((c) => [c.cidade, c.cidade])];
       return `<h1>Perto de você</h1>
         <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
         <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
         <p class="gps-nota">${esc(estadoGps || "Sua localização fica só neste aparelho e é usada para ordenar a lista.")}</p>
-        <div class="tabela">${ordem.map(({ p, km, l }) => `
+        <div class="filtros" role="group" aria-label="Filtrar por cidade">${filtros.map(([v, r]) => `
+          <button class="btn ${v === filtroCidade ? "on" : ""}" data-acao="filtro" data-cidade="${esc(v)}" aria-pressed="${v === filtroCidade}">${esc(r)}</button>`).join("")}
+        </div>
+        <div class="tabela">${visiveis.map(({ p, km, l }) => `
           <a class="item ponto" href="#/guia/${p.id}">
             <span class="emoji" aria-hidden="true">${l.icone}</span>
             <span class="ponto-texto">
@@ -306,7 +317,8 @@
               <small class="ponto-dist">${esc(l.cidade)}${km === null ? "" : ` · ${formatarDist(km)}`}</small>
             </span>
           </a>`).join("")}
-        </div>`;
+        </div>
+        ${visiveis.length < ordem.length ? `<button class="btn btn-gps ver-todos" data-acao="ver-todos">Ver todos os ${ordem.length}</button>` : ""}`;
     },
     inicio() {
       return `${rapidas()}
@@ -462,6 +474,15 @@
       return;
     }
     if (b.dataset.acao === "gps") return pedirPosicao();
+    if (b.dataset.acao === "filtro") {
+      filtroCidade = b.dataset.cidade;
+      verTodos = false;
+      return render();
+    }
+    if (b.dataset.acao === "ver-todos") {
+      verTodos = true;
+      return render();
+    }
     if (b.dataset.acao === "narrar") return narrar(pontos().find((g) => g.id === b.dataset.guia).historia);
     const f = vistas[+b.dataset.i];
     if (b.dataset.acao === "falar") falar(f.es);

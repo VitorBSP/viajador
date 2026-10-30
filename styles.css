@@ -168,6 +168,9 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .check small { display: block; margin-top: 2px; }
 .check input:checked + span strong { text-decoration: line-through; }
 .btn-gps { min-height: 44px; }
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.filtros .btn { min-height: 44px; }
+.ver-todos { margin-top: 16px; width: 100%; justify-content: center; }
 .gps-nota { color: var(--suave); font-size: 14px; margin: 8px 0 16px; }
 .ponto { display: flex; gap: 12px; align-items: flex-start; text-decoration: none; }
 .ponto .emoji { font-size: 26px; line-height: 1.2; }

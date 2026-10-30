@@ -1,6 +1,6 @@
 // Service worker do Viajador: abre instantâneo do cache e atualiza em segundo plano.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-v4";
+const VERSAO = "viajador-v5";
 const NUCLEO = [
   "./",
   "styles.css",

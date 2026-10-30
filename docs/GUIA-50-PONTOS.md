@@ -1,13 +1,11 @@
 # Guia por localização: de 20 para 50 pontos
 
-Hoje são 20 pontos: 11 em Montevidéu e 9 em Punta del Este e arredores. Todos usam um lugar que já existe em `lugares` em `data/uy.js`.
+Hoje são 30 pontos: 21 em Montevidéu e 9 em Punta del Este e arredores. Todos usam um lugar que já existe em `lugares` em `data/uy.js`.
 
 ## O que precisa mudar antes de crescer
 
 | Mudança | Por quê | Quando |
 |---|---|---|
-| Filtro por cidade em "Perto de você" | 50 cartões são demais para rolar com uma mão | Antes de passar de 30 pontos |
-| Mostrar os 10 mais próximos e um botão "Ver todos" | Com GPS, só o entorno importa | Junto com o filtro |
 | Novas regiões em `cidades` e `lugares` (Maldonado, Piriápolis) | Hoje a tela só separa Montevidéu e Punta | Na onda 3 |
 | Separar as histórias em `data/uy-guia.js` | `data/uy.js` já é o maior arquivo do app; 50 histórias pesam mais. Exige ajuste em `index.html`, `sw.js`, no validador e no formato | Na onda 2 |
 | Busca nas histórias | Hoje a busca só encontra frases | Na onda 2 |
@@ -15,7 +13,7 @@ Hoje são 20 pontos: 11 em Montevidéu e 9 em Punta del Este e arredores. Todos 
 
 ## Regras de conteúdo
 
-- **Ler as fontes inteiras.** Os 20 pontos atuais foram escritos a partir de resumos de busca. Os novos devem ser checados na fonte, e os atuais precisam de uma revisão do mesmo tipo.
+- **Ler as fontes inteiras.** A revisão dos 20 primeiros pontos corrigiu 17 histórias que tinham sido escritas a partir de resumos de busca. Escreva só depois de ler.
 - **Priorizar fontes primárias:** governo, museu e prefeitura. Wikipédia e blogs entram só como apoio.
 - **Quando as fontes divergirem, dizer isso no texto**, em vez de escolher uma versão em silêncio.
 - **Conferir cada coordenada no mapa.** O museu do Carnaval e o porto de Punta foram estimados manualmente, porque a busca no OpenStreetMap não os encontrou.
@@ -26,7 +24,7 @@ Hoje são 20 pontos: 11 em Montevidéu e 9 em Punta del Este e arredores. Todos 
 
 Lista inicial, escrita de memória. Cada item ainda precisa de confirmação: existência atual, acesso ao público e fontes.
 
-### Onda 1: Montevidéu (10), perto do que o turista já faz
+### Onda 1: Montevidéu (10), concluída
 
 1. Plaza Matriz e Cabildo
 2. Puerta de la Ciudadela (hoje está dentro de Ciudad Vieja; vale ponto próprio)
@@ -36,7 +34,7 @@ Lista inicial, escrita de memória. Cada item ainda precisa de confirmação: ex
 6. Palacio Legislativo
 7. Monumento La Carreta (Parque Batlle)
 8. Parque Rodó
-9. Faro de Punta Carretas
+9. Faro de Punta Brava (bairro de Punta Carretas)
 10. Fortaleza General Artigas (Cerro de Montevideo)
 
 ### Onda 2: Punta del Este e arredores (10)
@@ -67,9 +65,8 @@ Lista inicial, escrita de memória. Cada item ainda precisa de confirmação: ex
 
 ## Ordem de trabalho
 
-1. **Revisar os 20 atuais** nas fontes completas e no celular real. Corrigir o formato antes de multiplicar.
-2. **Onda 1**, com filtro e "Ver todos" (30 pontos).
-3. **Onda 2**, separando os dados (40 pontos).
-4. **Onda 3**, com as novas regiões (50 pontos).
+1. **Revisão dos 20 primeiros e Onda 1 (30 pontos), com filtro e "Ver todos":** concluídas. Falta o teste no celular real.
+2. **Onda 2**, separando os dados (40 pontos).
+3. **Onda 3**, com as novas regiões (50 pontos).
 
 Critério de cada onda: validador limpo, nenhum fato sem fonte, teste em tela de celular e publicação.
