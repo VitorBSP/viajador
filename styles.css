@@ -163,6 +163,10 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .item h3 { font-size: 18px; }
 .item p { margin: 4px 0 0; }
 .item .suave { color: var(--suave); font-size: 14px; }
+.check { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; min-height: 44px; }
+.check input { width: 22px; height: 22px; margin: 2px 0 0; flex: none; accent-color: var(--celeste); }
+.check small { display: block; margin-top: 2px; }
+.check input:checked + span strong { text-decoration: line-through; }
 .item .ex { font-style: italic; font-size: 14px; color: var(--suave); }
 .alerta { color: #c0392b; }
 @media (prefers-color-scheme: dark) { .alerta { color: #ff8a7a; } }

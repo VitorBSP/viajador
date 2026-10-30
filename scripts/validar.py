@@ -28,7 +28,12 @@ PAIS = {
     "codigo": True, "nome": True, "bandeira": True, "voz": True, "cidades": True, "intro": True,
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
     "pronuncia": True, "comidas": True, "lugares": True,
+    "conversas": False, "etiqueta": False, "checklist": False,
 }
+CONVERSA = {"id": True, "icone": True, "titulo": True, "passos": True}
+PASSO = {"titulo": True, "es": True}
+ETIQUETA = {"titulo": True, "texto": True}
+CHECK = {"id": True, "texto": True, "nota": False}
 
 
 class ErroDeLeitura(Exception):
@@ -337,6 +342,26 @@ def checar_pais(r, chave, p, esperado):
             r.aviso(linha, "frases", f'"{es}" repetida (linha {vistas[es]}): favoritar uma marca as duas')
         else:
             vistas[es] = linha
+
+    # Conversas citam frases pelo texto de `es`: uma citação errada sumiria da tela.
+    conversas = lista_de(r, p, "conversas", "conversas")
+    checar_unicos(r, conversas, "id", "conversas")
+    for n, c in enumerate(conversas):
+        onde = f"conversas[{n}]"
+        if not checar_campos(r, c, CONVERSA, onde, p.linha):
+            continue
+        for m, passo in enumerate(lista_de(r, c, "passos", onde, minimo=1)):
+            lugar = f"{onde}.passos[{m}]"
+            if checar_campos(r, passo, PASSO, lugar, c.linha):
+                for es in lista_de(r, passo, "es", lugar, minimo=1):
+                    if es not in vistas:
+                        r.erro(passo.linha, lugar, f'frase citada não existe: "{es}"')
+    for n, e in enumerate(lista_de(r, p, "etiqueta", "etiqueta")):
+        checar_campos(r, e, ETIQUETA, f"etiqueta[{n}]", p.linha)
+    itens = lista_de(r, p, "checklist", "checklist")
+    checar_unicos(r, itens, "id", "checklist")
+    for n, i in enumerate(itens):
+        checar_campos(r, i, CHECK, f"checklist[{n}]", p.linha)
 
 
 def validar(caminho):

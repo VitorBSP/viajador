@@ -4,6 +4,7 @@
   const main = $("#conteudo");
   const CHAVE_FAV = "viajador:favoritos";
   const CHAVE_ESCALA = "viajador:escala";
+  const CHAVE_CHECK = "viajador:checklist";
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
   // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
   const RAPIDAS = [
@@ -17,6 +18,9 @@
   let favoritos = [];
   try { favoritos = JSON.parse(localStorage.getItem(CHAVE_FAV)) || []; } catch (e) {}
   const salvarFav = () => { try { localStorage.setItem(CHAVE_FAV, JSON.stringify(favoritos)); } catch (e) {} };
+
+  let marcados = [];
+  try { marcados = JSON.parse(localStorage.getItem(CHAVE_CHECK)) || []; } catch (e) {}
 
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const normal = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -239,6 +243,43 @@
         <p class="lead">${s.frases.length} frases úteis</p>
         ${lista(s.frases)}`;
     },
+    conversas(id) {
+      const c = (pais.conversas || []).find((x) => x.id === id);
+      if (!c) {
+        return `<h1>Conversas prontas</h1>
+          <p class="lead">O que dizer e o que vão te responder, na ordem em que acontece.</p>
+          <div class="grade">${(pais.conversas || []).map((x) => `
+            <a class="categoria" href="#/conversas/${x.id}">
+              <span class="emoji" aria-hidden="true">${x.icone}</span>
+              <strong>${esc(x.titulo)}</strong>
+              <small>${x.passos.length} etapas</small>
+            </a>`).join("")}
+          </div>`;
+      }
+      return `<a class="voltar" href="#/conversas">← Conversas</a>
+        <h1>${c.icone} ${esc(c.titulo)}</h1>
+        ${c.passos.map((p) => `
+          <h2>${esc(p.titulo)}</h2>
+          ${lista(p.es.map((es) => todas.find((f) => f.es === es)).filter(Boolean))}`).join("")}`;
+    },
+    preparar() {
+      return `<h1>Preparar a viagem</h1>
+        <p class="lead">O que resolver antes de sair e como se comportar por lá.</p>
+        <h2>Checklist</h2>
+        <div class="tabela">${(pais.checklist || []).map((c) => `
+          <label class="item check">
+            <input type="checkbox" data-check="${esc(c.id)}" ${marcados.includes(c.id) ? "checked" : ""}>
+            <span><strong>${esc(c.texto)}</strong>${c.nota ? `<small class="suave">${esc(c.nota)}</small>` : ""}</span>
+          </label>`).join("")}
+        </div>
+        <h2>Etiqueta</h2>
+        <div class="tabela">${(pais.etiqueta || []).map((e) => `
+          <div class="item">
+            <h3>${esc(e.titulo)}</h3>
+            <p class="suave">${esc(e.texto)}</p>
+          </div>`).join("")}
+        </div>`;
+    },
     lugares() {
       return `<h1>Lugares</h1>
         <p class="lead">Dicas e frases para cada ponto turístico.</p>
@@ -312,7 +353,7 @@
     let html;
     if (termo) html = telas.busca(termo);
     else if (rota === "s") html = telas.situacao(param);
-    else if (telas[rota]) html = telas[rota]();
+    else if (telas[rota]) html = telas[rota](param);
     else html = telas.inicio();
     main.innerHTML = html;
     document.querySelectorAll("#abas a").forEach((a) => {
@@ -344,6 +385,13 @@
       b.innerHTML = marcaFav(on) + " Salvar";
       avisar(on ? "Frase salva" : "Removida dos salvos");
     }
+  });
+
+  main.addEventListener("change", (e) => {
+    const id = e.target.dataset.check;
+    if (!id) return;
+    marcados = e.target.checked ? [...marcados, id] : marcados.filter((x) => x !== id);
+    try { localStorage.setItem(CHAVE_CHECK, JSON.stringify(marcados)); } catch (err) {}
   });
 
   $("#mostrar-fechar").addEventListener("click", fecharMostrar);

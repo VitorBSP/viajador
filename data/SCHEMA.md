@@ -29,6 +29,7 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `intro` | texto | Uma ou duas frases sobre o espanhol local. |
 | `situacoes` | lista | Pelo menos 1. |
 | `girias`, `ditados`, `falsosAmigos`, `pronuncia`, `comidas`, `lugares` | lista | Podem estar vazias (gera aviso e a tela fica em branco), mas precisam existir. |
+| `conversas`, `etiqueta`, `checklist` | lista | Opcionais. |
 
 ## Itens de cada lista
 
@@ -45,10 +46,15 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `lugares[]` | `cidade`, `itens` | | `cidade` |
 | `lugares[].itens[]` | `nome`, `icone`, `dica`, `frases` | | `nome` (na cidade) |
 | frase (em `frases[]`) | `es`, `pt`, `pr` | `dica` | ver abaixo |
+| `conversas[]` | `id`, `icone`, `titulo`, `passos` | | `id` |
+| `conversas[].passos[]` | `titulo`, `es` | | |
+| `etiqueta[]` | `titulo`, `texto` | | |
+| `checklist[]` | `id`, `texto` | `nota` | `id` |
 
 - **`id` da situação:** só `a-z`, `0-9` e `-`, porque vai na URL (`#/s/comer`).
 - **`frases`:** pelo menos 1 em cada situação e em cada lugar.
 - **`girias[]`:** use `ex` ou `dica`. Se houver os dois, o app mostra só `ex`.
+- **`conversas[].passos[].es`:** lista de frases de `situacoes` ou `lugares`, citadas pelo texto exato de `es`. Citação inexistente é erro.
 - **`falsosAmigos[].pt`:** começar com `⚠️` destaca o item como alerta (palavrão, por exemplo).
 - **`ditados[]` e `comidas[].pedir`:** não têm campo de pronúncia, e o app não mostra pronúncia neles.
 
