@@ -44,6 +44,10 @@ Conferência de 31/10/2026, fora da Wikipédia, feita com buscas e resumos dos r
 - Várias estrelas: datas e cidades sem conferência fora da Wikipédia.
 - Frases, gírias e ditados: nenhuma revisão de nativo.
 
+## Futebol
+
+Títulos da seleção, quatro estrelas, Peñarol, Nacional, Libertadores, Copa de 2030 e regras de segurança foram conferidos fora da Wikipédia. Os ídolos, o total de 15 Copas América, os campeões nacionais, a história do Manco e os dados dos estádios vêm principalmente da Wikipédia. As frases de futebol e a dica de começar por um jogo menor são do guia.
+
 ## Limites
 
 - As fontes do governo uruguaio nem sempre abriram, e o Ministério do Trabalho não apareceu nos resultados de feriados.

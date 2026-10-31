@@ -35,6 +35,7 @@
   const ditadoFrase = (d) => ({ es: d.es, pt: d.pt, pr: "", dica: d.uso });
   pais.girias.forEach((g) => todas.push({ ...giriaFrase(g), origem: "Gírias" }));
   pais.ditados.forEach((d) => todas.push({ ...ditadoFrase(d), origem: "Ditados" }));
+  ((pais.futebol && pais.futebol.frases) || []).forEach((f) => todas.push({ ...f, origem: "Futebol" }));
 
   // Termo da busca em andamento; os cartões destacam onde ele aparece.
   let termoBusca = "";
@@ -300,22 +301,42 @@
     };
   }
 
+  const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
+    <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
+  const pessoas = (itens) => `<div class="tabela">${itens.map((p) => `
+    <div class="item"><h3>${esc(p.nome)}</h3><p class="ponto-dist">${p.area ? `${esc(p.area)} · ` : ""}${esc(p.origem)}</p><p class="suave">${esc(p.texto)}</p></div>`).join("")}</div>`;
+  const cartoes = (itens) => `<div class="tabela">${itens.map((c) => `<div class="item"><h3>${esc(c.titulo)}</h3><p class="suave">${esc(c.texto)}</p></div>`).join("")}</div>`;
+  const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
+
   const telas = {
+    futebol() {
+      const f = pais.futebol;
+      return `<h1>⚽ Futebol uruguaio</h1>
+        <p class="lead">${esc(f.intro)}</p>
+        ${secao("Títulos", f.titulos, cartoes)}
+        ${secao("Momentos que marcaram", f.momentos, momentos)}
+        ${secao("Peñarol, Nacional e os outros", f.clubes, cartoes)}
+        ${secao("Estádios", f.estadios, cartoes)}
+        <a class="btn btn-gps ver-todos" href="#/guia/estadio-centenario">Ver a história do Centenario</a>
+        ${secao("Ídolos", f.idolos, pessoas)}
+        ${secao("Cultura do futebol", f.cultura, cartoes)}
+        ${secao("Como ir a um jogo", f.jogo, cartoes)}
+        <h2>Frases para o jogo</h2>
+        ${lista(f.frases)}
+        <a class="btn btn-gps ver-todos" href="#/quiz/futebol">Fazer o quiz de futebol</a>
+        <h2>Fontes</h2>
+        <ul class="fontes">${f.fontes.map((x) => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.titulo)}</a></li>`).join("")}</ul>`;
+    },
     historia(id) {
       const lista = pais.historias || [];
       const h = lista.find((x) => x.id === id) || lista[0];
-      const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
-        <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
-      const pessoas = (itens) => `<div class="tabela">${itens.map((p) => `
-        <div class="item"><h3>${esc(p.nome)}</h3><p class="ponto-dist">${p.area ? `${esc(p.area)} · ` : ""}${esc(p.origem)}</p><p class="suave">${esc(p.texto)}</p></div>`).join("")}</div>`;
-      const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
       return `<h1>${h.icone} ${esc(h.titulo)}</h1>
         <p class="lead">${esc(h.intro)}</p>
         <div class="filtros" role="group" aria-label="Escolher país ou cidade">${lista.map((x) => `
           <a class="btn ${x.id === h.id ? "on" : ""}" href="#/historia/${x.id}"${x.id === h.id ? ' aria-current="page"' : ""}>${esc(x.titulo)}</a>`).join("")}
         </div>
         ${secao("Momentos históricos", h.momentos, momentos)}
-        ${secao("Costumes", h.costumes, (i) => `<div class="tabela">${i.map((c) => `<div class="item"><h3>${esc(c.titulo)}</h3><p class="suave">${esc(c.texto)}</p></div>`).join("")}</div>`)}
+        ${secao("Costumes", h.costumes, cartoes)}
         ${secao("Pessoas históricas", h.pessoas, pessoas)}
         ${secao("Estrelas", h.estrelas, pessoas)}
         ${secao("Datas importantes", h.datas, momentos)}
@@ -328,7 +349,7 @@
       const nivel = niveis.find((x) => x.id === id);
       if (!nivel) {
         return `<h1>Quiz do Uruguai</h1>
-          <p class="lead">Três níveis, com perguntas tiradas da seção de História.</p>
+          <p class="lead">Três níveis gerais e um de futebol, com perguntas tiradas das seções do guia.</p>
           <div class="tabela">${niveis.map((n) => `
             <a class="item ponto" href="#/quiz/${n.id}">
               <span class="emoji" aria-hidden="true">${n.icone}</span>

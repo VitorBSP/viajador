@@ -30,6 +30,7 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `situacoes` | lista | Pelo menos 1. |
 | `girias`, `ditados`, `falsosAmigos`, `pronuncia`, `comidas`, `lugares` | lista | Podem estar vazias (gera aviso e a tela fica em branco), mas precisam existir. |
 | `conversas`, `etiqueta`, `checklist`, `guia`, `historias`, `quiz` | lista | Opcionais. |
+| `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 
 ## Itens de cada lista
 

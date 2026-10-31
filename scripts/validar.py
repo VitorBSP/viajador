@@ -29,8 +29,10 @@ PAIS = {
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
-    "historias": False, "quiz": False,
+    "historias": False, "quiz": False, "futebol": False,
 }
+FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
+           "cultura": True, "jogo": True, "frases": True, "fontes": True}
 HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "momentos": True, "costumes": True,
             "pessoas": True, "estrelas": True, "datas": True, "fontes": True}
 MOMENTO = {"data": True, "titulo": True, "texto": True}
@@ -221,7 +223,7 @@ def checar_campos(r, obj, spec, onde, linha_pai=0):
         if campo not in obj:
             if obrigatorio:
                 r.erro(obj.linha, onde, f'falta o campo obrigatório "{campo}"')
-        elif not isinstance(obj[campo], (str, list)):
+        elif not isinstance(obj[campo], (str, list, dict)):
             r.erro(obj.linha, onde, f'"{campo}" tem tipo errado')
         elif isinstance(obj[campo], str) and not obj[campo].strip():
             r.erro(obj.linha, onde, f'"{campo}" está vazio')
@@ -385,6 +387,19 @@ def checar_pais(r, chave, p, esperado):
         for m, f in enumerate(lista_de(r, g, "fontes", onde, minimo=1)):
             if checar_campos(r, f, FONTE, f"{onde}.fontes[{m}]", g.linha) and not str(f.get("url")).startswith("https://"):
                 r.erro(f.linha, f"{onde}.fontes[{m}]", "url deveria começar com https://")
+    futebol = p.get("futebol")
+    if futebol is not None and checar_campos(r, futebol, FUTEBOL, "futebol", p.linha):
+        for campo in ("titulos", "clubes", "estadios", "cultura", "jogo"):
+            for m, item in enumerate(lista_de(r, futebol, campo, "futebol")):
+                checar_campos(r, item, COSTUME, f"futebol.{campo}[{m}]", futebol.linha)
+        for m, item in enumerate(lista_de(r, futebol, "momentos", "futebol")):
+            checar_campos(r, item, MOMENTO, f"futebol.momentos[{m}]", futebol.linha)
+        for m, item in enumerate(lista_de(r, futebol, "idolos", "futebol")):
+            checar_campos(r, item, PESSOA, f"futebol.idolos[{m}]", futebol.linha)
+        checar_frases(r, futebol, "futebol")
+        for m, f in enumerate(lista_de(r, futebol, "fontes", "futebol", minimo=1)):
+            if checar_campos(r, f, FONTE, f"futebol.fontes[{m}]", futebol.linha) and not str(f.get("url")).startswith("https://"):
+                r.erro(f.linha, f"futebol.fontes[{m}]", "url deveria começar com https://")
     historias = lista_de(r, p, "historias", "historias")
     checar_unicos(r, historias, "id", "historias")
     for n, h in enumerate(historias):
