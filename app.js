@@ -6,6 +6,8 @@
   const CHAVE_ESCALA = "viajador:escala";
   const CHAVE_CHECK = "viajador:checklist";
   const CHAVE_QUIZ = "viajador:quiz";
+  const CHAVE_QUIZ_VISTAS = "viajador:quiz-vistas";
+  const RODADA = 10;
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
   // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
   const RAPIDAS = [
@@ -283,6 +285,10 @@
   let quizAtual = null;
   let recordes = {};
   try { recordes = JSON.parse(localStorage.getItem(CHAVE_QUIZ)) || {}; } catch (e) {}
+  // Perguntas já respondidas por nível: só voltam depois que o banco inteiro for visto.
+  let vistasQuiz = {};
+  try { vistasQuiz = JSON.parse(localStorage.getItem(CHAVE_QUIZ_VISTAS)) || {}; } catch (e) {}
+  const salvarVistasQuiz = () => { try { localStorage.setItem(CHAVE_QUIZ_VISTAS, JSON.stringify(vistasQuiz)); } catch (e) {} };
   const embaralhar = (lista) => {
     const a = [...lista];
     for (let i = a.length - 1; i > 0; i--) {
@@ -292,12 +298,22 @@
     return a;
   };
   function iniciarQuiz(nivel) {
+    const ja = vistasQuiz[nivel.id] || [];
+    const novas = embaralhar(nivel.perguntas.filter((q) => !ja.includes(q.pergunta)));
+    let escolhidas = novas.slice(0, RODADA);
+    if (escolhidas.length < RODADA) {
+      // Banco quase no fim: completa com perguntas antigas e recomeça a contagem.
+      const antigas = embaralhar(nivel.perguntas.filter((q) => ja.includes(q.pergunta)));
+      escolhidas = [...escolhidas, ...antigas.slice(0, RODADA - escolhidas.length)];
+      vistasQuiz[nivel.id] = [];
+      salvarVistasQuiz();
+    }
     quizAtual = {
       id: nivel.id,
       i: 0,
       acertos: 0,
       escolhida: null,
-      perguntas: embaralhar(nivel.perguntas).map((q) => ({ ...q, opcoes: embaralhar([q.certa, ...q.erradas]) })),
+      perguntas: embaralhar(escolhidas).map((q) => ({ ...q, opcoes: embaralhar([q.certa, ...q.erradas]) })),
     };
   }
 
@@ -349,14 +365,14 @@
       const nivel = niveis.find((x) => x.id === id);
       if (!nivel) {
         return `<h1>Quiz do Uruguai</h1>
-          <p class="lead">Três níveis gerais e um de futebol, com perguntas tiradas das seções do guia.</p>
+          <p class="lead">Três níveis gerais e um de futebol. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
           <div class="tabela">${niveis.map((n) => `
             <a class="item ponto" href="#/quiz/${n.id}">
               <span class="emoji" aria-hidden="true">${n.icone}</span>
               <span class="ponto-texto">
                 <strong>${esc(n.titulo)}</strong>
                 <small class="suave">${esc(n.descricao)}</small>
-                <small class="ponto-dist">${recordes[n.id] === undefined ? `${n.perguntas.length} perguntas` : `Recorde: ${recordes[n.id]} de ${n.perguntas.length}`}</small>
+                <small class="ponto-dist">${(vistasQuiz[n.id] || []).length} de ${n.perguntas.length} perguntas vistas${recordes[n.id] === undefined ? "" : ` · Recorde: ${recordes[n.id]} de ${RODADA}`}</small>
               </span>
             </a>`).join("")}
           </div>`;
@@ -367,7 +383,7 @@
         return `<a class="voltar" href="#/quiz">← Níveis</a>
           <h1>${nivel.icone} ${z.acertos} de ${z.perguntas.length}</h1>
           <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
-          <button class="btn btn-gps ver-todos" data-acao="quiz-repetir">Jogar de novo</button>
+          <button class="btn btn-gps ver-todos" data-acao="quiz-repetir">Jogar com novas perguntas</button>
           <a class="btn btn-gps ver-todos" href="#/historia">Rever a História</a>`;
       }
       const q = z.perguntas[z.i];
@@ -598,6 +614,9 @@
       quizAtual.escolhida = +b.dataset.op;
       const q = quizAtual.perguntas[quizAtual.i];
       if (q.opcoes[quizAtual.escolhida] === q.certa) quizAtual.acertos++;
+      const ja = vistasQuiz[quizAtual.id] || [];
+      if (!ja.includes(q.pergunta)) vistasQuiz[quizAtual.id] = [...ja, q.pergunta];
+      salvarVistasQuiz();
       return render();
     }
     if (b.dataset.acao === "quiz-proxima") {

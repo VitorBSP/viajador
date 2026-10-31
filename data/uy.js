@@ -2372,6 +2372,206 @@ window.VIAJADOR.paises.uy = {
       descricao: "O básico para não passar vergonha.",
       perguntas: [
         {
+          pergunta: "Qual é a moeda do Uruguai?",
+          certa: "Peso uruguaio",
+          erradas: [
+            "Real",
+            "Dólar uruguaio",
+            "Austral",
+          ],
+          explica: "O símbolo $ indica peso, e U$S indica dólar.",
+        },
+        {
+          pergunta: "Qual é a principal rodoviária de Montevidéu?",
+          certa: "Tres Cruces",
+          erradas: [
+            "Plaza Cagancha",
+            "Ciudad Vieja",
+            "Rambla Sur",
+          ],
+          explica: "Dali saem os ônibus para Punta del Este.",
+        },
+        {
+          pergunta: "Qual é o número central de emergência?",
+          certa: "911",
+          erradas: [
+            "190",
+            "112",
+            "105",
+          ],
+          explica: "O 911 atende polícia, bombeiros e ambulância.",
+        },
+        {
+          pergunta: "Qual é a gíria para ônibus?",
+          certa: "Bondi",
+          erradas: [
+            "Bo",
+            "Boliche",
+            "Botija",
+          ],
+          explica: "O nome formal é ómnibus.",
+        },
+        {
+          pergunta: "Como se pede o banheiro?",
+          certa: "¿Dónde está el baño?",
+          erradas: [
+            "¿Dónde está la cuenta?",
+            "¿Dónde está el bondi?",
+            "¿Dónde está la carta?",
+          ],
+          explica: "Baño se fala BA-nho.",
+        },
+        {
+          pergunta: "O que significa exquisito?",
+          certa: "Delicioso",
+          erradas: [
+            "Esquisito",
+            "Caro",
+            "Estragado",
+          ],
+          explica: "É um elogio à comida.",
+        },
+        {
+          pergunta: "O que significa propina?",
+          certa: "Gorjeta",
+          erradas: [
+            "Suborno",
+            "Couvert",
+            "Troco",
+          ],
+          explica: "O costume é deixar uns 10%, sem obrigação.",
+        },
+        {
+          pergunta: "Qual verbo se usa para tirar foto?",
+          certa: "Sacar",
+          erradas: [
+            "Tirar",
+            "Coger",
+            "Hacer",
+          ],
+          explica: "Diz-se ¿Me sacás una foto?",
+        },
+        {
+          pergunta: "O que é o chivito?",
+          certa: "Um sanduíche de carne",
+          erradas: [
+            "Um filhote de cabra assado",
+            "Um doce de leite",
+            "Um tipo de vinho",
+          ],
+          explica: "Apesar do nome, não leva cabrito.",
+        },
+        {
+          pergunta: "Em que mês acontece o Desfile de Llamadas?",
+          certa: "Fevereiro",
+          erradas: [
+            "Julho",
+            "Outubro",
+            "Dezembro",
+          ],
+          explica: "Faz parte do Carnaval de Montevidéu.",
+        },
+        {
+          pergunta: "Qual é o apelido da seleção uruguaia?",
+          certa: "La Celeste",
+          erradas: [
+            "La Roja",
+            "La Albiceleste",
+            "La Canarinha",
+          ],
+          explica: "O apelido vem da cor da camisa.",
+        },
+        {
+          pergunta: "Qual praia de Punta del Este tem o mar mais agitado?",
+          certa: "Playa Brava",
+          erradas: [
+            "Playa Mansa",
+            "Playa Ramírez",
+            "Playa Pocitos",
+          ],
+          explica: "A Brava fica de frente para o Atlântico.",
+        },
+        {
+          pergunta: "Quem fundou Piriápolis?",
+          certa: "Francisco Piria",
+          erradas: [
+            "Carlos Páez Vilaró",
+            "Juan Gorlero",
+            "Antonio Lussich",
+          ],
+          explica: "Ele comprou as terras por volta de 1890.",
+        },
+        {
+          pergunta: "Pelo que o Mercado del Puerto é famoso hoje?",
+          certa: "Restaurantes de carne",
+          erradas: [
+            "Peixe cru",
+            "Roupas importadas",
+            "Antiguidades",
+          ],
+          explica: "Começou como mercado de frutas e verduras.",
+        },
+        {
+          pergunta: "O que é Tannat?",
+          certa: "Uma uva tinta",
+          erradas: [
+            "Um queijo",
+            "Um doce",
+            "Uma dança",
+          ],
+          explica: "É considerada a uva nacional.",
+        },
+        {
+          pergunta: "O que são championes?",
+          certa: "Tênis",
+          erradas: [
+            "Campeões de futebol",
+            "Cogumelos",
+            "Chinelos",
+          ],
+          explica: "Vení con championes significa venha de tênis.",
+        },
+        {
+          pergunta: "O que significa está salado?",
+          certa: "Está caro",
+          erradas: [
+            "Está gostoso",
+            "Está fechado",
+            "Está longe",
+          ],
+          explica: "Também se usa para a comida, mas a gíria é sobre preço.",
+        },
+        {
+          pergunta: "Onde fica a Rambla de Montevidéu?",
+          certa: "À beira do Rio da Prata",
+          erradas: [
+            "No alto do Cerro",
+            "Dentro do Parque Rodó",
+            "Na Peatonal Sarandí",
+          ],
+          explica: "São cerca de 22 km de calçadão.",
+        },
+        {
+          pergunta: "Em que praça fica o Palacio Salvo?",
+          certa: "Plaza Independencia",
+          erradas: [
+            "Plaza Matriz",
+            "Plaza Zabala",
+            "Plaza Artigas",
+          ],
+          explica: "O prédio foi concluído em 1928.",
+        },
+        {
+          pergunta: "O que se pede com la cuenta, por favor?",
+          certa: "A conta",
+          erradas: [
+            "O cardápio",
+            "Um conto",
+            "O troco",
+          ],
+          explica: "Se fala la KUEN-ta.",
+        },
+        {
           pergunta: "Qual é a capital do Uruguai?",
           certa: "Montevidéu",
           erradas: [
@@ -2479,6 +2679,206 @@ window.VIAJADOR.paises.uy = {
       icone: "🧭",
       descricao: "Para quem já prestou atenção no guia.",
       perguntas: [
+        {
+          pergunta: "Em que dia a primeira Constituição foi jurada?",
+          certa: "18 de julho de 1830",
+          erradas: [
+            "25 de agosto de 1825",
+            "19 de abril de 1825",
+            "1º de março de 1830",
+          ],
+          explica: "A data virou feriado nacional.",
+        },
+        {
+          pergunta: "Quem liderou os Treinta y Tres?",
+          certa: "Juan Antonio Lavalleja",
+          erradas: [
+            "José Artigas",
+            "Manuel Oribe",
+            "José Batlle y Ordóñez",
+          ],
+          explica: "O desembarque foi em La Agraciada.",
+        },
+        {
+          pergunta: "Onde estão os restos de Artigas?",
+          certa: "Sob a Plaza Independencia",
+          erradas: [
+            "No Cabildo",
+            "Na Catedral de Maldonado",
+            "No Estadio Centenario",
+          ],
+          explica: "Duas escadarias descem até a câmara.",
+        },
+        {
+          pergunta: "Como se chama o 6 de janeiro no calendário?",
+          certa: "Dia das Crianças",
+          erradas: [
+            "Dia de Reis",
+            "Dia da Família",
+            "Dia da Pátria",
+          ],
+          explica: "O nome mudou com a lei de 1919.",
+        },
+        {
+          pergunta: "Quem escreveu Tabaré?",
+          certa: "Juan Zorrilla de San Martín",
+          erradas: [
+            "José Enrique Rodó",
+            "Horacio Quiroga",
+            "Mario Benedetti",
+          ],
+          explica: "Ele é o avô de China Zorrilla.",
+        },
+        {
+          pergunta: "Quem escreveu La tregua?",
+          certa: "Mario Benedetti",
+          erradas: [
+            "Eduardo Galeano",
+            "Juan Carlos Onetti",
+            "Idea Vilariño",
+          ],
+          explica: "Ele nasceu em Paso de los Toros.",
+        },
+        {
+          pergunta: "Quem escreveu o ensaio Ariel?",
+          certa: "José Enrique Rodó",
+          erradas: [
+            "Juan Zorrilla de San Martín",
+            "Pedro Figari",
+            "Horacio Quiroga",
+          ],
+          explica: "O ensaio é de 1900.",
+        },
+        {
+          pergunta: "Quem foi chamada de Juana de América?",
+          certa: "Juana de Ibarbourou",
+          erradas: [
+            "Delmira Agustini",
+            "Idea Vilariño",
+            "China Zorrilla",
+          ],
+          explica: "A poeta nasceu em Melo.",
+        },
+        {
+          pergunta: "O que acontece no pôr do sol em Casapueblo?",
+          certa: "A Ceremonia del Sol",
+          erradas: [
+            "Um desfile de Llamadas",
+            "Uma missa",
+            "Um show de tango",
+          ],
+          explica: "Um poema é ouvido na voz de Páez Vilaró.",
+        },
+        {
+          pergunta: "De onde vieram as peças de ferro do Mercado del Puerto?",
+          certa: "De Liverpool",
+          erradas: [
+            "De Paris",
+            "De Buenos Aires",
+            "De Gênova",
+          ],
+          explica: "Foram fundidas na Inglaterra.",
+        },
+        {
+          pergunta: "Qual ópera abriu o Teatro Solís em 1856?",
+          certa: "Ernani",
+          erradas: [
+            "La Traviata",
+            "Aida",
+            "Tosca",
+          ],
+          explica: "É uma ópera de Verdi.",
+        },
+        {
+          pergunta: "Em que dia funciona a Feria de Tristán Narvaja?",
+          certa: "Domingo",
+          erradas: [
+            "Segunda",
+            "Quarta",
+            "Sexta",
+          ],
+          explica: "É uma feira das manhãs de domingo.",
+        },
+        {
+          pergunta: "Quando o Argentino Hotel abriu?",
+          certa: "Em 1930",
+          erradas: [
+            "Em 1890",
+            "Em 1907",
+            "Em 1958",
+          ],
+          explica: "A abertura foi em 24 de dezembro.",
+        },
+        {
+          pergunta: "De que país é o autor de La Mano?",
+          certa: "Chile",
+          erradas: [
+            "Uruguai",
+            "Argentina",
+            "Itália",
+          ],
+          explica: "O escultor é Mario Irarrázabal.",
+        },
+        {
+          pergunta: "Quem fez a ponte ondulada de La Barra?",
+          certa: "Leonel Viera",
+          erradas: [
+            "Rafael Viñoly",
+            "Carlos Ott",
+            "Juan Scasso",
+          ],
+          explica: "Ele estudou engenharia, mas não se formou.",
+        },
+        {
+          pergunta: "Qual é o formato da ponte da Laguna Garzón?",
+          certa: "Circular",
+          erradas: [
+            "Ondulado",
+            "Em arco duplo",
+            "Em zigue-zague",
+          ],
+          explica: "O anel serve para reduzir a velocidade.",
+        },
+        {
+          pergunta: "Em que ano o candombe entrou na lista da Unesco?",
+          certa: "2009",
+          erradas: [
+            "1956",
+            "1978",
+            "2021",
+          ],
+          explica: "É patrimônio imaterial da humanidade.",
+        },
+        {
+          pergunta: "Em que bairro fica o Rosedal?",
+          certa: "El Prado",
+          erradas: [
+            "Pocitos",
+            "Ciudad Vieja",
+            "Carrasco",
+          ],
+          explica: "Foi inaugurado em 1912.",
+        },
+        {
+          pergunta: "O que aconteceu diante de Punta del Este em 1939?",
+          certa: "A Batalha do Rio da Prata",
+          erradas: [
+            "A Conferência de 1961",
+            "A Guerra Grande",
+            "O desembarque dos Treinta y Tres",
+          ],
+          explica: "Foi em 13 de dezembro.",
+        },
+        {
+          pergunta: "Quando José Mujica foi presidente?",
+          certa: "De 2010 a 2015",
+          erradas: [
+            "De 1985 a 1990",
+            "De 1973 a 1985",
+            "De 1903 a 1907",
+          ],
+          explica: "Antes, ficou preso de 1972 a 1985.",
+        },
         {
           pergunta: "Em que ano aconteceu o desembarque dos Treinta y Tres?",
           certa: "1825",
@@ -2588,6 +2988,206 @@ window.VIAJADOR.paises.uy = {
       descricao: "Difícil até para quem mora lá.",
       perguntas: [
         {
+          pergunta: "Qual é a data oficial de fundação de Montevidéu?",
+          certa: "24 de dezembro de 1726",
+          erradas: [
+            "22 de janeiro de 1724",
+            "18 de julho de 1830",
+            "19 de janeiro de 1811",
+          ],
+          explica: "O processo começou em 1724.",
+        },
+        {
+          pergunta: "Quem conduziu a fundação de Montevidéu?",
+          certa: "Bruno Mauricio de Zabala",
+          erradas: [
+            "Juan Díaz de Solís",
+            "Francisco Javier de Elío",
+            "José Joaquín de Viana",
+          ],
+          explica: "A cidade deveria garantir a presença espanhola.",
+        },
+        {
+          pergunta: "Em que data foi o Grito de Asencio?",
+          certa: "28 de fevereiro de 1811",
+          erradas: [
+            "18 de maio de 1811",
+            "23 de outubro de 1811",
+            "19 de abril de 1825",
+          ],
+          explica: "Ele iniciou a revolução na Banda Oriental.",
+        },
+        {
+          pergunta: "Para onde levaram quatro sobreviventes de Salsipuedes?",
+          certa: "Para Paris",
+          erradas: [
+            "Para Lisboa",
+            "Para Madri",
+            "Para Londres",
+          ],
+          explica: "Foram exibidos ao público, e o caso é lembrado até hoje.",
+        },
+        {
+          pergunta: "Quanto tempo durou o Sítio Grande?",
+          certa: "De 1843 a 1851",
+          erradas: [
+            "De 1811 a 1814",
+            "De 1864 a 1870",
+            "De 1817 a 1828",
+          ],
+          explica: "A cidade ganhou o apelido de Nova Troia.",
+        },
+        {
+          pergunta: "Contra quem o Uruguai lutou na Tríplice Aliança?",
+          certa: "Paraguai",
+          erradas: [
+            "Brasil",
+            "Argentina",
+            "Chile",
+          ],
+          explica: "O Uruguai se aliou a Brasil e Argentina.",
+        },
+        {
+          pergunta: "Em que data foi o golpe de 1973?",
+          certa: "27 de junho",
+          erradas: [
+            "18 de julho",
+            "25 de agosto",
+            "1º de março",
+          ],
+          explica: "Bordaberry dissolveu as câmaras.",
+        },
+        {
+          pergunta: "Quando a democracia voltou?",
+          certa: "1º de março de 1985",
+          erradas: [
+            "27 de junho de 1973",
+            "25 de agosto de 1975",
+            "18 de julho de 1990",
+          ],
+          explica: "Sanguinetti tomou posse nesse dia.",
+        },
+        {
+          pergunta: "Quem fundou o Partido Nacional?",
+          certa: "Manuel Oribe",
+          erradas: [
+            "Fructuoso Rivera",
+            "José Batlle y Ordóñez",
+            "Líber Seregni",
+          ],
+          explica: "Os blancos enfrentaram os colorados na Guerra Grande.",
+        },
+        {
+          pergunta: "Quem foi o primeiro presidente da Frente Ampla?",
+          certa: "Líber Seregni",
+          erradas: [
+            "José Mujica",
+            "Fructuoso Rivera",
+            "Juan Antonio Lavalleja",
+          ],
+          explica: "A Frente Ampla é de 1971.",
+        },
+        {
+          pergunta: "Onde nasceu Paulina Luisi?",
+          certa: "Na Argentina",
+          erradas: [
+            "Em Montevidéu",
+            "Em Salto",
+            "Em Melo",
+          ],
+          explica: "Ela nasceu em Colón, em Entre Ríos.",
+        },
+        {
+          pergunta: "De que ano é a primeira lei do divórcio?",
+          certa: "1907",
+          erradas: [
+            "1830",
+            "1919",
+            "1950",
+          ],
+          explica: "É do período das reformas de Batlle.",
+        },
+        {
+          pergunta: "Quem foi o arquiteto do Palacio Salvo?",
+          certa: "Mario Palanti",
+          erradas: [
+            "Vittorio Meano",
+            "Carlo Zucchi",
+            "Juan Scasso",
+          ],
+          explica: "Era italiano e também projetou o Barolo, em Buenos Aires.",
+        },
+        {
+          pergunta: "Quem venceu o concurso do Palacio Legislativo?",
+          certa: "Vittorio Meano",
+          erradas: [
+            "Gaetano Moretti",
+            "Mario Palanti",
+            "Carlos Ott",
+          ],
+          explica: "Ele foi assassinado antes de saber do prêmio.",
+        },
+        {
+          pergunta: "Quando o Cabildo de Montevidéu começou a ser construído?",
+          certa: "Em 1804",
+          erradas: [
+            "Em 1726",
+            "Em 1830",
+            "Em 1958",
+          ],
+          explica: "Hoje funciona ali o Museo Histórico Cabildo.",
+        },
+        {
+          pergunta: "Qual é o Dia Nacional do Candombe?",
+          certa: "3 de dezembro",
+          erradas: [
+            "16 de julho",
+            "2 de fevereiro",
+            "24 de agosto",
+          ],
+          explica: "Lembra o despejo do Mediomundo, em 1978.",
+        },
+        {
+          pergunta: "Quem representou Cuba em Punta del Este em 1961?",
+          certa: "Che Guevara",
+          erradas: [
+            "Fidel Castro",
+            "Raúl Castro",
+            "Salvador Allende",
+          ],
+          explica: "Foi na conferência da Aliança para o Progresso.",
+        },
+        {
+          pergunta: "Em que ano o Castillo de Piria foi inaugurado?",
+          certa: "1897",
+          erradas: [
+            "1890",
+            "1930",
+            "1980",
+          ],
+          explica: "A inauguração foi em 17 de agosto.",
+        },
+        {
+          pergunta: "Quem comprou a península de Punta del Este em 1843?",
+          certa: "Os irmãos Lafone",
+          erradas: [
+            "Francisco Piria",
+            "Pedro Risso",
+            "Juan Gorlero",
+          ],
+          explica: "As fontes divergem sobre o valor.",
+        },
+        {
+          pergunta: "Quais cidades disputam o nascimento de Gardel?",
+          certa: "Tacuarembó e Toulouse",
+          erradas: [
+            "Montevidéu e Buenos Aires",
+            "Salto e Medellín",
+            "Melo e Paris",
+          ],
+          explica: "A hipótese uruguaia é uma entre outras.",
+        },
+        {
           pergunta: "Em que data aconteceu a Batalha de Las Piedras?",
           certa: "18 de maio de 1811",
           erradas: [
@@ -2695,6 +3295,166 @@ window.VIAJADOR.paises.uy = {
       icone: "⚽",
       descricao: "Para quem sabe o que foi o Maracanazo.",
       perguntas: [
+        {
+          pergunta: "Quem o Uruguai venceu na final olímpica de 1924?",
+          certa: "Suíça",
+          erradas: [
+            "Argentina",
+            "França",
+            "Itália",
+          ],
+          explica: "O placar foi 3 a 0, em Paris.",
+        },
+        {
+          pergunta: "Quem o Uruguai venceu na final olímpica de 1928?",
+          certa: "Argentina",
+          erradas: [
+            "Suíça",
+            "Brasil",
+            "Holanda",
+          ],
+          explica: "A decisão precisou de um jogo de desempate.",
+        },
+        {
+          pergunta: "Em que estádio foi a final da Copa de 1930?",
+          certa: "Estadio Centenario",
+          erradas: [
+            "Gran Parque Central",
+            "Campeón del Siglo",
+            "Maracanã",
+          ],
+          explica: "O Uruguai venceu a Argentina em 30 de julho.",
+        },
+        {
+          pergunta: "Quem abriu o placar na final de 1950?",
+          certa: "Friaça, do Brasil",
+          erradas: [
+            "Ghiggia, do Uruguai",
+            "Schiaffino, do Uruguai",
+            "Varela, do Uruguai",
+          ],
+          explica: "O Uruguai virou o jogo depois.",
+        },
+        {
+          pergunta: "Quem empatou para o Uruguai no Maracanazo?",
+          certa: "Juan Alberto Schiaffino",
+          erradas: [
+            "Alcides Ghiggia",
+            "Obdulio Varela",
+            "José Nasazzi",
+          ],
+          explica: "Ghiggia fez o segundo gol.",
+        },
+        {
+          pergunta: "Quem criou o clube que deu origem ao Peñarol?",
+          certa: "Ferroviários",
+          erradas: [
+            "Pescadores",
+            "Estudantes",
+            "Militares",
+          ],
+          explica: "O CURCC é de 1891.",
+        },
+        {
+          pergunta: "Em que ano o Nacional foi fundado?",
+          certa: "1899",
+          erradas: [
+            "1891",
+            "1900",
+            "1930",
+          ],
+          explica: "A data é 14 de maio.",
+        },
+        {
+          pergunta: "Em que ano nasceu o CURCC?",
+          certa: "1891",
+          erradas: [
+            "1899",
+            "1913",
+            "1924",
+          ],
+          explica: "A data é 28 de setembro.",
+        },
+        {
+          pergunta: "Quantas Libertadores o Nacional conquistou?",
+          certa: "Três",
+          erradas: [
+            "Cinco",
+            "Uma",
+            "Duas",
+          ],
+          explica: "Foram em 1971, 1980 e 1988.",
+        },
+        {
+          pergunta: "Em que ano o Campeón del Siglo foi inaugurado?",
+          certa: "2016",
+          erradas: [
+            "1900",
+            "1930",
+            "1995",
+          ],
+          explica: "É a casa do Peñarol.",
+        },
+        {
+          pergunta: "De qual clube argentino Francescoli é ídolo?",
+          certa: "River Plate",
+          erradas: [
+            "Boca Juniors",
+            "Racing",
+            "Independiente",
+          ],
+          explica: "Ele nasceu em Montevidéu, em 1961.",
+        },
+        {
+          pergunta: "Quem era a Maravilla Negra?",
+          certa: "José Leandro Andrade",
+          erradas: [
+            "Obdulio Varela",
+            "Héctor Castro",
+            "Alcides Ghiggia",
+          ],
+          explica: "Ele brilhou nos ouros olímpicos.",
+        },
+        {
+          pergunta: "Quem é o segundo maior artilheiro da seleção?",
+          certa: "Edinson Cavani",
+          erradas: [
+            "Luis Suárez",
+            "Diego Forlán",
+            "Héctor Scarone",
+          ],
+          explica: "Suárez é o primeiro.",
+        },
+        {
+          pergunta: "Em que cidade nasceu Luis Suárez?",
+          certa: "Salto",
+          erradas: [
+            "Montevidéu",
+            "Melo",
+            "Maldonado",
+          ],
+          explica: "Cavani e Andrade também nasceram lá.",
+        },
+        {
+          pergunta: "Qual estádio uruguaio terá jogo da Copa de 2030?",
+          certa: "Estadio Centenario",
+          erradas: [
+            "Gran Parque Central",
+            "Campeón del Siglo",
+            "Domingo Burgueño",
+          ],
+          explica: "Será nos 100 anos da primeira Copa.",
+        },
+        {
+          pergunta: "Qual foi o resultado do primeiro clássico, em 1900?",
+          certa: "CURCC 2 x 0 Nacional",
+          erradas: [
+            "Nacional 2 x 0 CURCC",
+            "CURCC 1 x 1 Nacional",
+            "Nacional 3 x 1 CURCC",
+          ],
+          explica: "O jogo foi em 15 de julho.",
+        },
         {
           pergunta: "Por que a camisa do Uruguai tem quatro estrelas?",
           certa: "Duas Copas e dois ouros olímpicos",
