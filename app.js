@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "13";
+  const VERSAO_APP = "14";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -736,7 +736,7 @@
       if (!nome) return avisar("Escreva um nome");
       nomeJogador = nome;
       salvarNoRanking(nome);
-      avisar("Salvo no ranking");
+      if (!rankingOnline()) avisar("Salvo no ranking");
       return render();
     }
     if (b.dataset.acao === "quiz-repetir") {
