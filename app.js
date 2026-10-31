@@ -10,6 +10,9 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
+  const VERSAO_APP = "12";
+  const SUPABASE = window.VIAJADOR_SUPABASE || {};
+  const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
   // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
@@ -291,25 +294,74 @@
   // Perguntas já respondidas por nível: só voltam depois que o banco inteiro for visto.
   let vistasQuiz = {};
   try { vistasQuiz = JSON.parse(localStorage.getItem(CHAVE_QUIZ_VISTAS)) || {}; } catch (e) {}
-  // Ranking só deste aparelho: não há servidor para comparar com outras pessoas.
+  // O ranking fica sempre no aparelho e, se o Supabase estiver configurado, também online.
+  const apiRanking = (consulta, opcoes = {}) =>
+    fetch(`${SUPABASE.url}/rest/v1/ranking${consulta}`, {
+      ...opcoes,
+      headers: { apikey: SUPABASE.chave, "Content-Type": "application/json", ...opcoes.headers },
+    }).then((r) => {
+      if (!r.ok) throw new Error(r.status);
+      return r;
+    });
+  let placarOnline = {};
+  let placarFalhou = {};
+  function carregarPlacar(id) {
+    if (!rankingOnline() || placarOnline[id] || placarFalhou[id] === "carregando") return;
+    placarFalhou[id] = "carregando";
+    apiRanking(`?select=nome,pontos,segundos&nivel=eq.${id}&order=pontos.desc,segundos.asc,criado.asc&limit=${TAM_RANKING}`)
+      .then((r) => r.json())
+      .then((lista) => {
+        placarOnline[id] = lista;
+        placarFalhou[id] = false;
+      })
+      .catch(() => { placarFalhou[id] = true; })
+      .then(() => {
+        // Troca só a tabela, para não apagar o nome que a pessoa está digitando.
+        document.querySelectorAll(`.ranking-caixa[data-nivel="${id}"]`).forEach((c) => { c.innerHTML = conteudoRanking(id); });
+      });
+  }
   let ranking = {};
   try { ranking = JSON.parse(localStorage.getItem(CHAVE_RANKING)) || {}; } catch (e) {}
   let nomeJogador = "";
   try { nomeJogador = localStorage.getItem(CHAVE_NOME) || ""; } catch (e) {}
   function salvarNoRanking(nome) {
     const z = quizAtual;
-    const lista = [...(ranking[z.id] || []), { nome, pontos: z.acertos, segundos: Math.round((Date.now() - z.inicio) / 1000) }];
+    const segundos = Math.round((Date.now() - z.inicio) / 1000);
+    const lista = [...(ranking[z.id] || []), { nome, pontos: z.acertos, segundos }];
     ranking[z.id] = lista.sort((a, b) => b.pontos - a.pontos || a.segundos - b.segundos).slice(0, TAM_RANKING);
     z.salvo = true;
     try {
       localStorage.setItem(CHAVE_RANKING, JSON.stringify(ranking));
       localStorage.setItem(CHAVE_NOME, nome);
     } catch (e) {}
+    if (rankingOnline()) {
+      const id = z.id;
+      apiRanking("", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({ nivel: id, nome, pontos: z.acertos, segundos }),
+      })
+        .then(() => {
+          delete placarOnline[id];
+          placarFalhou[id] = false;
+          carregarPlacar(id);
+          avisar("Resultado enviado ao ranking");
+        })
+        .catch(() => avisar("Sem conexão: salvo só neste aparelho"));
+    }
+  }
+  function conteudoRanking(id) {
+    const online = rankingOnline() && !placarFalhou[id] && placarOnline[id];
+    const lista = (online ? placarOnline[id] : ranking[id]) || [];
+    const titulo = online ? "Ranking geral" : rankingOnline() && placarFalhou[id] === "carregando" ? "Carregando o ranking geral…" : rankingOnline() ? "Sem conexão: ranking deste aparelho" : "Ranking neste aparelho";
+    const tabela = lista.length
+      ? `<ol class="ranking">${lista.map((r) => `<li><strong>${esc(r.nome)}</strong> <span class="suave">${esc(r.pontos)} de ${RODADA} · ${esc(r.segundos)}s</span></li>`).join("")}</ol>`
+      : `<p class="suave">Ninguém entrou neste ranking ainda.</p>`;
+    return `<p class="gps-nota">${titulo}</p>${tabela}`;
   }
   const tabelaRanking = (id) => {
-    const lista = ranking[id] || [];
-    if (!lista.length) return `<p class="suave">Ninguém jogou ainda neste aparelho.</p>`;
-    return `<ol class="ranking">${lista.map((r) => `<li><strong>${esc(r.nome)}</strong> <span class="suave">${r.pontos} de ${RODADA} · ${r.segundos}s</span></li>`).join("")}</ol>`;
+    carregarPlacar(id);
+    return `<div class="ranking-caixa" data-nivel="${esc(id)}">${conteudoRanking(id)}</div>`;
   };
   const salvarVistasQuiz = () => { try { localStorage.setItem(CHAVE_QUIZ_VISTAS, JSON.stringify(vistasQuiz)); } catch (e) {} };
   const embaralhar = (lista) => {
@@ -349,6 +401,17 @@
   const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
 
   const telas = {
+    origem() {
+      const h = (pais.historias || [])[0];
+      return `<h1>🇺🇾 Como nasceu o Uruguai</h1>
+        <p class="lead">Banda Oriental, Província Oriental, Províncias Unidas, e o papel de Argentina, Brasil e Inglaterra.</p>
+        ${cartoes(h.fundacao || [])}
+        ${secao("Linha do tempo", h.momentos.filter((m) => /^1[6-8]/.test(m.data)), momentos)}
+        <a class="btn btn-gps ver-todos" href="#/historia/uruguai">Ver a História completa</a>
+        <a class="btn btn-gps ver-todos" href="#/quiz/uruguaio">Fazer o quiz Quase uruguaio</a>
+        <h2>Fontes</h2>
+        <ul class="fontes">${h.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
+    },
     futebol() {
       const f = pais.futebol;
       return `<h1>⚽ Futebol uruguaio</h1>
@@ -401,8 +464,8 @@
               </span>
             </a>`).join("")}
           </div>
-          <h2>Ranking neste aparelho</h2>
-          <p class="lead">Fica só neste celular. Passe o aparelho para os amigos jogarem.</p>
+          <h2>Ranking</h2>
+          <p class="lead">${rankingOnline() ? "Os melhores resultados de todo mundo, por nível." : "Fica só neste celular. Passe o aparelho para os amigos jogarem."}</p>
           ${niveis.map((n) => `<h3 class="ranking-nivel">${n.icone} ${esc(n.titulo)}</h3>${tabelaRanking(n.id)}`).join("")}`;
       }
       if (!quizAtual || quizAtual.id !== nivel.id) iniciarQuiz(nivel);
@@ -411,7 +474,7 @@
         return `<a class="voltar" href="#/quiz">← Níveis</a>
           <h1>${nivel.icone} ${z.acertos} de ${z.perguntas.length}</h1>
           <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
-          ${z.salvo ? "" : `<label class="ranking-nome">Seu nome no ranking
+          ${z.salvo ? "" : `<label class="ranking-nome">Seu nome no ranking${rankingOnline() ? " (fica visível para todos)" : ""}
             <input id="nome-ranking" type="text" maxlength="20" value="${esc(nomeJogador)}" autocomplete="off">
           </label>
           <button class="btn btn-gps ver-todos" data-acao="quiz-salvar">Salvar no ranking</button>`}
@@ -625,7 +688,7 @@
     else if (rota === "s") html = telas.situacao(param);
     else if (telas[rota]) html = telas[rota](param);
     else html = telas.inicio();
-    main.innerHTML = html;
+    main.innerHTML = `${html}<p class="versao">Viajador · versão ${VERSAO_APP}</p>`;
     document.querySelectorAll("#abas a").forEach((a) => {
       const ativa = !termo && (a.dataset.aba === rota || (a.dataset.aba === "" && rota === "s"));
       a.classList.toggle("ativa", ativa);
@@ -659,6 +722,8 @@
       if (quizAtual.i >= quizAtual.perguntas.length) {
         recordes[quizAtual.id] = Math.max(recordes[quizAtual.id] || 0, quizAtual.acertos);
         try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(recordes)); } catch (err) {}
+        // Quem já deu o nome entra no ranking sem precisar de outro toque.
+        if (nomeJogador) salvarNoRanking(nomeJogador);
       }
       render();
       return window.scrollTo(0, 0);
@@ -719,6 +784,8 @@
   window.addEventListener("hashchange", () => {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     quizAtual = null;
+    placarOnline = {};
+    placarFalhou = {};
     $("#busca").value = "";
     render();
     window.scrollTo(0, 0);
