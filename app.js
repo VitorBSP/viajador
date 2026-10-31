@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "12";
+  const VERSAO_APP = "13";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -334,7 +334,10 @@
       localStorage.setItem(CHAVE_RANKING, JSON.stringify(ranking));
       localStorage.setItem(CHAVE_NOME, nome);
     } catch (e) {}
-    if (rankingOnline()) {
+    // O banco recusa rodadas rápidas demais; avisa em vez de parecer falha de conexão.
+    if (rankingOnline() && segundos < 10) {
+      avisar("Rodada muito rápida: salva só neste aparelho");
+    } else if (rankingOnline()) {
       const id = z.id;
       apiRanking("", {
         method: "POST",
