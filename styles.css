@@ -168,6 +168,11 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .check small { display: block; margin-top: 2px; }
 .check input:checked + span strong { text-decoration: line-through; }
 .btn-gps { min-height: 44px; }
+.ranking { margin: 8px 0 16px; padding-left: 22px; }
+.ranking li { margin-bottom: 6px; }
+.ranking-nivel { margin-top: 14px; font-size: 16px; }
+.ranking-nome { display: block; margin: 12px 0 8px; font-weight: 600; }
+.ranking-nome input { display: block; width: 100%; margin-top: 6px; padding: 12px; font-size: 16px; border: 1px solid var(--borda-btn); border-radius: 10px; background: var(--cartao); color: var(--texto); }
 a.btn { text-decoration: none; }
 .filtros a.btn { min-height: 44px; }
 .linha-tempo { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 3px solid var(--sol); }

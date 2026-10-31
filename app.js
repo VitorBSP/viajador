@@ -8,6 +8,9 @@
   const CHAVE_QUIZ = "viajador:quiz";
   const CHAVE_QUIZ_VISTAS = "viajador:quiz-vistas";
   const RODADA = 10;
+  const CHAVE_RANKING = "viajador:ranking";
+  const CHAVE_NOME = "viajador:nome";
+  const TAM_RANKING = 10;
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
   // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
   const RAPIDAS = [
@@ -288,6 +291,26 @@
   // Perguntas já respondidas por nível: só voltam depois que o banco inteiro for visto.
   let vistasQuiz = {};
   try { vistasQuiz = JSON.parse(localStorage.getItem(CHAVE_QUIZ_VISTAS)) || {}; } catch (e) {}
+  // Ranking só deste aparelho: não há servidor para comparar com outras pessoas.
+  let ranking = {};
+  try { ranking = JSON.parse(localStorage.getItem(CHAVE_RANKING)) || {}; } catch (e) {}
+  let nomeJogador = "";
+  try { nomeJogador = localStorage.getItem(CHAVE_NOME) || ""; } catch (e) {}
+  function salvarNoRanking(nome) {
+    const z = quizAtual;
+    const lista = [...(ranking[z.id] || []), { nome, pontos: z.acertos, segundos: Math.round((Date.now() - z.inicio) / 1000) }];
+    ranking[z.id] = lista.sort((a, b) => b.pontos - a.pontos || a.segundos - b.segundos).slice(0, TAM_RANKING);
+    z.salvo = true;
+    try {
+      localStorage.setItem(CHAVE_RANKING, JSON.stringify(ranking));
+      localStorage.setItem(CHAVE_NOME, nome);
+    } catch (e) {}
+  }
+  const tabelaRanking = (id) => {
+    const lista = ranking[id] || [];
+    if (!lista.length) return `<p class="suave">Ninguém jogou ainda neste aparelho.</p>`;
+    return `<ol class="ranking">${lista.map((r) => `<li><strong>${esc(r.nome)}</strong> <span class="suave">${r.pontos} de ${RODADA} · ${r.segundos}s</span></li>`).join("")}</ol>`;
+  };
   const salvarVistasQuiz = () => { try { localStorage.setItem(CHAVE_QUIZ_VISTAS, JSON.stringify(vistasQuiz)); } catch (e) {} };
   const embaralhar = (lista) => {
     const a = [...lista];
@@ -310,6 +333,7 @@
     }
     quizAtual = {
       id: nivel.id,
+      inicio: Date.now(),
       i: 0,
       acertos: 0,
       escolhida: null,
@@ -351,6 +375,7 @@
         <div class="filtros" role="group" aria-label="Escolher país ou cidade">${lista.map((x) => `
           <a class="btn ${x.id === h.id ? "on" : ""}" href="#/historia/${x.id}"${x.id === h.id ? ' aria-current="page"' : ""}>${esc(x.titulo)}</a>`).join("")}
         </div>
+        ${secao("Como nasceu o Uruguai", h.fundacao || [], cartoes)}
         ${secao("Momentos históricos", h.momentos, momentos)}
         ${secao("Costumes", h.costumes, cartoes)}
         ${secao("Pessoas históricas", h.pessoas, pessoas)}
@@ -375,7 +400,10 @@
                 <small class="ponto-dist">${(vistasQuiz[n.id] || []).length} de ${n.perguntas.length} perguntas vistas${recordes[n.id] === undefined ? "" : ` · Recorde: ${recordes[n.id]} de ${RODADA}`}</small>
               </span>
             </a>`).join("")}
-          </div>`;
+          </div>
+          <h2>Ranking neste aparelho</h2>
+          <p class="lead">Fica só neste celular. Passe o aparelho para os amigos jogarem.</p>
+          ${niveis.map((n) => `<h3 class="ranking-nivel">${n.icone} ${esc(n.titulo)}</h3>${tabelaRanking(n.id)}`).join("")}`;
       }
       if (!quizAtual || quizAtual.id !== nivel.id) iniciarQuiz(nivel);
       const z = quizAtual;
@@ -383,6 +411,12 @@
         return `<a class="voltar" href="#/quiz">← Níveis</a>
           <h1>${nivel.icone} ${z.acertos} de ${z.perguntas.length}</h1>
           <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
+          ${z.salvo ? "" : `<label class="ranking-nome">Seu nome no ranking
+            <input id="nome-ranking" type="text" maxlength="20" value="${esc(nomeJogador)}" autocomplete="off">
+          </label>
+          <button class="btn btn-gps ver-todos" data-acao="quiz-salvar">Salvar no ranking</button>`}
+          <h2>Ranking de ${esc(nivel.titulo)}</h2>
+          ${tabelaRanking(nivel.id)}
           <button class="btn btn-gps ver-todos" data-acao="quiz-repetir">Jogar com novas perguntas</button>
           <a class="btn btn-gps ver-todos" href="#/historia">Rever a História</a>`;
       }
@@ -629,6 +663,14 @@
       render();
       return window.scrollTo(0, 0);
     }
+    if (b.dataset.acao === "quiz-salvar") {
+      const nome = $("#nome-ranking").value.trim().slice(0, 20);
+      if (!nome) return avisar("Escreva um nome");
+      nomeJogador = nome;
+      salvarNoRanking(nome);
+      avisar("Salvo no ranking");
+      return render();
+    }
     if (b.dataset.acao === "quiz-repetir") {
       quizAtual = null;
       return render();
@@ -708,6 +750,13 @@
   // Offline: só em http(s), para o site continuar abrindo direto do arquivo.
   if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     const primeiraVez = !navigator.serviceWorker.controller;
+    // Versão nova assumiu: recarrega uma vez para não misturar arquivos antigos e novos.
+    let recarregou = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (primeiraVez || recarregou) return;
+      recarregou = true;
+      location.reload();
+    });
     navigator.serviceWorker.register("sw.js").catch(() => {});
     if (primeiraVez) navigator.serviceWorker.ready.then(() => avisar("Pronto para usar sem internet"));
   }

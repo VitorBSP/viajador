@@ -1,6 +1,6 @@
-// Service worker do Viajador: abre instantâneo do cache e atualiza em segundo plano.
+// Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-v10";
+const VERSAO = "viajador-v11";
 const NUCLEO = [
   "./",
   "styles.css",
@@ -61,19 +61,18 @@ async function primeiroCache(request) {
   return resp;
 }
 
-// Páginas e dados: responde do cache e atualiza para a próxima abertura.
-async function cacheEAtualiza(event, chave) {
+// Páginas e dados: rede primeiro, para nunca misturar versões. Internet lenta ou ausente cai no cache.
+const ESPERA_REDE = 3500;
+async function redePrimeiro(chave) {
   const cache = await caches.open(VERSAO);
   const salvo = await cache.match(chave);
-  const rede = fetch(chave).then((resp) => {
-    if (resp.ok) return cache.put(chave, resp.clone()).then(() => resp);
+  const rede = fetch(chave, { cache: "no-cache" }).then((resp) => {
+    if (resp.ok) cache.put(chave, resp.clone());
     return resp;
   });
-  if (salvo) {
-    event.waitUntil(rede.catch(() => {}));
-    return salvo;
-  }
-  return rede;
+  if (!salvo) return rede;
+  const limite = new Promise((ok) => setTimeout(() => ok(salvo), ESPERA_REDE));
+  return Promise.race([rede.catch(() => salvo), limite]);
 }
 
 self.addEventListener("fetch", (event) => {
@@ -84,6 +83,6 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(primeiroCache(request));
   } else if (url.origin === self.location.origin) {
     // O app tem uma página só (rotas no #): toda navegação usa a raiz.
-    event.respondWith(cacheEAtualiza(event, request.mode === "navigate" ? new URL("./", self.location).href : request));
+    event.respondWith(redePrimeiro(request.mode === "navigate" ? new URL("./", self.location).href : request));
   }
 });

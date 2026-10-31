@@ -33,7 +33,7 @@ PAIS = {
 }
 FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
            "cultura": True, "jogo": True, "frases": True, "fontes": True}
-HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "momentos": True, "costumes": True,
+HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "fundacao": False, "momentos": True, "costumes": True,
             "pessoas": True, "estrelas": True, "datas": True, "fontes": True}
 MOMENTO = {"data": True, "titulo": True, "texto": True}
 COSTUME = {"titulo": True, "texto": True}
@@ -406,7 +406,7 @@ def checar_pais(r, chave, p, esperado):
         onde = f"historias[{n}]"
         if not checar_campos(r, h, HISTORIA, onde, p.linha):
             continue
-        for campo, spec in (("momentos", MOMENTO), ("costumes", COSTUME), ("pessoas", PESSOA), ("estrelas", ESTRELA), ("datas", MOMENTO)):
+        for campo, spec in (("fundacao", COSTUME), ("momentos", MOMENTO), ("costumes", COSTUME), ("pessoas", PESSOA), ("estrelas", ESTRELA), ("datas", MOMENTO)):
             for m, item in enumerate(lista_de(r, h, campo, onde)):
                 checar_campos(r, item, spec, f"{onde}.{campo}[{m}]", h.linha)
         for m, f in enumerate(lista_de(r, h, "fontes", onde, minimo=1)):

@@ -2067,6 +2067,18 @@ window.VIAJADOR.paises.uy = {
       titulo: "Uruguai",
       icone: "🇺🇾",
       intro: "De terra disputada por espanhóis e portugueses a país independente em 1828, com heróis, guerras civis e duas Copas do Mundo no meio.",
+      fundacao: [
+        { titulo: "Por que Banda Oriental?", texto: "Era o nome da terra a leste do rio Uruguai e ao norte do Rio da Prata, a parte mais oriental do Vice-Reino do Rio da Prata. Correspondia mais ou menos ao Uruguai de hoje e ao Rio Grande do Sul. O nome aparece no começo do século 17 e não indicava uma unidade administrativa." },
+        { titulo: "Por que Província Oriental?", texto: "Em 1813, nas Instruções do Ano XIII, Artigas pediu uma província entre o rio Uruguai e o Atlântico, unida às outras por uma liga de amizade. Buenos Aires a oficializou em 7 de março de 1814, mas com governador escolhido por ela, contra o que Artigas pedia." },
+        { titulo: "O que eram as Províncias Unidas?", texto: "Era o Estado em formação, de 1810 a 1831, nas terras do antigo Vice-Reino que reconheciam os governos revolucionários. É a raiz da Argentina: declarou independência em Tucumán, em 1816, e o Pacto Federal de 1831 levou à Confederação Argentina." },
+        { titulo: "Artigas contra Buenos Aires", texto: "O federalismo de Artigas chocou com o centralismo de Buenos Aires. Ele liderou a Liga dos Povos Livres, com Córdoba, Corrientes, Entre Ríos, Santa Fe, Misiones e a Província Oriental, como seu Protetor. A Liga acabou em 1820, e Artigas foi para o exílio no Paraguai." },
+        { titulo: "Portugal e Brasil", texto: "Em agosto de 1816, um exército luso-brasileiro invadiu a província, e Montevidéu caiu em janeiro de 1817. Em 1821, o território foi incorporado como Província Cisplatina, que passou ao Império do Brasil depois de 1822." },
+        { titulo: "Por que a união de 1825?", texto: "Lavalleja atravessou o rio com apoio argentino. Em 25 de agosto, em La Florida, os representantes votaram a separação do Brasil e a união às Províncias Unidas. Ou seja: naquele dia, a ideia ainda não era um país à parte. Daí veio a Guerra do Brasil." },
+        { titulo: "O papel da Inglaterra", texto: "Os britânicos invadiram a região em 1806 e 1807 e ocuparam Montevidéu. Na guerra seguinte, o diplomata John Ponsonby propôs a independência, para garantir o comércio britânico e criar um Estado-tampão entre Brasil e Argentina. Foi ele quem chamou a Banda Oriental de chave do Prata." },
+        { titulo: "1828: nasce o país", texto: "A Convenção Preliminar de Paz foi assinada no Rio de Janeiro, em 27 de agosto, por Brasil e Províncias Unidas, com mediação britânica. Ela não fixou os limites, e os dois vizinhos ainda examinariam a Constituição de 1830." },
+        { titulo: "Por que Oriental até hoje?", texto: "O nome de 1830 foi Estado Oriental do Uruguai, herança da Banda Oriental. A Constituição de 1918 consagrou República Oriental do Uruguai. O termo oriental também virou gentílico, embora venha caindo em desuso. Uruguai vem do rio, e o significado do nome guarani é discutido." },
+        { titulo: "Depois da independência", texto: "Os vizinhos seguiram presentes: Rosas apoiou Oribe na Guerra Grande. Em 1851, tratados com o Brasil cederam territórios ao norte. Na Tríplice Aliança, o Uruguai lutou ao lado dos dois. Capital britânico também marcou o país, como na ferrovia que deu origem ao Peñarol." },
+      ],
       momentos: [
         { data: "c. 10.000 a.C.", titulo: "Primeiros vestígios", texto: "Achados no atual departamento de Artigas são os registros humanos mais antigos do território." },
         { data: "1516", titulo: "A chegada de Solís", texto: "A expedição de Juan Díaz de Solís alcança o Rio da Prata. Solís morre na viagem, e as versões sobre sua morte divergem." },
@@ -2157,6 +2169,15 @@ window.VIAJADOR.paises.uy = {
       fontes: [
         { titulo: "Wikipédia: Historia de Uruguay", url: "https://es.wikipedia.org/wiki/Historia_de_Uruguay" },
         { titulo: "Britannica: Uruguay", url: "https://www.britannica.com/place/Uruguay/The-struggle-for-national-identity" },
+        { titulo: "Country Studies: 1820-30", url: "https://countrystudies.us/uruguay/4.htm" },
+        { titulo: "Wikipédia: Banda Oriental", url: "https://es.wikipedia.org/wiki/Banda_Oriental" },
+        { titulo: "Wikipédia: Provincia Oriental", url: "https://es.wikipedia.org/wiki/Provincia_Oriental" },
+        { titulo: "Wikipédia: Provincias Unidas", url: "https://es.wikipedia.org/wiki/Provincias_Unidas_del_R%C3%ADo_de_la_Plata" },
+        { titulo: "Wikipédia: Liga Federal", url: "https://es.wikipedia.org/wiki/Liga_Federal" },
+        { titulo: "Wikipédia: Provincia Cisplatina", url: "https://es.wikipedia.org/wiki/Provincia_Cisplatina" },
+        { titulo: "Wikipédia: Convención de 1828", url: "https://es.wikipedia.org/wiki/Convenci%C3%B3n_Preliminar_de_Paz_(1828)" },
+        { titulo: "Wikipédia: John Ponsonby", url: "https://es.wikipedia.org/wiki/John_Ponsonby" },
+        { titulo: "Wikipédia: Estado Oriental del Uruguay", url: "https://es.wikipedia.org/wiki/Estado_Oriental_del_Uruguay" },
         { titulo: "Wikipédia: Cruzada Libertadora", url: "https://es.wikipedia.org/wiki/Cruzada_Libertadora" },
         { titulo: "Wikipédia: Guerra del Brasil", url: "https://es.wikipedia.org/wiki/Guerra_del_Brasil" },
         { titulo: "Wikipédia: Matanza del Salsipuedes", url: "https://es.wikipedia.org/wiki/Matanza_del_Salsipuedes" },
@@ -2988,6 +3009,86 @@ window.VIAJADOR.paises.uy = {
       descricao: "Difícil até para quem mora lá.",
       perguntas: [
         {
+          pergunta: "O que era a Banda Oriental?",
+          certa: "A terra a leste do rio Uruguai",
+          erradas: [
+            "A terra a oeste do Paraná",
+            "Uma ilha do Rio da Prata",
+            "Um bairro de Montevidéu",
+          ],
+          explica: "Era a parte mais oriental do Vice-Reino do Rio da Prata.",
+        },
+        {
+          pergunta: "O que era Província Oriental?",
+          certa: "O território proposto por Artigas em 1813",
+          erradas: [
+            "O nome colonial de Colônia",
+            "Um estado do Brasil de 1890",
+            "Um bairro de Buenos Aires",
+          ],
+          explica: "Foi oficializada em 1814.",
+        },
+        {
+          pergunta: "No que as Províncias Unidas se transformaram?",
+          certa: "Na Argentina",
+          erradas: [
+            "No Paraguai",
+            "No Rio Grande do Sul",
+            "Na Bolívia",
+          ],
+          explica: "O Pacto de 1831 levou à Confederação Argentina.",
+        },
+        {
+          pergunta: "Com quem a Província Oriental se uniu na Declaração de 1825?",
+          certa: "Províncias Unidas",
+          erradas: [
+            "Brasil",
+            "Portugal",
+            "Inglaterra",
+          ],
+          explica: "A declaração separou do Brasil e uniu às Províncias Unidas.",
+        },
+        {
+          pergunta: "Que país mediou a paz de 1828?",
+          certa: "Reino Unido",
+          erradas: [
+            "França",
+            "Estados Unidos",
+            "Espanha",
+          ],
+          explica: "O diplomata foi John Ponsonby.",
+        },
+        {
+          pergunta: "Por que o Reino Unido queria um Estado independente?",
+          certa: "Para proteger seu comércio na região",
+          erradas: [
+            "Para ocupar Montevidéu",
+            "Para difundir o futebol",
+            "Para vender terras",
+          ],
+          explica: "A ideia é chamada de Estado-tampão.",
+        },
+        {
+          pergunta: "O que o gentílico oriental significa no Uruguai?",
+          certa: "Uruguaio",
+          erradas: [
+            "Asiático",
+            "Morador de Punta",
+            "Argentino",
+          ],
+          explica: "O uso tem caído, mas o nome oficial mantém a palavra.",
+        },
+        {
+          pergunta: "De onde vem o nome Uruguai?",
+          certa: "Do rio Uruguai",
+          erradas: [
+            "De um cacique",
+            "De um santo",
+            "De um rei espanhol",
+          ],
+          explica: "O significado do nome guarani é discutido.",
+        },
+        {
           pergunta: "Qual é a data oficial de fundação de Montevidéu?",
           certa: "24 de dezembro de 1726",
           erradas: [
@@ -3296,6 +3397,66 @@ window.VIAJADOR.paises.uy = {
       descricao: "Para quem sabe o que foi o Maracanazo.",
       perguntas: [
         {
+          pergunta: "O que significa cuadro no futebol?",
+          certa: "Time",
+          erradas: [
+            "Quadro de avisos",
+            "Campo",
+            "Técnico",
+          ],
+          explica: "¿De qué cuadro sos? é pra que time você torce.",
+        },
+        {
+          pergunta: "O que significa golero?",
+          certa: "Goleiro",
+          erradas: [
+            "Artilheiro",
+            "Torcedor",
+            "Juiz",
+          ],
+          explica: "Pronúncia: go-LE-ro.",
+        },
+        {
+          pergunta: "O que significa hincha?",
+          certa: "Torcedor",
+          erradas: [
+            "Inchaço",
+            "Bandeira",
+            "Reserva",
+          ],
+          explica: "Pronúncia: IN-tcha.",
+        },
+        {
+          pergunta: "O que significa cancha?",
+          certa: "Campo",
+          erradas: [
+            "Canja",
+            "Chuteira",
+            "Gol",
+          ],
+          explica: "Pronúncia: KAN-tcha.",
+        },
+        {
+          pergunta: "Em que ano o Gran Parque Central abriu?",
+          certa: "1900",
+          erradas: [
+            "1899",
+            "1930",
+            "2016",
+          ],
+          explica: "Foi em 25 de maio.",
+        },
+        {
+          pergunta: "Quantos títulos nacionais o Defensor Sporting tem?",
+          certa: "Quatro",
+          erradas: [
+            "Um",
+            "Dez",
+            "Vinte",
+          ],
+          explica: "Danubio e River Plate também têm quatro.",
+        },
+        {
           pergunta: "Quem o Uruguai venceu na final olímpica de 1924?",
           certa: "Suíça",
           erradas: [
@@ -3534,6 +3695,3640 @@ window.VIAJADOR.paises.uy = {
             "Federico Valverde",
           ],
           explica: "O prêmio é de melhor jogador do torneio.",
+        },
+      ],
+    },
+    {
+      id: "espanhol",
+      titulo: "Espanhol & dialeto",
+      icone: "🗣️",
+      descricao: "Palavras, ditados, falsos amigos e como falar.",
+      perguntas: [
+        {
+          pergunta: "O que significa \"Ta\"?",
+          certa: "Ok, beleza, tá bom",
+          erradas: [
+            "Boa! Mandou bem!",
+            "Fiquei sem graça / passei vergonha",
+            "Mate (parente do chimarrão) / Garrafa térmica",
+          ],
+          explica: "Pronúncia: TA.",
+        },
+        {
+          pergunta: "O que significa \"Dale\"?",
+          certa: "Combinado, vamos, pode ser",
+          erradas: [
+            "Nossa! Caramba!",
+            "Boa! Mandou bem!",
+            "Dinheiro",
+          ],
+          explica: "Pronúncia: DA-le.",
+        },
+        {
+          pergunta: "O que significa \"Bo\"?",
+          certa: "Ei, cara (chamar atenção)",
+          erradas: [
+            "Muito, um monte",
+            "Ônibus",
+            "Fazer companhia, dar uma força",
+          ],
+          explica: "Pronúncia: BO.",
+        },
+        {
+          pergunta: "O que significa \"Che\"?",
+          certa: "Ei, ô (vocativo)",
+          erradas: [
+            "Ônibus",
+            "Que chato, que azar",
+            "Se mexer, acordar pra vida",
+          ],
+          explica: "Pronúncia: TCHE.",
+        },
+        {
+          pergunta: "O que significa \"¡Pa!\"?",
+          certa: "Nossa! Caramba!",
+          erradas: [
+            "Muito bom, top",
+            "Que chato, que azar",
+            "Combinado, vamos, pode ser",
+          ],
+          explica: "Pronúncia: PA.",
+        },
+        {
+          pergunta: "O que significa \"Bárbaro\"?",
+          certa: "Ótimo, demais",
+          erradas: [
+            "Ok, beleza, tá bom",
+            "Ônibus",
+            "Grana (dinheiro, informal)",
+          ],
+          explica: "Pronúncia: BAR-ba-ro.",
+        },
+        {
+          pergunta: "O que significa \"Bien ahí\"?",
+          certa: "Boa! Mandou bem!",
+          erradas: [
+            "Muito bom, top",
+            "Que chato, que azar",
+            "Grana (dinheiro, informal)",
+          ],
+          explica: "Pronúncia: BIEN a-I.",
+        },
+        {
+          pergunta: "O que significa \"De más\"?",
+          certa: "Muito bom, top",
+          erradas: [
+            "Ei, cara (chamar atenção)",
+            "Grana (dinheiro, informal)",
+            "Criança, moleque",
+          ],
+          explica: "Pronúncia: de MAS.",
+        },
+        {
+          pergunta: "O que significa \"Salado\"?",
+          certa: "Caro",
+          erradas: [
+            "Talvez",
+            "Ótimo, demais",
+            "Tranquilo, de boa",
+          ],
+          explica: "Pronúncia: sa-LA-do.",
+        },
+        {
+          pergunta: "O que significa \"Bondi\"?",
+          certa: "Ônibus",
+          erradas: [
+            "Talvez",
+            "Boa! Mandou bem!",
+            "Ótimo, demais",
+          ],
+          explica: "Pronúncia: BON-di.",
+        },
+        {
+          pergunta: "O que significa \"Botija / Gurí, gurisa\"?",
+          certa: "Criança, moleque",
+          erradas: [
+            "Talvez",
+            "Combinado, vamos, pode ser",
+            "Fiquei sem graça / passei vergonha",
+          ],
+          explica: "Pronúncia: bo-TI-rra / gu-RI, gu-RI-sa.",
+        },
+        {
+          pergunta: "O que significa \"Una pila\"?",
+          certa: "Muito, um monte",
+          erradas: [
+            "Ônibus",
+            "Tranquilo, de boa",
+            "Grana (dinheiro, informal)",
+          ],
+          explica: "Pronúncia: U-na PI-la.",
+        },
+        {
+          pergunta: "O que significa \"Re\"?",
+          certa: "Muito (intensificador)",
+          erradas: [
+            "Grana (dinheiro, informal)",
+            "Mate (parente do chimarrão) / Garrafa térmica",
+            "Ok, beleza, tá bom",
+          ],
+          explica: "Pronúncia: RRE.",
+        },
+        {
+          pergunta: "O que significa \"Capaz\"?",
+          certa: "Talvez",
+          erradas: [
+            "Muito bom, top",
+            "Boa! Mandou bem!",
+            "Grana (dinheiro, informal)",
+          ],
+          explica: "Pronúncia: ka-PÁS.",
+        },
+        {
+          pergunta: "O que significa \"Tranqui\"?",
+          certa: "Tranquilo, de boa",
+          erradas: [
+            "Ei, ô (vocativo)",
+            "Dinheiro",
+            "Ei, cara (chamar atenção)",
+          ],
+          explica: "Pronúncia: TRAN-ki.",
+        },
+        {
+          pergunta: "O que significa \"Plata\"?",
+          certa: "Dinheiro",
+          erradas: [
+            "Combinado, vamos, pode ser",
+            "Ei, cara (chamar atenção)",
+            "Bar de bairro (ou balada)",
+          ],
+          explica: "Pronúncia: PLA-ta.",
+        },
+        {
+          pergunta: "O que significa \"Championes\"?",
+          certa: "Tênis (calçado)",
+          erradas: [
+            "Fiquei sem graça / passei vergonha",
+            "Dinheiro",
+            "Fazer companhia, dar uma força",
+          ],
+          explica: "Pronúncia: tcham-PIO-nes.",
+        },
+        {
+          pergunta: "O que significa \"Boliche\"?",
+          certa: "Bar de bairro (ou balada)",
+          erradas: [
+            "Caro",
+            "Ok, beleza, tá bom",
+            "Ônibus",
+          ],
+          explica: "Pronúncia: bo-LI-tche.",
+        },
+        {
+          pergunta: "O que significa \"Garrón\"?",
+          certa: "Que chato, que azar",
+          erradas: [
+            "Nossa! Caramba!",
+            "Bar de bairro (ou balada)",
+            "Criança, moleque",
+          ],
+          explica: "Pronúncia: ga-RRON.",
+        },
+        {
+          pergunta: "O que significa \"Me quedé pagando\"?",
+          certa: "Fiquei sem graça / passei vergonha",
+          erradas: [
+            "Muito bom, top",
+            "Caro",
+            "Talvez",
+          ],
+          explica: "Pronúncia: me ke-DÉ pa-GAN-do.",
+        },
+        {
+          pergunta: "O que significa \"Arrancar\"?",
+          certa: "Começar, ir embora",
+          erradas: [
+            "Ônibus",
+            "Ei, ô (vocativo)",
+            "Fiquei sem graça / passei vergonha",
+          ],
+          explica: "Pronúncia: a-rran-KAR.",
+        },
+        {
+          pergunta: "O que significa \"Hacer la gamba\"?",
+          certa: "Fazer companhia, dar uma força",
+          erradas: [
+            "Boa! Mandou bem!",
+            "Muito bom, top",
+            "Que chato, que azar",
+          ],
+          explica: "Pronúncia: a-SER la GAM-ba.",
+        },
+        {
+          pergunta: "O que significa \"Ponerse las pilas\"?",
+          certa: "Se mexer, acordar pra vida",
+          erradas: [
+            "Começar, ir embora",
+            "Mate (parente do chimarrão) / Garrafa térmica",
+            "Ei, cara (chamar atenção)",
+          ],
+          explica: "Pronúncia: po-NER-se las PI-las.",
+        },
+        {
+          pergunta: "O que significa \"Mate / Termo\"?",
+          certa: "Mate (parente do chimarrão) / Garrafa térmica",
+          erradas: [
+            "Caro",
+            "Que chato, que azar",
+            "Muito, um monte",
+          ],
+          explica: "Pronúncia: MA-te / TER-mo.",
+        },
+        {
+          pergunta: "O que significa \"Mango\"?",
+          certa: "Grana (dinheiro, informal)",
+          erradas: [
+            "Talvez",
+            "Criança, moleque",
+            "Se mexer, acordar pra vida",
+          ],
+          explica: "Pronúncia: MAN-go.",
+        },
+        {
+          pergunta: "O que significa \"Andá a cantarle a Gardel\"?",
+          certa: "Vai reclamar pro bispo",
+          erradas: [
+            "Jogar a toalha, desistir",
+            "Chato de galocha",
+            "Estar ferrado, numa enrascada",
+          ],
+          explica: "Para dizer que a pessoa não vai conseguir o que quer.",
+        },
+        {
+          pergunta: "O que significa \"Más pesado que collar de melones\"?",
+          certa: "Chato de galocha",
+          erradas: [
+            "Não pega bem / não rola",
+            "Estar no mundo da lua",
+            "Se fazer de bobo",
+          ],
+          explica: "Para alguém muito chato ou inconveniente.",
+        },
+        {
+          pergunta: "O que significa \"Al pan, pan y al vino, vino\"?",
+          certa: "Pão, pão; queijo, queijo",
+          erradas: [
+            "Vai reclamar pro bispo",
+            "Não pega bem / não rola",
+            "Estar no mundo da lua",
+          ],
+          explica: "Falar as coisas como elas são.",
+        },
+        {
+          pergunta: "O que significa \"Estar al horno\"?",
+          certa: "Estar ferrado, numa enrascada",
+          erradas: [
+            "Chato de galocha",
+            "Não pega bem / não rola",
+            "Estar no mundo da lua",
+          ],
+          explica: "Perdi o último ônibus: estoy al horno.",
+        },
+        {
+          pergunta: "O que significa \"Tirar la toalla\"?",
+          certa: "Jogar a toalha, desistir",
+          erradas: [
+            "Ser um doce de pessoa",
+            "Não pega bem / não rola",
+            "Pão, pão; queijo, queijo",
+          ],
+          explica: "Igual ao português.",
+        },
+        {
+          pergunta: "O que significa \"Ser un pan de Dios\"?",
+          certa: "Ser um doce de pessoa",
+          erradas: [
+            "Topar, aceitar a proposta",
+            "Pão, pão; queijo, queijo",
+            "Estar ferrado, numa enrascada",
+          ],
+          explica: "Elogiar alguém muito bondoso.",
+        },
+        {
+          pergunta: "O que significa \"Hacerse el bobo\"?",
+          certa: "Se fazer de bobo",
+          erradas: [
+            "Pão, pão; queijo, queijo",
+            "Estar super à vontade",
+            "Topar, aceitar a proposta",
+          ],
+          explica: "Fingir que não entendeu.",
+        },
+        {
+          pergunta: "O que significa \"Estar como Pancho por su casa\"?",
+          certa: "Estar super à vontade",
+          erradas: [
+            "Pão, pão; queijo, queijo",
+            "Vai reclamar pro bispo",
+            "Chato de galocha",
+          ],
+          explica: "Quando alguém age como se estivesse em casa.",
+        },
+        {
+          pergunta: "O que significa \"No da\"?",
+          certa: "Não pega bem / não rola",
+          erradas: [
+            "Se fazer de bobo",
+            "A raça uruguaia",
+            "Ser um doce de pessoa",
+          ],
+          explica: "Ir de chinelo nesse restaurante: no da.",
+        },
+        {
+          pergunta: "O que significa \"Estar en la luna\"?",
+          certa: "Estar no mundo da lua",
+          erradas: [
+            "Chato de galocha",
+            "Ser um doce de pessoa",
+            "Jogar a toalha, desistir",
+          ],
+          explica: "Para alguém distraído.",
+        },
+        {
+          pergunta: "O que significa \"Agarrar viaje\"?",
+          certa: "Topar, aceitar a proposta",
+          erradas: [
+            "Chato de galocha",
+            "Estar no mundo da lua",
+            "Pão, pão; queijo, queijo",
+          ],
+          explica: "—¿Vamos a Punta? —¡Agarro viaje!",
+        },
+        {
+          pergunta: "O que significa \"La garra charrúa\"?",
+          certa: "A raça uruguaia",
+          erradas: [
+            "Topar, aceitar a proposta",
+            "Se fazer de bobo",
+            "Estar no mundo da lua",
+          ],
+          explica: "Orgulho nacional de lutar até o fim, muito usado no futebol.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Exquisito\"?",
+          certa: "Delicioso",
+          erradas: [
+            "Esquisito",
+            "Suposto, suspeito",
+            "Momento, instante",
+          ],
+          explica: "Cuidado: não é esquisito.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Embarazada\"?",
+          certa: "Grávida",
+          erradas: [
+            "Embaraçada",
+            "Comprido",
+            "Gorjeta",
+          ],
+          explica: "Cuidado: não é embaraçada.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Propina\"?",
+          certa: "Gorjeta",
+          erradas: [
+            "Propina",
+            "Logo, em breve",
+            "Momento, instante",
+          ],
+          explica: "Cuidado: não é propina (suborno).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Oficina\"?",
+          certa: "Escritório",
+          erradas: [
+            "Oficina mecânica",
+            "Bêbada",
+            "Xícara",
+          ],
+          explica: "Cuidado: não é oficina mecânica.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Taller\"?",
+          certa: "Oficina mecânica",
+          erradas: [
+            "Talher",
+            "Suposto, suspeito",
+            "Sobrenome",
+          ],
+          explica: "Cuidado: não é talher.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Cubiertos\"?",
+          certa: "Talheres",
+          erradas: [
+            "Cobertos",
+            "Grávida",
+            "Gorjeta",
+          ],
+          explica: "Cuidado: não é cobertos.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Vaso\"?",
+          certa: "Copo",
+          erradas: [
+            "Vaso",
+            "Oficina mecânica",
+            "Pó, poeira",
+          ],
+          explica: "Cuidado: não é vaso.",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Taza\"?",
+          certa: "Xícara",
+          erradas: [
+            "Taça",
+            "Bêbada",
+            "Oficina mecânica",
+          ],
+          explica: "Cuidado: não é taça (= copa).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Rato\"?",
+          certa: "Momento, instante",
+          erradas: [
+            "Rato",
+            "Jogar fora",
+            "Gorjeta",
+          ],
+          explica: "Cuidado: não é rato (animal).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Largo\"?",
+          certa: "Comprido",
+          erradas: [
+            "Largo",
+            "Sobrenome",
+            "Talheres",
+          ],
+          explica: "Cuidado: não é largo (amplo = ancho).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Pronto\"?",
+          certa: "Logo, em breve",
+          erradas: [
+            "Pronto",
+            "Óleo, azeite",
+            "Momento, instante",
+          ],
+          explica: "Cuidado: não é pronto (= listo).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Apellido\"?",
+          certa: "Sobrenome",
+          erradas: [
+            "Apelido",
+            "Xícara",
+            "Pó, poeira",
+          ],
+          explica: "Cuidado: não é apelido (= apodo).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Polvo\"?",
+          certa: "Pó, poeira",
+          erradas: [
+            "Polvo",
+            "Talheres",
+            "Momento, instante",
+          ],
+          explica: "Cuidado: não é polvo (= pulpo).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Tirar\"?",
+          certa: "Jogar fora",
+          erradas: [
+            "Tirar",
+            "Comprido",
+            "Jantar",
+          ],
+          explica: "Cuidado: não é tirar (foto = sacar).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Salsa\"?",
+          certa: "Molho",
+          erradas: [
+            "Salsinha",
+            "Logo, em breve",
+            "Óleo, azeite",
+          ],
+          explica: "Cuidado: não é salsinha (= perejil).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Cena\"?",
+          certa: "Jantar",
+          erradas: [
+            "Cena de filme",
+            "Óleo, azeite",
+            "Escritório",
+          ],
+          explica: "Cuidado: não é cena de filme (= escena).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Borracha\"?",
+          certa: "Bêbada",
+          erradas: [
+            "Borracha",
+            "Momento, instante",
+            "Copo",
+          ],
+          explica: "Cuidado: não é borracha (= goma).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Aceite\"?",
+          certa: "Óleo, azeite",
+          erradas: [
+            "Aceite",
+            "Oficina mecânica",
+            "Jantar",
+          ],
+          explica: "Cuidado: não é aceite (de aceitar).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Presunto\"?",
+          certa: "Suposto, suspeito",
+          erradas: [
+            "Presunto",
+            "Comprido",
+            "Logo, em breve",
+          ],
+          explica: "Cuidado: não é presunto (= jamón).",
+        },
+        {
+          pergunta: "No espanhol, o que significa \"Todavía\"?",
+          certa: "Ainda",
+          erradas: [
+            "Todavia",
+            "Óleo, azeite",
+            "Jantar",
+          ],
+          explica: "Cuidado: não é todavia (= sin embargo).",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Menú del día\"?",
+          certa: "Prato do dia",
+          erradas: [
+            "Morango",
+            "Costela em tiras",
+            "Misto-quente",
+          ],
+          explica: "Pronúncia: me-NU del DI-a.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Minutas\"?",
+          certa: "Pratos rápidos, como milanesa e hambúrguer",
+          erradas: [
+            "Rim",
+            "Prato do dia",
+            "Tripa de boi grelhada",
+          ],
+          explica: "Pronúncia: mi-NU-tas.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Entraña\"?",
+          certa: "Fraldinha",
+          erradas: [
+            "Tripa de boi grelhada",
+            "Filé-mignon",
+            "Maminha",
+          ],
+          explica: "Pronúncia: en-TRA-nha.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Vacío\"?",
+          certa: "Vazio (corte da região da barriga)",
+          erradas: [
+            "Presunto",
+            "Rim",
+            "Frango",
+          ],
+          explica: "Pronúncia: ba-SI-o.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Asado de tira\"?",
+          certa: "Costela em tiras",
+          erradas: [
+            "Contrafilé",
+            "Pêssego",
+            "Cebola",
+          ],
+          explica: "Pronúncia: a-SA-do de TI-ra.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Bife de chorizo\"?",
+          certa: "Contrafilé",
+          erradas: [
+            "Pêssego",
+            "Misto-quente",
+            "Presunto",
+          ],
+          explica: "Pronúncia: BI-fe de tcho-RI-so.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Lomo\"?",
+          certa: "Filé-mignon",
+          erradas: [
+            "Pimentão",
+            "Milho",
+            "Queijo com doce de marmelo (ou batata-doce)",
+          ],
+          explica: "Pronúncia: LO-mo.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Colita de cuadril\"?",
+          certa: "Maminha",
+          erradas: [
+            "Costela em tiras",
+            "Cebola",
+            "Linguiça",
+          ],
+          explica: "Pronúncia: ko-LI-ta de kua-DRIL.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Pamplona\"?",
+          certa: "Rolo recheado de carne ou frango, na brasa",
+          erradas: [
+            "Salada de maionese com batata",
+            "Presunto",
+            "Morcela (linguiça de sangue)",
+          ],
+          explica: "Pronúncia: pam-PLO-na.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Chorizo\"?",
+          certa: "Linguiça",
+          erradas: [
+            "Vazio (corte da região da barriga)",
+            "Abóbora",
+            "Pimentão",
+          ],
+          explica: "Pronúncia: tcho-RI-so.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Morcilla\"?",
+          certa: "Morcela (linguiça de sangue)",
+          erradas: [
+            "Presunto",
+            "Morango",
+            "Filé-mignon",
+          ],
+          explica: "Pronúncia: mor-SI-sha.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Chinchulines\"?",
+          certa: "Tripa de boi grelhada",
+          erradas: [
+            "Morango",
+            "Rim",
+            "Morcela (linguiça de sangue)",
+          ],
+          explica: "Pronúncia: tchin-tchu-LI-nes.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Mollejas\"?",
+          certa: "Moleja (miúdo)",
+          erradas: [
+            "Alho",
+            "Milho",
+            "Vazio (corte da região da barriga)",
+          ],
+          explica: "Pronúncia: mo-SHE-rras.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Riñones\"?",
+          certa: "Rim",
+          erradas: [
+            "Vazio (corte da região da barriga)",
+            "Pimentão",
+            "Costela em tiras",
+          ],
+          explica: "Pronúncia: rri-NHO-nes.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Provoleta\"?",
+          certa: "Queijo provolone na chapa",
+          erradas: [
+            "Misto-quente",
+            "Cachorro-quente",
+            "Pêssego",
+          ],
+          explica: "Pronúncia: pro-bo-LE-ta.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Pollo\"?",
+          certa: "Frango",
+          erradas: [
+            "Morcela (linguiça de sangue)",
+            "Vazio (corte da região da barriga)",
+            "Sobremesa",
+          ],
+          explica: "Pronúncia: PO-sho.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Jamón\"?",
+          certa: "Presunto",
+          erradas: [
+            "Batata frita",
+            "Salada de maionese com batata",
+            "Tripa de boi grelhada",
+          ],
+          explica: "Pronúncia: rra-MON.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Panceta\"?",
+          certa: "Bacon, toucinho",
+          erradas: [
+            "Cebola",
+            "Abóbora",
+            "Filé-mignon",
+          ],
+          explica: "Pronúncia: pan-SE-ta.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Rabas\"?",
+          certa: "Anéis de lula empanados",
+          erradas: [
+            "Queijo provolone na chapa",
+            "Linguiça",
+            "Bacon, toucinho",
+          ],
+          explica: "Pronúncia: RRA-bas.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Ensalada rusa\"?",
+          certa: "Salada de maionese com batata",
+          erradas: [
+            "Alho",
+            "Pêssego",
+            "Pudim com doce de leite",
+          ],
+          explica: "Pronúncia: en-sa-LA-da RRU-sa.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Papas fritas\"?",
+          certa: "Batata frita",
+          erradas: [
+            "Rim",
+            "Frango",
+            "Milho",
+          ],
+          explica: "Pronúncia: PA-pas FRI-tas.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Zapallo\"?",
+          certa: "Abóbora",
+          erradas: [
+            "Contrafilé",
+            "Misto-quente",
+            "Tripa de boi grelhada",
+          ],
+          explica: "Pronúncia: sa-PA-sho.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Choclo\"?",
+          certa: "Milho",
+          erradas: [
+            "Frango",
+            "Moleja (miúdo)",
+            "Prato do dia",
+          ],
+          explica: "Pronúncia: TCHO-klo.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Morrón\"?",
+          certa: "Pimentão",
+          erradas: [
+            "Costela em tiras",
+            "Linguiça",
+            "Fraldinha",
+          ],
+          explica: "Pronúncia: mo-RRON.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Cebolla\"?",
+          certa: "Cebola",
+          erradas: [
+            "Queijo com doce de marmelo (ou batata-doce)",
+            "Sobremesa",
+            "Cachorro-quente",
+          ],
+          explica: "Pronúncia: se-BO-sha.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Ajo\"?",
+          certa: "Alho",
+          erradas: [
+            "Vazio (corte da região da barriga)",
+            "Pratos rápidos, como milanesa e hambúrguer",
+            "Anéis de lula empanados",
+          ],
+          explica: "Pronúncia: A-rro.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Manteca\"?",
+          certa: "Manteiga",
+          erradas: [
+            "Morango",
+            "Filé-mignon",
+            "Contrafilé",
+          ],
+          explica: "Pronúncia: man-TE-ka.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Tostado\"?",
+          certa: "Misto-quente",
+          erradas: [
+            "Batata frita",
+            "Prato do dia",
+            "Sobremesa",
+          ],
+          explica: "Pronúncia: tos-TA-do.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Pancho\"?",
+          certa: "Cachorro-quente",
+          erradas: [
+            "Vazio (corte da região da barriga)",
+            "Tripa de boi grelhada",
+            "Rolo recheado de carne ou frango, na brasa",
+          ],
+          explica: "Pronúncia: PAN-tcho.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Refresco\"?",
+          certa: "Refrigerante",
+          erradas: [
+            "Pimentão",
+            "Pratos rápidos, como milanesa e hambúrguer",
+            "Sobremesa",
+          ],
+          explica: "Pronúncia: rre-FRES-ko.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Postre\"?",
+          certa: "Sobremesa",
+          erradas: [
+            "Presunto",
+            "Rolo recheado de carne ou frango, na brasa",
+            "Salada de maionese com batata",
+          ],
+          explica: "Pronúncia: POS-tre.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Flan con dulce de leche\"?",
+          certa: "Pudim com doce de leite",
+          erradas: [
+            "Morcela (linguiça de sangue)",
+            "Maminha",
+            "Pimentão",
+          ],
+          explica: "Pronúncia: FLAN kon DUL-se de LE-tche.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Martín Fierro\"?",
+          certa: "Queijo com doce de marmelo (ou batata-doce)",
+          erradas: [
+            "Batata frita",
+            "Milho",
+            "Cebola",
+          ],
+          explica: "Pronúncia: mar-TIN FIE-rro.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Frutilla\"?",
+          certa: "Morango",
+          erradas: [
+            "Abóbora",
+            "Anéis de lula empanados",
+            "Filé-mignon",
+          ],
+          explica: "Pronúncia: fru-TI-sha.",
+        },
+        {
+          pergunta: "No cardápio, o que é \"Durazno\"?",
+          certa: "Pêssego",
+          erradas: [
+            "Maminha",
+            "Presunto",
+            "Manteiga",
+          ],
+          explica: "Pronúncia: du-RAS-no.",
+        },
+        {
+          pergunta: "Chegando ao Uruguai: como se diz \"Não tenho nada a declarar\"?",
+          certa: "No tengo nada que declarar",
+          erradas: [
+            "¿Cuántos días se queda?",
+            "¿Dónde están los taxis?",
+            "No llegó mi valija",
+          ],
+          explica: "Pronúncia: no TEN-go NA-da ke de-kla-RAR.",
+        },
+        {
+          pergunta: "Chegando ao Uruguai: como se diz \"Onde pego o ônibus para o centro?\"?",
+          certa: "¿Dónde se toma el ómnibus al centro?",
+          erradas: [
+            "Me quedo una semana",
+            "Su documento, por favor",
+            "No llegó mi valija",
+          ],
+          explica: "Pronúncia: DON-de se TO-ma el OM-ni-bus al SEN-tro?.",
+        },
+        {
+          pergunta: "Chegando ao Uruguai: como se diz \"Onde retiro o carro alugado?\"?",
+          certa: "¿Dónde retiro el auto alquilado?",
+          erradas: [
+            "¿Cuánto sale un taxi a Montevideo?",
+            "¿Dónde se aloja?",
+            "¿Este ómnibus va a Punta del Este?",
+          ],
+          explica: "Pronúncia: DON-de rre-TI-ro el AU-to al-ki-LA-do?.",
+        },
+        {
+          pergunta: "Chegando ao Uruguai: como se diz \"Preciso trocar dinheiro\"?",
+          certa: "Necesito cambiar plata",
+          erradas: [
+            "Su documento, por favor",
+            "Estoy en un hotel en Montevideo",
+            "¿Dónde están los taxis?",
+          ],
+          explica: "Pronúncia: ne-se-SI-to kam-BIAR PLA-ta.",
+        },
+        {
+          pergunta: "Chegando ao Uruguai: como se diz \"Estou em um hotel em Montevidéu\"?",
+          certa: "Estoy en un hotel en Montevideo",
+          erradas: [
+            "¿Cuánto sale un taxi a Montevideo?",
+            "Necesito cambiar plata",
+            "No tengo nada que declarar",
+          ],
+          explica: "Pronúncia: es-TOI en un o-TEL en mon-te-bi-DE-o.",
+        },
+        {
+          pergunta: "O que vão te dizer: como se diz \"Pegue esta rua\"?",
+          certa: "Agarrá por esta calle",
+          erradas: [
+            "¿Para acá o para llevar?",
+            "Hay que esperar un rato",
+            "¿Qué vas a tomar?",
+          ],
+          explica: "Pronúncia: a-ga-RRÁ por ES-ta KA-she.",
+        },
+        {
+          pergunta: "O que vão te dizer: como se diz \"Primeira vez no Uruguai?\"?",
+          certa: "¿Primera vez en Uruguay?",
+          erradas: [
+            "¿No tenés más chico?",
+            "¿Algo más?",
+            "Hay que esperar un rato",
+          ],
+          explica: "Pronúncia: pri-ME-ra BES en u-ru-GUAI?.",
+        },
+        {
+          pergunta: "O que vão te dizer: como se diz \"Pode falar / Pois não\"?",
+          certa: "Decime",
+          erradas: [
+            "No nos queda más",
+            "¿Mesa para cuántos?",
+            "¿Débito o crédito?",
+          ],
+          explica: "Pronúncia: de-SI-me.",
+        },
+        {
+          pergunta: "O que vão te dizer: como se diz \"Precisa esperar um pouco\"?",
+          certa: "Hay que esperar un rato",
+          erradas: [
+            "No nos queda más",
+            "¿No tenés más chico?",
+            "¿Para acá o para llevar?",
+          ],
+          explica: "Pronúncia: AI ke es-pe-RAR un RRA-to.",
+        },
+        {
+          pergunta: "O que vão te dizer: como se diz \"Posso ajudar em algo?\"?",
+          certa: "¿Te ayudo en algo?",
+          erradas: [
+            "Pasando el semáforo",
+            "¿Qué vas a tomar?",
+            "¿Para acá o para llevar?",
+          ],
+          explica: "Pronúncia: te a-SHU-do en AL-go?.",
+        },
+        {
+          pergunta: "Básico: como se diz \"Você fala português?\"?",
+          certa: "¿Hablás portugués?",
+          erradas: [
+            "Muchas gracias",
+            "No entiendo",
+            "No hablo bien español",
+          ],
+          explica: "Pronúncia: a-BLÁS por-tu-GUÉS?.",
+        },
+        {
+          pergunta: "Básico: como se diz \"Bom dia\"?",
+          certa: "Buen día",
+          erradas: [
+            "De nada",
+            "Chau, gracias",
+            "No hablo bien español",
+          ],
+          explica: "Pronúncia: BUEN DI-a.",
+        },
+        {
+          pergunta: "Básico: como se diz \"Não falo bem espanhol\"?",
+          certa: "No hablo bien español",
+          erradas: [
+            "¿Me lo podés repetir más despacio?",
+            "De nada",
+            "Ta",
+          ],
+          explica: "Pronúncia: no A-blo BIEN es-pa-NHOL.",
+        },
+        {
+          pergunta: "Básico: como se diz \"Oi, tudo bem?\"?",
+          certa: "Hola, ¿qué tal?",
+          erradas: [
+            "Ta",
+            "No hablo bien español",
+            "¿Hablás portugués?",
+          ],
+          explica: "Pronúncia: O-la, KE TAL?.",
+        },
+        {
+          pergunta: "Básico: como se diz \"Ok / Beleza / Entendi\"?",
+          certa: "Ta",
+          erradas: [
+            "No entiendo",
+            "¿Hablás portugués?",
+            "Chau, gracias",
+          ],
+          explica: "Pronúncia: TA.",
+        },
+        {
+          pergunta: "Comer & beber: como se diz \"A conta, por favor\"?",
+          certa: "La cuenta, por favor",
+          erradas: [
+            "Para mí, la carne a punto",
+            "¿Me traés la carta?",
+            "Un cortado, por favor",
+          ],
+          explica: "Pronúncia: la KUEN-ta, por fa-BOR.",
+        },
+        {
+          pergunta: "Comer & beber: como se diz \"A gorjeta está incluída?\"?",
+          certa: "¿La propina está incluida?",
+          erradas: [
+            "Para llevar, por favor",
+            "La cuenta, por favor",
+            "Sin gluten, por favor",
+          ],
+          explica: "Pronúncia: la pro-PI-na es-TÁ in-klu-I-da?.",
+        },
+        {
+          pergunta: "Comer & beber: como se diz \"O que você recomenda?\"?",
+          certa: "¿Qué me recomendás?",
+          erradas: [
+            "Una mesa para dos, por favor",
+            "¡Estaba exquisito!",
+            "Para llevar, por favor",
+          ],
+          explica: "Pronúncia: KE me rre-ko-men-DÁS?.",
+        },
+        {
+          pergunta: "Comer & beber: como se diz \"Uma mesa para dois, por favor\"?",
+          certa: "Una mesa para dos, por favor",
+          erradas: [
+            "¿Me traés la sal?",
+            "La cuenta, por favor",
+            "Quiero un chivito al plato",
+          ],
+          explica: "Pronúncia: U-na ME-sa PA-ra DOS, por fa-BOR.",
+        },
+        {
+          pergunta: "Comer & beber: como se diz \"Pra viagem, por favor\"?",
+          certa: "Para llevar, por favor",
+          erradas: [
+            "Para mí, la carne a punto",
+            "¿Me traés la sal?",
+            "Quiero un chivito al plato",
+          ],
+          explica: "Pronúncia: PA-ra she-BAR, por fa-BOR.",
+        },
+        {
+          pergunta: "Café & padaria: como se diz \"O que tem para comer?\"?",
+          certa: "¿Qué tenés para comer?",
+          erradas: [
+            "Dos medialunas, por favor",
+            "Un café chico, por favor",
+            "¿Tenés edulcorante?",
+          ],
+          explica: "Pronúncia: KE te-NÉS PA-ra ko-MER?.",
+        },
+        {
+          pergunta: "Café & padaria: como se diz \"Pode esquentar isto?\"?",
+          certa: "¿Me calentás esto?",
+          erradas: [
+            "Un submarino, por favor",
+            "Un café con leche",
+            "Un café sin azúcar",
+          ],
+          explica: "Pronúncia: me ka-len-TÁS ES-to?.",
+        },
+        {
+          pergunta: "Café & padaria: como se diz \"Um café pequeno, por favor\"?",
+          certa: "Un café chico, por favor",
+          erradas: [
+            "¿Tenés bizcochos?",
+            "Dos medialunas, por favor",
+            "¿Me calentás esto?",
+          ],
+          explica: "Pronúncia: un ka-FÉ TCHI-ko, por fa-BOR.",
+        },
+        {
+          pergunta: "Café & padaria: como se diz \"Um submarino, por favor\"?",
+          certa: "Un submarino, por favor",
+          erradas: [
+            "Un café con leche",
+            "Un tostado de jamón y queso",
+            "Dos medialunas, por favor",
+          ],
+          explica: "Pronúncia: un sub-ma-RI-no, por fa-BOR.",
+        },
+        {
+          pergunta: "Café & padaria: como se diz \"Tem bizcochos?\"?",
+          certa: "¿Tenés bizcochos?",
+          erradas: [
+            "Un tostado de jamón y queso",
+            "Un submarino, por favor",
+            "¿Puedo sentarme acá?",
+          ],
+          explica: "Pronúncia: te-NÉS bis-KO-tchos?.",
+        },
+        {
+          pergunta: "Mercado & feira: como se diz \"Tem um mercadinho por aqui?\"?",
+          certa: "¿Hay un almacén por acá?",
+          erradas: [
+            "¿Está fresco?",
+            "Un kilo de manzanas",
+            "¿Dónde pago?",
+          ],
+          explica: "Pronúncia: AI un al-ma-SEN por a-KÁ?.",
+        },
+        {
+          pergunta: "Mercado & feira: como se diz \"Um quilo de maçãs\"?",
+          certa: "Un kilo de manzanas",
+          erradas: [
+            "¿Dónde está la leche?",
+            "¿Querés bolsa?",
+            "¿Hay un almacén por acá?",
+          ],
+          explica: "Pronúncia: un KI-lo de man-SA-nas.",
+        },
+        {
+          pergunta: "Mercado & feira: como se diz \"Onde tem uma feira?\"?",
+          certa: "¿Dónde hay una feria?",
+          erradas: [
+            "¿Hay un almacén por acá?",
+            "¿Querés bolsa?",
+            "¿Venden yerba?",
+          ],
+          explica: "Pronúncia: DON-de AI U-na FE-ria?.",
+        },
+        {
+          pergunta: "Mercado & feira: como se diz \"Cem gramas de presunto\"?",
+          certa: "Cien gramos de jamón",
+          erradas: [
+            "¿Dónde hay una feria?",
+            "Medio kilo de tomates, por favor",
+            "¿Querés bolsa?",
+          ],
+          explica: "Pronúncia: SIEN GRA-mos de rra-MON.",
+        },
+        {
+          pergunta: "Mercado & feira: como se diz \"Está fresco?\"?",
+          certa: "¿Está fresco?",
+          erradas: [
+            "¿Dónde hay una feria?",
+            "¿Hasta qué hora abren?",
+            "¿Hay un almacén por acá?",
+          ],
+          explica: "Pronúncia: es-TÁ FRES-ko?.",
+        },
+        {
+          pergunta: "Direções: como se diz \"Me mostra no mapa?\"?",
+          certa: "¿Me lo mostrás en el mapa?",
+          erradas: [
+            "¿Se puede ir caminando?",
+            "A dos cuadras",
+            "En la esquina",
+          ],
+          explica: "Pronúncia: me lo mos-TRÁS en el MA-pa?.",
+        },
+        {
+          pergunta: "Direções: como se diz \"Como chego na Rambla?\"?",
+          certa: "¿Cómo llego a la Rambla?",
+          erradas: [
+            "¿Se puede ir caminando?",
+            "A dos cuadras",
+            "En la esquina",
+          ],
+          explica: "Pronúncia: KO-mo SHE-go a la RRAM-bla?.",
+        },
+        {
+          pergunta: "Direções: como se diz \"Dá pra ir a pé?\"?",
+          certa: "¿Se puede ir caminando?",
+          erradas: [
+            "En la esquina",
+            "¿Cómo llego a la Rambla?",
+            "¿Para qué lado queda?",
+          ],
+          explica: "Pronúncia: se PUE-de IR ka-mi-NAN-do?.",
+        },
+        {
+          pergunta: "Direções: como se diz \"Pra que lado fica?\"?",
+          certa: "¿Para qué lado queda?",
+          erradas: [
+            "¿Me lo mostrás en el mapa?",
+            "¿Cómo llego a la Rambla?",
+            "A dos cuadras",
+          ],
+          explica: "Pronúncia: PA-ra KE LA-do KE-da?.",
+        },
+        {
+          pergunta: "Direções: como se diz \"A duas quadras\"?",
+          certa: "A dos cuadras",
+          erradas: [
+            "¿Cómo llego a la Rambla?",
+            "¿Me lo mostrás en el mapa?",
+            "Todo derecho",
+          ],
+          explica: "Pronúncia: a DOS KUA-dras.",
+        },
+        {
+          pergunta: "Banheiro: como se diz \"Está ocupado?\"?",
+          certa: "¿Está ocupado?",
+          erradas: [
+            "¿Me das la llave del baño?",
+            "¿Hay que pagar?",
+            "¿Dónde está el baño?",
+          ],
+          explica: "Pronúncia: es-TÁ o-ku-PA-do?.",
+        },
+        {
+          pergunta: "Banheiro: como se diz \"Precisa pagar?\"?",
+          certa: "¿Hay que pagar?",
+          erradas: [
+            "¿Hay un baño público por acá?",
+            "No hay papel",
+            "¿Puedo usar el baño?",
+          ],
+          explica: "Pronúncia: AI ke pa-GAR?.",
+        },
+        {
+          pergunta: "Banheiro: como se diz \"Me dá a chave do banheiro?\"?",
+          certa: "¿Me das la llave del baño?",
+          erradas: [
+            "¿Dónde está el baño?",
+            "¿Hay que pagar?",
+            "No hay papel",
+          ],
+          explica: "Pronúncia: me DAS la SHA-be del BA-nho?.",
+        },
+        {
+          pergunta: "Banheiro: como se diz \"Tem banheiro público por aqui?\"?",
+          certa: "¿Hay un baño público por acá?",
+          erradas: [
+            "¿Me das la llave del baño?",
+            "¿Está ocupado?",
+            "¿Dónde está el baño?",
+          ],
+          explica: "Pronúncia: AI un BA-nho PU-bli-ko por a-KÁ?.",
+        },
+        {
+          pergunta: "Banheiro: como se diz \"Onde fica o banheiro?\"?",
+          certa: "¿Dónde está el baño?",
+          erradas: [
+            "¿Está ocupado?",
+            "No hay papel",
+            "¿Hay que pagar?",
+          ],
+          explica: "Pronúncia: DON-de es-TÁ el BA-nho?.",
+        },
+        {
+          pergunta: "Fotos: como se diz \"Pode tirar foto aqui?\"?",
+          certa: "¿Se pueden sacar fotos acá?",
+          erradas: [
+            "Una más, por favor",
+            "¿Te saco una foto yo?",
+            "Apretá acá",
+          ],
+          explica: "Pronúncia: se PUE-den sa-KAR FO-tos a-KÁ?.",
+        },
+        {
+          pergunta: "Fotos: como se diz \"Pode tirar uma foto minha?\"?",
+          certa: "¿Me sacás una foto?",
+          erradas: [
+            "Sacá varias, por favor",
+            "¿Nos sacás una foto, por favor?",
+            "Que se vea el fondo",
+          ],
+          explica: "Pronúncia: me sa-KÁS U-na FO-to?.",
+        },
+        {
+          pergunta: "Fotos: como se diz \"Tira várias, por favor\"?",
+          certa: "Sacá varias, por favor",
+          erradas: [
+            "Apretá acá",
+            "¿Te saco una foto yo?",
+            "¿Nos sacás una foto, por favor?",
+          ],
+          explica: "Pronúncia: sa-KÁ BA-rias, por fa-BOR.",
+        },
+        {
+          pergunta: "Fotos: como se diz \"Mais uma, por favor\"?",
+          certa: "Una más, por favor",
+          erradas: [
+            "¿Nos sacás una foto, por favor?",
+            "Que se vea el fondo",
+            "Apretá acá",
+          ],
+          explica: "Pronúncia: U-na MAS, por fa-BOR.",
+        },
+        {
+          pergunta: "Fotos: como se diz \"Que apareça o fundo\"?",
+          certa: "Que se vea el fondo",
+          erradas: [
+            "Apretá acá",
+            "¿Me sacás una foto?",
+            "¿Te saco una foto yo?",
+          ],
+          explica: "Pronúncia: ke se BE-a el FON-do.",
+        },
+        {
+          pergunta: "Passeios: como se diz \"Tem desconto pra estudante?\"?",
+          certa: "¿Hay descuento para estudiantes?",
+          erradas: [
+            "¿Qué me recomendás visitar?",
+            "¿Qué hay para hacer por acá?",
+            "¿Es seguro caminar por acá de noche?",
+          ],
+          explica: "Pronúncia: AI des-KUEN-to PA-ra es-tu-DIAN-tes?.",
+        },
+        {
+          pergunta: "Passeios: como se diz \"Onde fica o posto de informações turísticas?\"?",
+          certa: "¿Dónde está la oficina de turismo?",
+          erradas: [
+            "¿Es seguro caminar por acá de noche?",
+            "¿Está abierto hoy?",
+            "¿Qué hay para hacer por acá?",
+          ],
+          explica: "Pronúncia: DON-de es-TÁ la o-fi-SI-na de tu-RIS-mo?.",
+        },
+        {
+          pergunta: "Passeios: como se diz \"Tem visita guiada?\"?",
+          certa: "¿Hay visitas guiadas?",
+          erradas: [
+            "¿Qué me recomendás visitar?",
+            "¿Dónde está la oficina de turismo?",
+            "¿Hay descuento para estudiantes?",
+          ],
+          explica: "Pronúncia: AI bi-SI-tas GUIA-das?.",
+        },
+        {
+          pergunta: "Passeios: como se diz \"Quanto custa a entrada?\"?",
+          certa: "¿Cuánto sale la entrada?",
+          erradas: [
+            "¿Hay visitas guiadas?",
+            "¿Dónde está la oficina de turismo?",
+            "¿Es seguro caminar por acá de noche?",
+          ],
+          explica: "Pronúncia: KUAN-to SA-le la en-TRA-da?.",
+        },
+        {
+          pergunta: "Passeios: como se diz \"Está aberto hoje?\"?",
+          certa: "¿Está abierto hoy?",
+          erradas: [
+            "¿Hay visitas guiadas?",
+            "¿Qué hay para hacer por acá?",
+            "Dos entradas, por favor",
+          ],
+          explica: "Pronúncia: es-TÁ a-BIER-to OI?.",
+        },
+        {
+          pergunta: "Compras & pagamento: como se diz \"Me dá um desconto?\"?",
+          certa: "¿Me das un descuento?",
+          erradas: [
+            "¿Tenés otro talle?",
+            "Está salado",
+            "Solo estoy mirando, gracias",
+          ],
+          explica: "Pronúncia: me DAS un des-KUEN-to?.",
+        },
+        {
+          pergunta: "Compras & pagamento: como se diz \"Me dá uma sacola?\"?",
+          certa: "¿Me das una bolsa?",
+          erradas: [
+            "¿Aceptan tarjeta?",
+            "Con tarjeta extranjera, ¿me descuentan el IVA?",
+            "¿Me das un descuento?",
+          ],
+          explica: "Pronúncia: me DAS U-na BOL-sa?.",
+        },
+        {
+          pergunta: "Compras & pagamento: como se diz \"Vou levar\"?",
+          certa: "Me lo llevo",
+          erradas: [
+            "¿Aceptan tarjeta?",
+            "¿Me das una bolsa?",
+            "¿Cuánto sale?",
+          ],
+          explica: "Pronúncia: me lo SHE-bo.",
+        },
+        {
+          pergunta: "Compras & pagamento: como se diz \"Tem outro tamanho?\"?",
+          certa: "¿Tenés otro talle?",
+          erradas: [
+            "Está salado",
+            "¿Cuánto sale?",
+            "Solo estoy mirando, gracias",
+          ],
+          explica: "Pronúncia: te-NÉS O-tro TA-she?.",
+        },
+        {
+          pergunta: "Compras & pagamento: como se diz \"Com cartão estrangeiro tem desconto do IVA?\"?",
+          certa: "Con tarjeta extranjera, ¿me descuentan el IVA?",
+          erradas: [
+            "Solo estoy mirando, gracias",
+            "¿Me das un descuento?",
+            "Está salado",
+          ],
+          explica: "Pronúncia: kon tar-RRE-ta eks-tran-RRE-ra, me des-KUEN-tan el I-ba?.",
+        },
+        {
+          pergunta: "Câmbio & dinheiro: como se diz \"A quanto está o real?\"?",
+          certa: "¿A cuánto está el real?",
+          erradas: [
+            "¿Tenés cambio?",
+            "¿Dónde hay una casa de cambio?",
+            "¿Cobran comisión?",
+          ],
+          explica: "Pronúncia: a KUAN-to es-TÁ el rre-AL?.",
+        },
+        {
+          pergunta: "Câmbio & dinheiro: como se diz \"Tem troco?\"?",
+          certa: "¿Tenés cambio?",
+          erradas: [
+            "¿Cuánto es en pesos?",
+            "¿A cuánto está el dólar?",
+            "¿Dónde hay un cajero?",
+          ],
+          explica: "Pronúncia: te-NÉS KAM-bio?.",
+        },
+        {
+          pergunta: "Câmbio & dinheiro: como se diz \"Cobram comissão?\"?",
+          certa: "¿Cobran comisión?",
+          erradas: [
+            "¿A cuánto está el real?",
+            "¿Puedo cambiar reales acá?",
+            "¿A cuánto está el dólar?",
+          ],
+          explica: "Pronúncia: KO-bran ko-mi-SION?.",
+        },
+        {
+          pergunta: "Câmbio & dinheiro: como se diz \"Notas pequenas, por favor\"?",
+          certa: "Billetes chicos, por favor",
+          erradas: [
+            "¿Podemos pagar por separado?",
+            "¿Dónde hay una casa de cambio?",
+            "Creo que me falta cambio",
+          ],
+          explica: "Pronúncia: bi-SHE-tes TCHI-kos, por fa-BOR.",
+        },
+        {
+          pergunta: "Câmbio & dinheiro: como se diz \"Quanto dá em pesos?\"?",
+          certa: "¿Cuánto es en pesos?",
+          erradas: [
+            "Creo que me falta cambio",
+            "¿El precio es en pesos o en dólares?",
+            "¿Puedo cambiar reales acá?",
+          ],
+          explica: "Pronúncia: KUAN-to ES en PE-sos?.",
+        },
+        {
+          pergunta: "Transporte: como se diz \"Me avisa quando a gente chegar?\"?",
+          certa: "¿Me avisás cuando lleguemos?",
+          erradas: [
+            "Un boleto, por favor",
+            "¿Cuánto sale hasta el centro?",
+            "¿Me parás acá, por favor?",
+          ],
+          explica: "Pronúncia: me a-bi-SÁS KUAN-do she-GUE-mos?.",
+        },
+        {
+          pergunta: "Transporte: como se diz \"Quanto custa até o centro?\"?",
+          certa: "¿Cuánto sale hasta el centro?",
+          erradas: [
+            "¿A qué hora sale el próximo?",
+            "Al aeropuerto, por favor",
+            "¿Me parás acá, por favor?",
+          ],
+          explica: "Pronúncia: KUAN-to SA-le AS-ta el SEN-tro?.",
+        },
+        {
+          pergunta: "Transporte: como se diz \"Para o aeroporto, por favor\"?",
+          certa: "Al aeropuerto, por favor",
+          erradas: [
+            "¿Cuánto sale hasta el centro?",
+            "Un boleto, por favor",
+            "¿A qué hora sale el próximo?",
+          ],
+          explica: "Pronúncia: al a-e-ro-PUER-to, por fa-BOR.",
+        },
+        {
+          pergunta: "Transporte: como se diz \"Pode parar aqui, por favor?\"?",
+          certa: "¿Me parás acá, por favor?",
+          erradas: [
+            "¿Me avisás cuando lleguemos?",
+            "Un boleto, por favor",
+            "¿A qué hora sale el próximo?",
+          ],
+          explica: "Pronúncia: me pa-RÁS a-KÁ, por fa-BOR?.",
+        },
+        {
+          pergunta: "Transporte: como se diz \"Que horas sai o próximo?\"?",
+          certa: "¿A qué hora sale el próximo?",
+          erradas: [
+            "Un boleto, por favor",
+            "Terminal Tres Cruces",
+            "¿Me avisás cuando lleguemos?",
+          ],
+          explica: "Pronúncia: a KE O-ra SA-le el PROK-si-mo?.",
+        },
+        {
+          pergunta: "Hospedagem: como se diz \"O ar-condicionado não funciona\"?",
+          certa: "No funciona el aire acondicionado",
+          erradas: [
+            "No hay agua caliente",
+            "¿Me pedís un taxi?",
+            "¿Cuál es la clave del wifi?",
+          ],
+          explica: "Pronúncia: no fun-SIO-na el AI-re a-kon-di-sio-NA-do.",
+        },
+        {
+          pergunta: "Hospedagem: como se diz \"O wi-fi não funciona\"?",
+          certa: "El wifi no anda",
+          erradas: [
+            "No hay agua caliente",
+            "¿Puedo dejar las valijas?",
+            "¿El desayuno está incluido?",
+          ],
+          explica: "Pronúncia: el UAI-fai no AN-da.",
+        },
+        {
+          pergunta: "Hospedagem: como se diz \"Que horas é o check-out?\"?",
+          certa: "¿A qué hora es el check-out?",
+          erradas: [
+            "El wifi no anda",
+            "No funciona el aire acondicionado",
+            "¿Me pedís un taxi?",
+          ],
+          explica: "Pronúncia: a KE O-ra ES el tchek-AUT?.",
+        },
+        {
+          pergunta: "Hospedagem: como se diz \"Qual é a senha do wi-fi?\"?",
+          certa: "¿Cuál es la clave del wifi?",
+          erradas: [
+            "No hay agua caliente",
+            "¿Me traés más toallas?",
+            "¿Me pedís un taxi?",
+          ],
+          explica: "Pronúncia: KUAL ES la KLA-be del UAI-fai?.",
+        },
+        {
+          pergunta: "Hospedagem: como se diz \"O café da manhã está incluído?\"?",
+          certa: "¿El desayuno está incluido?",
+          erradas: [
+            "¿Me traés más toallas?",
+            "El wifi no anda",
+            "¿Cuál es la clave del wifi?",
+          ],
+          explica: "Pronúncia: el de-sa-SHU-no es-TÁ in-klu-I-do?.",
+        },
+        {
+          pergunta: "Posto de gasolina: como se diz \"Pode ver o óleo?\"?",
+          certa: "¿Me revisás el aceite?",
+          erradas: [
+            "¿Dónde puedo inflar las gomas?",
+            "¿Puedo pagar el peaje con tarjeta?",
+            "Poneme mil pesos de súper",
+          ],
+          explica: "Pronúncia: me rre-bi-SÁS el a-SEI-te?.",
+        },
+        {
+          pergunta: "Posto de gasolina: como se diz \"Quanto coloco?\"?",
+          certa: "¿Cuánto le pongo?",
+          erradas: [
+            "Este auto es a gasoil",
+            "¿Súper o premium?",
+            "¿Puedo pagar el peaje con tarjeta?",
+          ],
+          explica: "Pronúncia: KUAN-to le PON-go?.",
+        },
+        {
+          pergunta: "Posto de gasolina: como se diz \"Tem banheiro?\"?",
+          certa: "¿Tienen baño?",
+          erradas: [
+            "¿Me das el ticket?",
+            "¿Súper o premium?",
+            "Este auto es a gasoil",
+          ],
+          explica: "Pronúncia: TIE-nen BA-nho?.",
+        },
+        {
+          pergunta: "Posto de gasolina: como se diz \"Que gasolina este carro usa?\"?",
+          certa: "¿Qué nafta lleva este auto?",
+          erradas: [
+            "Poneme mil pesos de súper",
+            "¿Súper o premium?",
+            "¿Puedo pagar el peaje con tarjeta?",
+          ],
+          explica: "Pronúncia: KE NAF-ta SHE-ba ES-te AU-to?.",
+        },
+        {
+          pergunta: "Posto de gasolina: como se diz \"Coloca mil pesos de comum\"?",
+          certa: "Poneme mil pesos de súper",
+          erradas: [
+            "¿Puedo pagar el peaje con tarjeta?",
+            "¿Aceptan tarjeta extranjera?",
+            "Este auto es a gasoil",
+          ],
+          explica: "Pronúncia: po-NE-me MIL PE-sos de SU-per.",
+        },
+        {
+          pergunta: "Carro & estrada: como se diz \"Onde posso estacionar?\"?",
+          certa: "¿Dónde puedo estacionar?",
+          erradas: [
+            "Lleno de nafta, por favor",
+            "¿El seguro está incluido?",
+            "Se me pinchó una rueda",
+          ],
+          explica: "Pronúncia: DON-de PUE-do es-ta-sio-NAR?.",
+        },
+        {
+          pergunta: "Carro & estrada: como se diz \"O seguro está incluído?\"?",
+          certa: "¿El seguro está incluido?",
+          erradas: [
+            "¿Hay que pagar el estacionamiento?",
+            "¿Cuánto falta para el peaje?",
+            "Se me quedó el auto",
+          ],
+          explica: "Pronúncia: el se-GU-ro es-TÁ in-klu-I-do?.",
+        },
+        {
+          pergunta: "Carro & estrada: como se diz \"Devolvo com o tanque cheio?\"?",
+          certa: "¿Lo devuelvo con el tanque lleno?",
+          erradas: [
+            "Se me quedó el auto",
+            "Quiero alquilar un auto",
+            "Se me pinchó una rueda",
+          ],
+          explica: "Pronúncia: lo de-BUEL-bo kon el TAN-ke SHE-no?.",
+        },
+        {
+          pergunta: "Carro & estrada: como se diz \"Meu carro parou\"?",
+          certa: "Se me quedó el auto",
+          erradas: [
+            "Lleno de nafta, por favor",
+            "¿El seguro está incluido?",
+            "Se me pinchó una rueda",
+          ],
+          explica: "Pronúncia: se me ke-DÓ el AU-to.",
+        },
+        {
+          pergunta: "Carro & estrada: como se diz \"Furou um pneu\"?",
+          certa: "Se me pinchó una rueda",
+          erradas: [
+            "¿Hay que pagar el estacionamiento?",
+            "Lleno de nafta, por favor",
+            "Se me quedó el auto",
+          ],
+          explica: "Pronúncia: se me pin-TCHÓ U-na RRUE-da.",
+        },
+        {
+          pergunta: "Chip & internet: como se diz \"Minha internet não funciona\"?",
+          certa: "No me anda internet",
+          erradas: [
+            "¿Cómo lo recargo?",
+            "¿Dónde puedo cargar el celular?",
+            "¿Me prestás un cargador?",
+          ],
+          explica: "Pronúncia: no me AN-da in-ter-NET.",
+        },
+        {
+          pergunta: "Chip & internet: como se diz \"Me empresta um carregador?\"?",
+          certa: "¿Me prestás un cargador?",
+          erradas: [
+            "No me anda internet",
+            "¿Dónde puedo comprar un chip?",
+            "Me quedé sin batería",
+          ],
+          explica: "Pronúncia: me pres-TÁS un kar-ga-DOR?.",
+        },
+        {
+          pergunta: "Chip & internet: como se diz \"Fiquei sem bateria\"?",
+          certa: "Me quedé sin batería",
+          erradas: [
+            "¿Dónde puedo comprar un chip?",
+            "¿Hay wifi acá?",
+            "¿Dónde puedo cargar el celular?",
+          ],
+          explica: "Pronúncia: me ke-DÉ sin ba-te-RI-a.",
+        },
+        {
+          pergunta: "Chip & internet: como se diz \"Quero um chip com internet\"?",
+          certa: "Quiero un chip con datos",
+          erradas: [
+            "¿Dónde puedo comprar un chip?",
+            "¿Cómo lo recargo?",
+            "¿Me prestás un cargador?",
+          ],
+          explica: "Pronúncia: KIE-ro un TCHIP kon DA-tos.",
+        },
+        {
+          pergunta: "Chip & internet: como se diz \"Onde posso comprar um chip?\"?",
+          certa: "¿Dónde puedo comprar un chip?",
+          erradas: [
+            "¿Cómo lo recargo?",
+            "No me anda internet",
+            "Me quedé sin batería",
+          ],
+          explica: "Pronúncia: DON-de PUE-do kom-PRAR un TCHIP?.",
+        },
+        {
+          pergunta: "Praia: como se diz \"Dá pra nadar aqui?\"?",
+          certa: "¿Se puede nadar acá?",
+          erradas: [
+            "¿Dónde está el guardavidas?",
+            "¿Cuánto sale alquilar una reposera?",
+            "¿A qué hora se pone el sol?",
+          ],
+          explica: "Pronúncia: se PUE-de na-DAR a-KÁ?.",
+        },
+        {
+          pergunta: "Praia: como se diz \"Quanto custa alugar uma cadeira de praia?\"?",
+          certa: "¿Cuánto sale alquilar una reposera?",
+          erradas: [
+            "¿Cuánto sale alquilar una sombrilla?",
+            "¿El agua está fría?",
+            "Bandera roja: prohibido bañarse",
+          ],
+          explica: "Pronúncia: KUAN-to SA-le al-ki-LAR U-na rre-po-SE-ra?.",
+        },
+        {
+          pergunta: "Praia: como se diz \"A água está fria?\"?",
+          certa: "¿El agua está fría?",
+          erradas: [
+            "¿Se puede nadar acá?",
+            "¿A qué hora se pone el sol?",
+            "¿Cuánto sale alquilar una sombrilla?",
+          ],
+          explica: "Pronúncia: el A-gua es-TÁ FRI-a?.",
+        },
+        {
+          pergunta: "Praia: como se diz \"Onde fica o salva-vidas?\"?",
+          certa: "¿Dónde está el guardavidas?",
+          erradas: [
+            "¿Cuánto sale alquilar una sombrilla?",
+            "¿A qué hora se pone el sol?",
+            "Bandera roja: prohibido bañarse",
+          ],
+          explica: "Pronúncia: DON-de es-TÁ el guar-da-BI-das?.",
+        },
+        {
+          pergunta: "Praia: como se diz \"Que horas é o pôr do sol?\"?",
+          certa: "¿A qué hora se pone el sol?",
+          erradas: [
+            "¿Cuánto sale alquilar una reposera?",
+            "¿Dónde está el guardavidas?",
+            "¿Cuánto sale alquilar una sombrilla?",
+          ],
+          explica: "Pronúncia: a KE O-ra se PO-ne el SOL?.",
+        },
+        {
+          pergunta: "Emergência: como se diz \"Preciso de um médico\"?",
+          certa: "Necesito un médico",
+          erradas: [
+            "¿Dónde está el consulado de Brasil?",
+            "Me robaron",
+            "Me duele acá",
+          ],
+          explica: "Pronúncia: ne-se-SI-to un ME-di-ko.",
+        },
+        {
+          pergunta: "Emergência: como se diz \"Me roubaram\"?",
+          certa: "Me robaron",
+          erradas: [
+            "Me duele acá",
+            "¿Dónde hay una farmacia?",
+            "Quiero hacer una denuncia",
+          ],
+          explica: "Pronúncia: me rro-BA-ron.",
+        },
+        {
+          pergunta: "Emergência: como se diz \"Liga para o 911\"?",
+          certa: "Llamá al 911",
+          erradas: [
+            "¿Dónde hay una farmacia?",
+            "Quiero hacer una denuncia",
+            "¡Ayuda!",
+          ],
+          explica: "Pronúncia: sha-MÁ al NUE-be ON-se.",
+        },
+        {
+          pergunta: "Emergência: como se diz \"Dói aqui\"?",
+          certa: "Me duele acá",
+          erradas: [
+            "Quiero hacer una denuncia",
+            "¿Dónde hay una farmacia?",
+            "¡Ayuda!",
+          ],
+          explica: "Pronúncia: me DUE-le a-KÁ.",
+        },
+        {
+          pergunta: "Emergência: como se diz \"Quero fazer um boletim de ocorrência\"?",
+          certa: "Quiero hacer una denuncia",
+          erradas: [
+            "Me duele acá",
+            "¡Ayuda!",
+            "¿Dónde hay una farmacia?",
+          ],
+          explica: "Pronúncia: KIE-ro a-SER U-na de-NUN-sia.",
+        },
+        {
+          pergunta: "Farmácia & sintomas: como se diz \"Band-aid, por favor\"?",
+          certa: "Curitas, por favor",
+          erradas: [
+            "¿Cada cuántas horas lo tomo?",
+            "Me duele la cabeza",
+            "Tengo tos",
+          ],
+          explica: "Pronúncia: ku-RI-tas, por fa-BOR.",
+        },
+        {
+          pergunta: "Farmácia & sintomas: como se diz \"Tomo este remédio\"?",
+          certa: "Tomo esta medicación",
+          erradas: [
+            "Protector solar, por favor",
+            "¿Hay una farmacia de turno cerca?",
+            "Curitas, por favor",
+          ],
+          explica: "Pronúncia: TO-mo ES-ta me-di-ka-SION.",
+        },
+        {
+          pergunta: "Farmácia & sintomas: como se diz \"Estou com dor de dente\"?",
+          certa: "Me duele un diente",
+          erradas: [
+            "Me duele la cabeza",
+            "¿Necesito receta?",
+            "Protector solar, por favor",
+          ],
+          explica: "Pronúncia: me DUE-le un DIEN-te.",
+        },
+        {
+          pergunta: "Farmácia & sintomas: como se diz \"Me queimei de sol\"?",
+          certa: "Me quemé con el sol",
+          erradas: [
+            "Me duele la cabeza",
+            "Tengo tos",
+            "Me duele un diente",
+          ],
+          explica: "Pronúncia: me ke-MÉ kon el SOL.",
+        },
+        {
+          pergunta: "Farmácia & sintomas: como se diz \"Preciso de receita?\"?",
+          certa: "¿Necesito receta?",
+          erradas: [
+            "Tengo fiebre",
+            "Tengo tos",
+            "¿Hay una farmacia de turno cerca?",
+          ],
+          explica: "Pronúncia: ne-se-SI-to rre-SE-ta?.",
+        },
+        {
+          pergunta: "O que é um falso amigo perigoso no Rio da Prata?",
+          certa: "Coger",
+          erradas: [
+            "Tomar",
+            "Agarrar",
+            "Sacar",
+          ],
+          explica: "É vulgar por aqui. Use tomar ou agarrar.",
+        },
+        {
+          pergunta: "Como o ll de calle costuma soar no Uruguai?",
+          certa: "Como ch de chave",
+          erradas: [
+            "Como lh de filho",
+            "Como j de janela",
+            "Como l de lata",
+          ],
+          explica: "Calle soa como KA-she.",
+        },
+        {
+          pergunta: "Como o j de jamón soa?",
+          certa: "Como um rr soprado",
+          erradas: [
+            "Como j de janela",
+            "Como ch de chave",
+            "Como z de zebra",
+          ],
+          explica: "Jamón soa como rra-MON.",
+        },
+        {
+          pergunta: "Como o v de vino soa?",
+          certa: "Como b",
+          erradas: [
+            "Como v de vaca",
+            "Como f",
+            "Como w",
+          ],
+          explica: "Vino soa como BI-no.",
+        },
+        {
+          pergunta: "Como o ñ de baño soa?",
+          certa: "Como nh",
+          erradas: [
+            "Como n",
+            "Como ny separado",
+            "Como lh",
+          ],
+          explica: "Baño soa como BA-nho.",
+        },
+        {
+          pergunta: "Como o z de cerveza soa?",
+          certa: "Como s de sapo",
+          erradas: [
+            "Como z de zebra",
+            "Como ç de cabeça com a língua nos dentes",
+            "Como ch",
+          ],
+          explica: "Cerveza soa como ser-BE-sa.",
+        },
+        {
+          pergunta: "Qual forma de \"você tem\" é típica do Uruguai?",
+          certa: "Vos tenés",
+          erradas: [
+            "Tú tienes sempre",
+            "Vosotros tenéis",
+            "Usted tenés",
+          ],
+          explica: "Em Montevidéu também se ouve tú tenés.",
+        },
+        {
+          pergunta: "Qual pergunta é mais comum para saber o preço?",
+          certa: "¿Cuánto sale?",
+          erradas: [
+            "¿Cuánto vale la pena?",
+            "¿Qué precio tiene el señor?",
+            "¿A cuánto llega?",
+          ],
+          explica: "É mais comum do que ¿cuánto cuesta?",
+        },
+        {
+          pergunta: "Como se diz \"aqui\" no espanhol rioplatense?",
+          certa: "Acá",
+          erradas: [
+            "Aquí sempre",
+            "Allá",
+            "Ahí nomás",
+          ],
+          explica: "Acá é a forma comum por lá.",
+        },
+        {
+          pergunta: "O que você ouve quando dizem Decime?",
+          certa: "Pode falar",
+          erradas: [
+            "Me dê um dinheiro",
+            "Dê licença",
+            "Vá embora",
+          ],
+          explica: "É como o atendente pede o seu pedido.",
+        },
+        {
+          pergunta: "Como se chama garçom?",
+          certa: "Mozo",
+          erradas: [
+            "Botija",
+            "Pistero",
+            "Gurí",
+          ],
+          explica: "Para chamar, um disculpá resolve.",
+        },
+        {
+          pergunta: "O que é um almacén?",
+          certa: "Mercadinho de bairro",
+          erradas: [
+            "Armazém de carga",
+            "Loja de roupas",
+            "Farmácia",
+          ],
+          explica: "Bom para compras pequenas.",
+        },
+        {
+          pergunta: "O que é um submarino no café?",
+          certa: "Leite quente com chocolate",
+          erradas: [
+            "Café gelado",
+            "Sanduíche comprido",
+            "Chá de erva",
+          ],
+          explica: "A barra de chocolate vai dentro do leite.",
+        },
+        {
+          pergunta: "O que é um cortado?",
+          certa: "Café com um pouco de leite",
+          erradas: [
+            "Café sem açúcar",
+            "Corte de carne",
+            "Bolo fatiado",
+          ],
+          explica: "Pede-se: un cortado, por favor.",
+        },
+        {
+          pergunta: "O que significa dizer \"gracias\" na roda de mate?",
+          certa: "Que você não quer mais",
+          erradas: [
+            "Que quer mais mate",
+            "Que quer trocar a erva",
+            "Que está brindando",
+          ],
+          explica: "Dizer gracias significa que você não quer mais.",
+        },
+      ],
+    },
+    {
+      id: "lugares",
+      titulo: "Lugares & viagem",
+      icone: "🧭",
+      descricao: "Pontos, regiões, comidas e dicas práticas.",
+      perguntas: [
+        {
+          pergunta: "Que lugar é este: \"O grande teatro do país, aberto em 1856 com uma ópera de Verdi.\"",
+          certa: "Teatro Solís",
+          erradas: [
+            "Argentino Hotel",
+            "Faro de Punta del Este",
+            "Fortaleza General Artigas (Cerro)",
+          ],
+          explica: "Olhe a fachada de frente e depois as alas: o conjunto cresceu em etapas.",
+        },
+        {
+          pergunta: "Em que região fica Teatro Solís?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Punta del Este",
+            "Arredores de Punta",
+          ],
+          explica: "O grande teatro do país, aberto em 1856 com uma ópera de Verdi.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Nasceu em 1868 para vender frutas e verduras e virou o salão das parrillas.\"",
+          certa: "Mercado del Puerto",
+          erradas: [
+            "Monumento La Carreta",
+            "Plaza Independencia & Palacio Salvo",
+            "Avenida Gorlero",
+          ],
+          explica: "Antes de sentar, olhe pra cima: a estrutura de ferro é o verdadeiro monumento.",
+        },
+        {
+          pergunta: "Em que região fica Mercado del Puerto?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Arredores de Punta",
+            "Piriápolis",
+          ],
+          explica: "Nasceu em 1868 para vender frutas e verduras e virou o salão das parrillas.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Erguido às pressas para a primeira Copa do Mundo, em 1930.\"",
+          certa: "Estadio Centenario & Museo del Fútbol",
+          erradas: [
+            "Parque Rodó",
+            "Ciudad Vieja & Peatonal Sarandí",
+            "Teatro Solís",
+          ],
+          explica: "Procure a Torre de los Homenajes, com cerca de 100 metros: é a marca do estádio.",
+        },
+        {
+          pergunta: "Em que região fica Estadio Centenario & Museo del Fútbol?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Piriápolis",
+            "Punta del Este",
+          ],
+          explica: "Erguido às pressas para a primeira Copa do Mundo, em 1930.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Feita em seis dias em 1982, e a única daquele verão que ficou na praia.\"",
+          certa: "La Mano (Los Dedos) — Playa Brava",
+          erradas: [
+            "Playa Mansa x Playa Brava",
+            "Museo Nacional de Artes Visuales",
+            "Museo del Mar",
+          ],
+          explica: "Chegue perto para ver o tamanho dos dedos, e repare como a mão parece sair da areia.",
+        },
+        {
+          pergunta: "Em que região fica La Mano (Los Dedos) — Playa Brava?",
+          certa: "Punta del Este",
+          erradas: [
+            "Montevidéu",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "Feita em seis dias em 1982, e a única daquele verão que ficou na praia.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Uma cabana de tábuas que virou a casa-escultura de Páez Vilaró.\"",
+          certa: "Casapueblo (Punta Ballena)",
+          erradas: [
+            "Museo Torres García",
+            "Café Brasilero",
+            "Parque Rodó",
+          ],
+          explica: "Olhe as formas curvas e brancas: quase nada parece reto, e nada seguiu uma planta.",
+        },
+        {
+          pergunta: "Em que região fica Casapueblo (Punta Ballena)?",
+          certa: "Punta del Este",
+          erradas: [
+            "Montevidéu",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "Uma cabana de tábuas que virou a casa-escultura de Páez Vilaró.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A cidade murada de onde Montevidéu nasceu.\"",
+          certa: "Ciudad Vieja & Peatonal Sarandí",
+          erradas: [
+            "Iglesia de la Candelaria",
+            "Catedral de San Fernando",
+            "La Mano (Los Dedos) — Playa Brava",
+          ],
+          explica: "Ande pela Sarandí olhando para cima: as fachadas contam mais do que as vitrines.",
+        },
+        {
+          pergunta: "Em que região fica Ciudad Vieja & Peatonal Sarandí?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "A cidade murada de onde Montevidéu nasceu.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Cerca de 22 km de calçadão, feitos em etapas ao longo de décadas.\"",
+          certa: "Rambla",
+          erradas: [
+            "El Prado",
+            "Faro de Punta del Este",
+            "Laguna del Sauce",
+          ],
+          explica: "Observe quem usa a Rambla no fim da tarde: é a sala de estar da cidade.",
+        },
+        {
+          pergunta: "Em que região fica Rambla?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "Cerca de 22 km de calçadão, feitos em etapas ao longo de décadas.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O coração cívico da cidade, com Artigas e um arranha-céu de 1928.\"",
+          certa: "Plaza Independencia & Palacio Salvo",
+          erradas: [
+            "Catedral de San Fernando",
+            "Arboretum Lussich",
+            "Hotel Carrasco",
+          ],
+          explica: "Desça ao mausoléu e depois olhe o Salvo do meio da praça.",
+        },
+        {
+          pergunta: "Em que região fica Plaza Independencia & Palacio Salvo?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Piriápolis",
+            "Punta del Este",
+          ],
+          explica: "O coração cívico da cidade, com Artigas e um arranha-céu de 1928.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A feira de domingo que chegou aqui em 1909.\"",
+          certa: "Feria de Tristán Narvaja",
+          erradas: [
+            "Feria de Artesanos — Plaza Artigas",
+            "Laguna del Sauce",
+            "Playa Mansa x Playa Brava",
+          ],
+          explica: "Vá até as bancas de livros e antiguidades: é onde a feira mostra quanto mudou.",
+        },
+        {
+          pergunta: "Em que região fica Feria de Tristán Narvaja?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Arredores de Punta",
+            "Punta del Este",
+          ],
+          explica: "A feira de domingo que chegou aqui em 1909.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O nome vem dos pocinhos que as lavadeiras cavavam na areia.\"",
+          certa: "Pocitos",
+          erradas: [
+            "Faro de José Ignacio",
+            "Fundación Atchugarry & MACA",
+            "Parque Rodó",
+          ],
+          explica: "Olhe a linha de prédios na frente da praia e tente imaginar aqui um povoado à parte.",
+        },
+        {
+          pergunta: "Em que região fica Pocitos?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "O nome vem dos pocinhos que as lavadeiras cavavam na areia.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Murga e candombe num antigo depósito de trens perto do porto.\"",
+          certa: "Museo del Carnaval",
+          erradas: [
+            "Iglesia de la Candelaria",
+            "Café Brasilero",
+            "Puerto de Punta del Este",
+          ],
+          explica: "Procure a parte dos tablados: eram os palcos populares de bairro do carnaval.",
+        },
+        {
+          pergunta: "Em que região fica Museo del Carnaval?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Punta del Este",
+            "Arredores de Punta",
+          ],
+          explica: "Murga e candombe num antigo depósito de trens perto do porto.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Uma quinta particular do século 19 que virou parque público.\"",
+          certa: "El Prado",
+          erradas: [
+            "Iglesia de la Candelaria",
+            "Isla de Lobos",
+            "Feria de Artesanos — Plaza Artigas",
+          ],
+          explica: "Caminhe sob as quatro pérgolas do Rosedal e veja o nome da avenida ao lado: Buschental.",
+        },
+        {
+          pergunta: "Em que região fica El Prado?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "Uma quinta particular do século 19 que virou parque público.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A rodoviária de 1994, com shopping no mesmo prédio.\"",
+          certa: "Terminal Tres Cruces",
+          erradas: [
+            "Museo del Carnaval",
+            "Puerto de Punta del Este",
+            "Faro de José Ignacio",
+          ],
+          explica: "Se tiver tempo antes do ônibus, repare como rodoviária e shopping se misturam.",
+        },
+        {
+          pergunta: "Em que região fica Terminal Tres Cruces?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "A rodoviária de 1994, com shopping no mesmo prédio.",
+        },
+        {
+          pergunta: "Que lugar é este: \"De barco militar e pescadores a marina, com lobos-marinhos.\"",
+          certa: "Puerto de Punta del Este",
+          erradas: [
+            "Museo del Carnaval",
+            "La Barra & José Ignacio",
+            "Café Brasilero",
+          ],
+          explica: "Observe os lobos-marinhos perto da zona dos pescadores, respeitando qualquer cerca ou aviso.",
+        },
+        {
+          pergunta: "Em que região fica Puerto de Punta del Este?",
+          certa: "Punta del Este",
+          erradas: [
+            "Montevidéu",
+            "Arredores de Punta",
+            "Piriápolis",
+          ],
+          explica: "De barco militar e pescadores a marina, com lobos-marinhos.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Ilha de praias calmas com ruínas de fortificações do século 18.\"",
+          certa: "Isla Gorriti",
+          erradas: [
+            "Laguna del Sauce",
+            "Terminal Tres Cruces",
+            "Mercado del Puerto",
+          ],
+          explica: "Além da praia, procure as ruínas de pedra das antigas baterias.",
+        },
+        {
+          pergunta: "Em que região fica Isla Gorriti?",
+          certa: "Punta del Este",
+          erradas: [
+            "Piriápolis",
+            "Montevidéu",
+            "Arredores de Punta",
+          ],
+          explica: "Ilha de praias calmas com ruínas de fortificações do século 18.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Dois mares, um de cada lado da mesma península.\"",
+          certa: "Playa Mansa x Playa Brava",
+          erradas: [
+            "Mercado del Puerto",
+            "Isla de Lobos",
+            "Puerto de Punta del Este",
+          ],
+          explica: "Atravesse a península a pé e compare os dois mares no mesmo passeio.",
+        },
+        {
+          pergunta: "Em que região fica Playa Mansa x Playa Brava?",
+          certa: "Punta del Este",
+          erradas: [
+            "Montevidéu",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "Dois mares, um de cada lado da mesma península.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A ponte em ondas de um construtor que nunca se formou engenheiro.\"",
+          certa: "La Barra & José Ignacio",
+          erradas: [
+            "Parque Rodó",
+            "Teatro Solís",
+            "Laguna del Sauce",
+          ],
+          explica: "Passe devagar e sinta as ondas. Com segurança, pare depois para ver o desenho de fora.",
+        },
+        {
+          pergunta: "Em que região fica La Barra & José Ignacio?",
+          certa: "Punta del Este",
+          erradas: [
+            "Piriápolis",
+            "Arredores de Punta",
+            "Montevidéu",
+          ],
+          explica: "A ponte em ondas de um construtor que nunca se formou engenheiro.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A antiga rua 4, rebatizada em 1918 em homenagem a um pioneiro local.\"",
+          certa: "Avenida Gorlero",
+          erradas: [
+            "La Barra & José Ignacio",
+            "Faro de José Ignacio",
+            "Rambla de los Argentinos",
+          ],
+          explica: "Procure as placas com o nome da rua: quase ninguém que passa sabe quem foi Gorlero.",
+        },
+        {
+          pergunta: "Em que região fica Avenida Gorlero?",
+          certa: "Punta del Este",
+          erradas: [
+            "Arredores de Punta",
+            "Montevidéu",
+            "Piriápolis",
+          ],
+          explica: "A antiga rua 4, rebatizada em 1918 em homenagem a um pioneiro local.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A \"praça do tanque\" que virou a praça dos artesãos em 1967.\"",
+          certa: "Feria de Artesanos — Plaza Artigas",
+          erradas: [
+            "Café Brasilero",
+            "Arboretum Lussich",
+            "Playa Mansa x Playa Brava",
+          ],
+          explica: "Converse com quem está na banca: muitas peças são vendidas por quem as faz.",
+        },
+        {
+          pergunta: "Em que região fica Feria de Artesanos — Plaza Artigas?",
+          certa: "Punta del Este",
+          erradas: [
+            "Arredores de Punta",
+            "Piriápolis",
+            "Montevidéu",
+          ],
+          explica: "A \"praça do tanque\" que virou a praça dos artesãos em 1967.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Um poeta e empresário naval plantou uma floresta sobre as dunas.\"",
+          certa: "Arboretum Lussich",
+          erradas: [
+            "Museo del Carnaval",
+            "Rambla de los Argentinos",
+            "Rambla",
+          ],
+          explica: "Repare como a mata muda ao longo do caminho, e lembre que aqui já foi só areia e vento.",
+        },
+        {
+          pergunta: "Em que região fica Arboretum Lussich?",
+          certa: "Punta del Este",
+          erradas: [
+            "Piriápolis",
+            "Arredores de Punta",
+            "Montevidéu",
+          ],
+          explica: "Um poeta e empresário naval plantou uma floresta sobre as dunas.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A antiga praça principal, onde foi jurada a primeira Constituição.\"",
+          certa: "Plaza Matriz & Cabildo",
+          erradas: [
+            "Argentino Hotel",
+            "Faro de Punta del Este",
+            "Faro de José Ignacio",
+          ],
+          explica: "Repare nos faunos e tritões na borda da fonte.",
+        },
+        {
+          pergunta: "Em que região fica Plaza Matriz & Cabildo?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "A antiga praça principal, onde foi jurada a primeira Constituição.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Muita gente acha que era a entrada da cidade. Não era.\"",
+          certa: "Puerta de la Ciudadela",
+          erradas: [
+            "Plaza Independencia & Palacio Salvo",
+            "Palacio Legislativo",
+            "Barrio Sur & Palermo",
+          ],
+          explica: "Olhe o alto do portão: na remontagem de 1892, foi aberta uma janela onde ficava o brasão espanhol. Veja se ainda dá para notar.",
+        },
+        {
+          pergunta: "Em que região fica Puerta de la Ciudadela?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Arredores de Punta",
+            "Punta del Este",
+          ],
+          explica: "Muita gente acha que era a entrada da cidade. Não era.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Criado pela família do artista, fechou na ditadura e renasceu na Sarandí.\"",
+          certa: "Museo Torres García",
+          erradas: [
+            "Museo Nacional de Artes Visuales",
+            "Laguna del Sauce",
+            "Palacio Legislativo",
+          ],
+          explica: "Veja como o museu se divide em andares: Clásico, Moderno e Universal.",
+        },
+        {
+          pergunta: "Em que região fica Museo Torres García?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "Criado pela família do artista, fechou na ditadura e renasceu na Sarandí.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Arte indígena num prédio feito para ser um spa que nunca abriu.\"",
+          certa: "Museo de Arte Precolombino e Indígena (MAPI)",
+          erradas: [
+            "Avenida Gorlero",
+            "Cerro Pan de Azúcar",
+            "Faro de Punta Brava (Punta Carretas)",
+          ],
+          explica: "Procure o fragmento de casco de gliptodonte, com cerca de 30 mil anos, e a sala das máscaras.",
+        },
+        {
+          pergunta: "Em que região fica Museo de Arte Precolombino e Indígena (MAPI)?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Punta del Este",
+            "Arredores de Punta",
+          ],
+          explica: "Arte indígena num prédio feito para ser um spa que nunca abriu.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Café de 1877 onde escreveram Onetti, Galeano e Benedetti.\"",
+          certa: "Café Brasilero",
+          erradas: [
+            "La Mano (Los Dedos) — Playa Brava",
+            "Feria de Artesanos — Plaza Artigas",
+            "Museo Gurvich",
+          ],
+          explica: "Olhe a soleira da porta e procure no cardápio o \"café Galeano\".",
+        },
+        {
+          pergunta: "Em que região fica Café Brasilero?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "Café de 1877 onde escreveram Onetti, Galeano e Benedetti.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Seu arquiteto foi assassinado antes de saber que tinha vencido.\"",
+          certa: "Palacio Legislativo",
+          erradas: [
+            "Museo Nacional de Artes Visuales",
+            "Parque Rodó",
+            "Avenida Gorlero",
+          ],
+          explica: "Por dentro, repare nas 24 cariátides de cerca de 4 metros, ao redor da claraboia.",
+        },
+        {
+          pergunta: "Em que região fica Palacio Legislativo?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Punta del Este",
+            "Arredores de Punta",
+          ],
+          explica: "Seu arquiteto foi assassinado antes de saber que tinha vencido.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O monumento de 1929 de José Belloni, perto do Centenario.\"",
+          certa: "Monumento La Carreta",
+          erradas: [
+            "Laguna del Sauce",
+            "Museo Ralli",
+            "Pueblo Garzón",
+          ],
+          explica: "Dá para combinar com o Estadio Centenario: fica perto, então vá a pé pelo parque.",
+        },
+        {
+          pergunta: "Em que região fica Monumento La Carreta?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Arredores de Punta",
+            "Piriápolis",
+          ],
+          explica: "O monumento de 1929 de José Belloni, perto do Centenario.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O antigo Parque Urbano, com lago, brinquedos e arte na grama.\"",
+          certa: "Parque Rodó",
+          erradas: [
+            "Museo del Carnaval",
+            "Rambla de los Argentinos",
+            "Puente de Laguna Garzón",
+          ],
+          explica: "No jardim do Museo Nacional de Artes Visuales, procure o Monumento Cósmico, de Torres García.",
+        },
+        {
+          pergunta: "Em que região fica Parque Rodó?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "O antigo Parque Urbano, com lago, brinquedos e arte na grama.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O farol de 1876 que ainda orienta quem navega.\"",
+          certa: "Faro de Punta Brava (Punta Carretas)",
+          erradas: [
+            "Terminal Tres Cruces",
+            "Isla Gorriti",
+            "Feria de Tristán Narvaja",
+          ],
+          explica: "Fique até anoitecer e tente contar os 10 segundos entre os clarões.",
+        },
+        {
+          pergunta: "Em que região fica Faro de Punta Brava (Punta Carretas)?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "O farol de 1876 que ainda orienta quem navega.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A última obra espanhola da região, no alto do Cerro.\"",
+          certa: "Fortaleza General Artigas (Cerro)",
+          erradas: [
+            "Parque Rodó",
+            "Cerro Pan de Azúcar",
+            "Iglesia de la Candelaria",
+          ],
+          explica: "Do alto, a 148 metros, olhe a baía inteira. A fortaleza aparece até no brasão nacional.",
+        },
+        {
+          pergunta: "Em que região fica Fortaleza General Artigas (Cerro)?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Arredores de Punta",
+            "Piriápolis",
+          ],
+          explica: "A última obra espanhola da região, no alto do Cerro.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O berço do candombe, patrimônio da Unesco desde 2009.\"",
+          certa: "Barrio Sur & Palermo",
+          erradas: [
+            "Playa Mansa x Playa Brava",
+            "Hotel Carrasco",
+            "Faro de Punta del Este",
+          ],
+          explica: "Procure a placa no prédio da antiga rua Cuareim 1080 e ande pela Peatonal Curuguaty, com seu calçamento antigo.",
+        },
+        {
+          pergunta: "Em que região fica Barrio Sur & Palermo?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Arredores de Punta",
+            "Piriápolis",
+          ],
+          explica: "O berço do candombe, patrimônio da Unesco desde 2009.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A maior coleção pública de pintura e escultura do Uruguai.\"",
+          certa: "Museo Nacional de Artes Visuales",
+          erradas: [
+            "Catedral de San Fernando",
+            "Iglesia de la Candelaria",
+            "Museo Gurvich",
+          ],
+          explica: "Não saia sem ver o jardim, onde fica o Monumento Cósmico, de Torres García.",
+        },
+        {
+          pergunta: "Em que região fica Museo Nacional de Artes Visuales?",
+          certa: "Montevidéu",
+          erradas: [
+            "Piriápolis",
+            "Punta del Este",
+            "Arredores de Punta",
+          ],
+          explica: "A maior coleção pública de pintura e escultura do Uruguai.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O menino lituano que virou pintor em Montevidéu.\"",
+          certa: "Museo Gurvich",
+          erradas: [
+            "Faro de Punta Brava (Punta Carretas)",
+            "Arboretum Lussich",
+            "Rambla",
+          ],
+          explica: "Procure o mural de 1963 feito para o Frigorífico do Cerro.",
+        },
+        {
+          pergunta: "Em que região fica Museo Gurvich?",
+          certa: "Montevidéu",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "O menino lituano que virou pintor em Montevidéu.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O hotel de 1921 que recebeu Einstein e García Lorca.\"",
+          certa: "Hotel Carrasco",
+          erradas: [
+            "Café Brasilero",
+            "Punta Ballena",
+            "Cerro Pan de Azúcar",
+          ],
+          explica: "Veja a fachada a partir da Rambla de Carrasco: é um dos cartões-postais do bairro.",
+        },
+        {
+          pergunta: "Em que região fica Hotel Carrasco?",
+          certa: "Montevidéu",
+          erradas: [
+            "Punta del Este",
+            "Arredores de Punta",
+            "Piriápolis",
+          ],
+          explica: "O hotel de 1921 que recebeu Einstein e García Lorca.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O farol de 1860 no centro da península. Não abre ao público.\"",
+          certa: "Faro de Punta del Este",
+          erradas: [
+            "Arboretum Lussich",
+            "Pocitos",
+            "Isla de Lobos",
+          ],
+          explica: "Repare na cúpula com faixas brancas e vermelhas.",
+        },
+        {
+          pergunta: "Em que região fica Faro de Punta del Este?",
+          certa: "Punta del Este",
+          erradas: [
+            "Montevidéu",
+            "Piriápolis",
+            "Arredores de Punta",
+          ],
+          explica: "O farol de 1860 no centro da península. Não abre ao público.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A igreja da padroeira, que cresceu de capela em capela.\"",
+          certa: "Iglesia de la Candelaria",
+          erradas: [
+            "Museo Torres García",
+            "Hotel Carrasco",
+            "Ciudad Vieja & Peatonal Sarandí",
+          ],
+          explica: "Olhe o pórtico e a torre: são o que resta da capela de 1922.",
+        },
+        {
+          pergunta: "Em que região fica Iglesia de la Candelaria?",
+          certa: "Punta del Este",
+          erradas: [
+            "Arredores de Punta",
+            "Piriápolis",
+            "Montevidéu",
+          ],
+          explica: "A igreja da padroeira, que cresceu de capela em capela.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A ilha dos lobos-marinhos virou área protegida em 2024.\"",
+          certa: "Isla de Lobos",
+          erradas: [
+            "Plaza Independencia & Palacio Salvo",
+            "Faro de Punta Brava (Punta Carretas)",
+            "Palacio Legislativo",
+          ],
+          explica: "De barco, tente ver os animais sobre as pedras e o farol ao fundo. Não dá pra descer por conta própria.",
+        },
+        {
+          pergunta: "Em que região fica Isla de Lobos?",
+          certa: "Punta del Este",
+          erradas: [
+            "Arredores de Punta",
+            "Piriápolis",
+            "Montevidéu",
+          ],
+          explica: "A ilha dos lobos-marinhos virou área protegida em 2024.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Museu de arte mantido por uma fundação, com obras de Dalí.\"",
+          certa: "Museo Ralli",
+          erradas: [
+            "Museo del Mar",
+            "La Barra & José Ignacio",
+            "Feria de Tristán Narvaja",
+          ],
+          explica: "Não fique só nas salas: veja as esculturas nos pátios.",
+        },
+        {
+          pergunta: "Em que região fica Museo Ralli?",
+          certa: "Punta del Este",
+          erradas: [
+            "Piriápolis",
+            "Arredores de Punta",
+            "Montevidéu",
+          ],
+          explica: "Museu de arte mantido por uma fundação, com obras de Dalí.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Falésias sobre o mar, com baleias entre julho e outubro.\"",
+          certa: "Punta Ballena",
+          erradas: [
+            "Pocitos",
+            "Casapueblo (Punta Ballena)",
+            "Café Brasilero",
+          ],
+          explica: "Entre julho e outubro, olhe para o mar com calma: pode aparecer uma baleia.",
+        },
+        {
+          pergunta: "Em que região fica Punta Ballena?",
+          certa: "Punta del Este",
+          erradas: [
+            "Piriápolis",
+            "Montevidéu",
+            "Arredores de Punta",
+          ],
+          explica: "Falésias sobre o mar, com baleias entre julho e outubro.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O farol de 1877, erguido para evitar naufrágios.\"",
+          certa: "Faro de José Ignacio",
+          erradas: [
+            "Rambla",
+            "Barrio Sur & Palermo",
+            "Isla Gorriti",
+          ],
+          explica: "Veja os três anéis brancos da torre e as pedras em volta.",
+        },
+        {
+          pergunta: "Em que região fica Faro de José Ignacio?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Montevidéu",
+            "Piriápolis",
+            "Punta del Este",
+          ],
+          explica: "O farol de 1877, erguido para evitar naufrágios.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Uma ponte redonda de propósito, para o carro ir devagar.\"",
+          certa: "Puente de Laguna Garzón",
+          erradas: [
+            "Parque Rodó",
+            "Pueblo Garzón",
+            "Faro de José Ignacio",
+          ],
+          explica: "Dê a volta a pé no anel e olhe a laguna dos dois lados.",
+        },
+        {
+          pergunta: "Em que região fica Puente de Laguna Garzón?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Punta del Este",
+            "Montevidéu",
+            "Piriápolis",
+          ],
+          explica: "Uma ponte redonda de propósito, para o carro ir devagar.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Esculturas ao ar livre e um museu em forma de proa.\"",
+          certa: "Fundación Atchugarry & MACA",
+          erradas: [
+            "Ciudad Vieja & Peatonal Sarandí",
+            "Fortaleza General Artigas (Cerro)",
+            "Rambla de los Argentinos",
+          ],
+          explica: "Olhe o prédio de fora: ele lembra a proa de um navio.",
+        },
+        {
+          pergunta: "Em que região fica Fundación Atchugarry & MACA?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Piriápolis",
+            "Punta del Este",
+            "Montevidéu",
+          ],
+          explica: "Esculturas ao ar livre e um museu em forma de proa.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Esqueletos de baleia e 5 mil peças reunidas por um colecionador.\"",
+          certa: "Museo del Mar",
+          erradas: [
+            "Feria de Artesanos — Plaza Artigas",
+            "Laguna del Sauce",
+            "La Barra & José Ignacio",
+          ],
+          explica: "Procure os esqueletos de baleia e a sala dos piratas.",
+        },
+        {
+          pergunta: "Em que região fica Museo del Mar?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Punta del Este",
+            "Montevidéu",
+            "Piriápolis",
+          ],
+          explica: "Esqueletos de baleia e 5 mil peças reunidas por um colecionador.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A maior reserva de água doce de Maldonado.\"",
+          certa: "Laguna del Sauce",
+          erradas: [
+            "Museo Ralli",
+            "Cerro Pan de Azúcar",
+            "Puerto de Punta del Este",
+          ],
+          explica: "Se chegar de avião a Punta del Este, procure a laguna pela janela.",
+        },
+        {
+          pergunta: "Em que região fica Laguna del Sauce?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Punta del Este",
+            "Montevidéu",
+            "Piriápolis",
+          ],
+          explica: "A maior reserva de água doce de Maldonado.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Quase um século de obras, interrompidas pelas invasões inglesas.\"",
+          certa: "Catedral de San Fernando",
+          erradas: [
+            "Hotel Carrasco",
+            "Fundación Atchugarry & MACA",
+            "Feria de Artesanos — Plaza Artigas",
+          ],
+          explica: "Dentro, procure o altar de Antonio Veiga e a Virgem do naufrágio.",
+        },
+        {
+          pergunta: "Em que região fica Catedral de San Fernando?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Montevidéu",
+            "Piriápolis",
+            "Punta del Este",
+          ],
+          explica: "Quase um século de obras, interrompidas pelas invasões inglesas.",
+        },
+        {
+          pergunta: "Que lugar é este: \"Um vilarejo de menos de 200 pessoas que atrai pelo restaurante.\"",
+          certa: "Pueblo Garzón",
+          erradas: [
+            "Teatro Solís",
+            "Fortaleza General Artigas (Cerro)",
+            "Catedral de San Fernando",
+          ],
+          explica: "Dê uma volta pela praça e veja a Capilla Nuestra Señora de la Merced.",
+        },
+        {
+          pergunta: "Em que região fica Pueblo Garzón?",
+          certa: "Arredores de Punta",
+          erradas: [
+            "Montevidéu",
+            "Punta del Este",
+            "Piriápolis",
+          ],
+          explica: "Um vilarejo de menos de 200 pessoas que atrai pelo restaurante.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O castelo do fundador de Piriápolis, chamado de alquimista.\"",
+          certa: "Castillo de Piria",
+          erradas: [
+            "La Barra & José Ignacio",
+            "Pocitos",
+            "Hotel Carrasco",
+          ],
+          explica: "No parque, procure a réplica em bronze de Mercúrio em descanso.",
+        },
+        {
+          pergunta: "Em que região fica Castillo de Piria?",
+          certa: "Piriápolis",
+          erradas: [
+            "Montevidéu",
+            "Arredores de Punta",
+            "Punta del Este",
+          ],
+          explica: "O castelo do fundador de Piriápolis, chamado de alquimista.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O sonho final de Piria, aberto em 1930.\"",
+          certa: "Argentino Hotel",
+          erradas: [
+            "Pocitos",
+            "Casapueblo (Punta Ballena)",
+            "Museo Nacional de Artes Visuales",
+          ],
+          explica: "Procure as estátuas da entrada e o vitral de 5 metros quadrados.",
+        },
+        {
+          pergunta: "Em que região fica Argentino Hotel?",
+          certa: "Piriápolis",
+          erradas: [
+            "Punta del Este",
+            "Arredores de Punta",
+            "Montevidéu",
+          ],
+          explica: "O sonho final de Piria, aberto em 1930.",
+        },
+        {
+          pergunta: "Que lugar é este: \"A rambla de pedra de Piria, Monumento Histórico desde 2021.\"",
+          certa: "Rambla de los Argentinos",
+          erradas: [
+            "Puente de Laguna Garzón",
+            "Faro de Punta Brava (Punta Carretas)",
+            "Plaza Independencia & Palacio Salvo",
+          ],
+          explica: "Caminhe olhando as fachadas Art Déco do lado oposto ao mar.",
+        },
+        {
+          pergunta: "Em que região fica Rambla de los Argentinos?",
+          certa: "Piriápolis",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Montevidéu",
+          ],
+          explica: "A rambla de pedra de Piria, Monumento Histórico desde 2021.",
+        },
+        {
+          pergunta: "Que lugar é este: \"O morro de 389 metros com uma cruz de 35 metros no topo.\"",
+          certa: "Cerro Pan de Azúcar",
+          erradas: [
+            "Puente de Laguna Garzón",
+            "El Prado",
+            "Monumento La Carreta",
+          ],
+          explica: "Mesmo de longe, procure a cruz no alto do morro.",
+        },
+        {
+          pergunta: "Em que região fica Cerro Pan de Azúcar?",
+          certa: "Piriápolis",
+          erradas: [
+            "Arredores de Punta",
+            "Punta del Este",
+            "Montevidéu",
+          ],
+          explica: "O morro de 389 metros com uma cruz de 35 metros no topo.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Sanduíche (ou prato) com filé fino, presunto, queijo, ovo, alface e tomate. O prato nacional.\"",
+          certa: "Chivito",
+          erradas: [
+            "Torta frita",
+            "Milanesa",
+            "Alfajor & dulce de leche",
+          ],
+          explica: "Para pedir: Un chivito canadiense, por favor.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Churrasco uruguaio na brasa de lenha. A parrillada vem com vários cortes e miúdos.\"",
+          certa: "Asado / Parrillada",
+          erradas: [
+            "Chajá",
+            "Medio y medio",
+            "Tannat",
+          ],
+          explica: "Para pedir: Una parrillada para dos.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Mistura de vinho espumante doce com vinho branco seco. Clássico do Mercado del Puerto.\"",
+          certa: "Medio y medio",
+          erradas: [
+            "Tannat",
+            "Fainá",
+            "Alfajor & dulce de leche",
+          ],
+          explica: "Para pedir: Un medio y medio, por favor.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Massa fina de farinha de grão-de-bico. Come-se em cima da pizza (\"pizza a caballo\").\"",
+          certa: "Fainá",
+          erradas: [
+            "Chivito",
+            "Tannat",
+            "Chajá",
+          ],
+          explica: "Para pedir: Una muzza con fainá.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Massa frita, clássica de dia de chuva, com mate.\"",
+          certa: "Torta frita",
+          erradas: [
+            "Medio y medio",
+            "Asado / Parrillada",
+            "Milanesa",
+          ],
+          explica: "Para pedir: Dos tortas fritas.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Salgadinhos e doces de padaria, vendidos por peso. Companhia oficial do mate.\"",
+          certa: "Bizcochos",
+          erradas: [
+            "Alfajor & dulce de leche",
+            "Chajá",
+            "Asado / Parrillada",
+          ],
+          explica: "Para pedir: Un cuarto de bizcochos, por favor.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Sobremesa de pão de ló, merengue, creme e pêssego ou morango. Nasceu em Paysandú, em 1927.\"",
+          certa: "Chajá",
+          erradas: [
+            "Medio y medio",
+            "Mate",
+            "Tannat",
+          ],
+          explica: "Para pedir: Una porción de chajá.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Bife à milanesa; \"napolitana\" vem com molho, presunto e queijo.\"",
+          certa: "Milanesa",
+          erradas: [
+            "Chajá",
+            "Fainá",
+            "Torta frita",
+          ],
+          explica: "Para pedir: Una milanesa napolitana con fritas.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Doce de leite está em tudo. O alfajor é o lanche oficial.\"",
+          certa: "Alfajor & dulce de leche",
+          erradas: [
+            "Asado / Parrillada",
+            "Bizcochos",
+            "Chivito",
+          ],
+          explica: "Para pedir: ¿Tenés alfajores de dulce de leche?.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Mais uma companhia do que uma bebida: vai junto pra rua, pra praia e pro trabalho. Puxar assunto sobre ele costuma render boa conversa.\"",
+          certa: "Mate",
+          erradas: [
+            "Tannat",
+            "Bizcochos",
+            "Chajá",
+          ],
+          explica: "Para pedir: ¿Me enseñás a tomar mate?.",
+        },
+        {
+          pergunta: "Que comida ou bebida é esta: \"Uva tinta símbolo do Uruguai. Vinho encorpado, ótimo com carne.\"",
+          certa: "Tannat",
+          erradas: [
+            "Chajá",
+            "Chivito",
+            "Medio y medio",
+          ],
+          explica: "Para pedir: Una copa de Tannat.",
+        },
+        {
+          pergunta: "Qual costume de restaurante é o mais comum?",
+          certa: "Deixar uns 10% de gorjeta",
+          erradas: [
+            "Deixar 30%",
+            "Nunca deixar nada",
+            "Pagar antes de comer",
+          ],
+          explica: "Não é obrigatório.",
+        },
+        {
+          pergunta: "A que horas o jantar costuma começar?",
+          certa: "Tarde, depois das 20h ou 21h",
+          erradas: [
+            "Às 17h",
+            "Às 18h em ponto",
+            "Só depois da meia-noite",
+          ],
+          explica: "Às 19h, o restaurante pode estar vazio.",
+        },
+        {
+          pergunta: "Qual é a voltagem da rede no Uruguai?",
+          certa: "Cerca de 230 V",
+          erradas: [
+            "110 V",
+            "127 V",
+            "60 V",
+          ],
+          explica: "Confira a etiqueta do carregador.",
+        },
+        {
+          pergunta: "Qual documento não vale para entrar no Uruguai?",
+          certa: "CNH",
+          erradas: [
+            "Passaporte",
+            "RG em bom estado",
+            "RG recente",
+          ],
+          explica: "Confirme a regra antes de viajar.",
+        },
+        {
+          pergunta: "Como cumprimentar um desconhecido?",
+          certa: "Com um buenas",
+          erradas: [
+            "Com dois beijos",
+            "Com um abraço",
+            "Com uma reverência",
+          ],
+          explica: "Beijo no rosto é mais entre conhecidos.",
+        },
+        {
+          pergunta: "Qual é o número de bombeiros?",
+          certa: "104",
+          erradas: [
+            "911 é o único",
+            "193",
+            "108",
+          ],
+          explica: "O 911 também encaminha.",
+        },
+        {
+          pergunta: "Qual é o número da ambulância pública?",
+          certa: "105",
+          erradas: [
+            "192",
+            "100",
+            "106",
+          ],
+          explica: "É o SAME.",
+        },
+        {
+          pergunta: "Qual gasolina é a mais comum no posto?",
+          certa: "Súper 95",
+          erradas: [
+            "Premium 97",
+            "Gasoil",
+            "Nafta 87",
+          ],
+          explica: "Diesel é gasoil.",
+        },
+      ],
+    },
+    {
+      id: "extreme",
+      titulo: "Extreme",
+      icone: "🔥",
+      descricao: "Quase ninguém acerta tudo. Sério.",
+      perguntas: [
+        {
+          pergunta: "Quem assinou o decreto que oficializou a província em 7 de março de 1814?",
+          certa: "Gervasio Antonio de Posadas",
+          erradas: [
+            "José Artigas",
+            "Carlos María de Alvear",
+            "Bernardino Rivadavia",
+          ],
+          explica: "O governador seria escolhido em Buenos Aires.",
+        },
+        {
+          pergunta: "Onde foi o Congresso de Oriente, em 29 de junho de 1815?",
+          certa: "Concepción del Uruguay",
+          erradas: [
+            "Purificación",
+            "Montevidéu",
+            "Santa Fe",
+          ],
+          explica: "Foi o congresso da Liga Federal.",
+        },
+        {
+          pergunta: "Onde ficou a sede de Artigas de 1815 a 1818?",
+          certa: "Campamento de Purificación",
+          erradas: [
+            "Ayuí",
+            "Las Piedras",
+            "Asencio",
+          ],
+          explica: "Foi o centro da Liga dos Povos Livres.",
+        },
+        {
+          pergunta: "Que título Artigas tinha na Liga Federal?",
+          certa: "Protetor dos Povos Livres",
+          erradas: [
+            "Diretor Supremo",
+            "Vice-Rei Oriental",
+            "Presidente da Banda",
+          ],
+          explica: "A Liga reunia várias províncias.",
+        },
+        {
+          pergunta: "Quem comandou a invasão luso-brasileira que tomou Montevidéu em 1817?",
+          certa: "Carlos Frederico Lecor",
+          erradas: [
+            "Pedro I",
+            "Samuel Auchmuty",
+            "José Posadas",
+          ],
+          explica: "Maldonado caiu em 4 de janeiro de 1817.",
+        },
+        {
+          pergunta: "Em que ano o Congresso Cisplatino votou a incorporação?",
+          certa: "1821",
+          erradas: [
+            "1816",
+            "1825",
+            "1828",
+          ],
+          explica: "As datas exatas variam em julho.",
+        },
+        {
+          pergunta: "Quem escreveu que a Banda Oriental era a chave do Prata?",
+          certa: "John Ponsonby",
+          erradas: [
+            "Lavalleja",
+            "Pedro I",
+            "Rivadavia",
+          ],
+          explica: "Foi o diplomata britânico da mediação.",
+        },
+        {
+          pergunta: "Em que cidade foi assinada a Convenção de 1828?",
+          certa: "Rio de Janeiro",
+          erradas: [
+            "Montevidéu",
+            "Buenos Aires",
+            "Londres",
+          ],
+          explica: "É também chamada de Tratado de Montevidéu.",
+        },
+        {
+          pergunta: "Qual foi o nome provisório do novo Estado na Convenção?",
+          certa: "Estado de Montevidéu",
+          erradas: [
+            "Estado Nord Argentino",
+            "República do Prata",
+            "Província Cisplatina",
+          ],
+          explica: "A comissão propôs esse nome.",
+        },
+        {
+          pergunta: "Qual foi a principal batalha da Guerra do Brasil?",
+          certa: "Ituzaingó",
+          erradas: [
+            "Sarandí",
+            "Las Piedras",
+            "Caseros",
+          ],
+          explica: "Foi em 20 de fevereiro de 1827.",
+        },
+        {
+          pergunta: "Em que dia foi a Batalha de Sarandí?",
+          certa: "12 de outubro de 1825",
+          erradas: [
+            "25 de agosto de 1825",
+            "19 de abril de 1825",
+            "20 de fevereiro de 1827",
+          ],
+          explica: "Aconteceu depois da Declaração de agosto.",
+        },
+        {
+          pergunta: "O que a Convenção de 1828 deixou de definir?",
+          certa: "Os limites do território",
+          erradas: [
+            "A paz entre os países",
+            "A independência",
+            "A elaboração da Constituição",
+          ],
+          explica: "Esse é um dos defeitos apontados.",
+        },
+        {
+          pergunta: "Com que país o Uruguai assinou o tratado de limites de 12 de outubro de 1851?",
+          certa: "Brasil",
+          erradas: [
+            "Argentina",
+            "Paraguai",
+            "Inglaterra",
+          ],
+          explica: "O Uruguai cedeu áreas como o Rincón de Artigas.",
+        },
+        {
+          pergunta: "Qual constituição fixou o nome República Oriental do Uruguai?",
+          certa: "A de 1918",
+          erradas: [
+            "A de 1830",
+            "A de 1934",
+            "A de 1967",
+          ],
+          explica: "O nome já era usado de fato.",
+        },
+        {
+          pergunta: "Segundo Azara, o nome Uruguai viria de quê?",
+          certa: "Rio do urú, uma ave",
+          erradas: [
+            "Rio das pedras",
+            "Rio dos peixes",
+            "Rio do sol",
+          ],
+          explica: "Há outras teorias, como rio dos caracóis.",
+        },
+        {
+          pergunta: "Qual lei tornou 3 de dezembro o Dia do Candombe?",
+          certa: "Lei 18.059",
+          erradas: [
+            "Lei 6.997",
+            "Lei 17.825",
+            "Lei 3.186",
+          ],
+          explica: "É de 2006.",
+        },
+        {
+          pergunta: "Qual lei de 1919 criou a Semana de Turismo?",
+          certa: "Lei 6.997",
+          erradas: [
+            "Lei 18.059",
+            "Lei 3.245",
+            "Lei 17.825",
+          ],
+          explica: "Ela também rebatizou o Natal e o Dia de Reis.",
+        },
+        {
+          pergunta: "Qual lei de 2004 oficializou a Noche de la Nostalgia?",
+          certa: "Lei 17.825",
+          erradas: [
+            "Lei 18.059",
+            "Lei 6.997",
+            "Lei 3.186",
+          ],
+          explica: "A festa começou em 1978.",
+        },
+        {
+          pergunta: "Quem organizou a festa de 1978 que originou a Noche de la Nostalgia?",
+          certa: "Pablo Lecueder",
+          erradas: [
+            "Rubén Rada",
+            "Jaime Roos",
+            "Mauricio Litman",
+          ],
+          explica: "Era dono de uma rádio.",
+        },
+        {
+          pergunta: "Qual engenheiro conduziu a obra do Mercado del Puerto?",
+          certa: "R. H. Mesures",
+          erradas: [
+            "Eugenio Penot",
+            "Carlo Zucchi",
+            "Víctor Rabu",
+          ],
+          explica: "As peças vieram de Liverpool.",
+        },
+        {
+          pergunta: "Quem projetou as alas laterais do Teatro Solís?",
+          certa: "Victor Rabu",
+          erradas: [
+            "Carlo Zucchi",
+            "Francisco Garmendia",
+            "Gaetano Moretti",
+          ],
+          explica: "Foram construídas de 1869 a 1874.",
+        },
+        {
+          pergunta: "Quem foi contratado em 1913 para concluir o Palacio Legislativo?",
+          certa: "Gaetano Moretti",
+          erradas: [
+            "Vittorio Meano",
+            "Mario Palanti",
+            "Juan Scasso",
+          ],
+          explica: "A inauguração foi em 1925.",
+        },
+        {
+          pergunta: "Quem começou a construir o Cabildo de Montevidéu?",
+          certa: "Tomás Toribio",
+          erradas: [
+            "Bruno de Zabala",
+            "Luis Crespi",
+            "Pedro Gronardo",
+          ],
+          explica: "A obra começou em 1804.",
+        },
+        {
+          pergunta: "Quem construiu o farol de Punta del Este?",
+          certa: "Tomás Libarona",
+          erradas: [
+            "Pedro Risso",
+            "Henry Burnett",
+            "Antonio Lussich",
+          ],
+          explica: "O nome também aparece como Libarena.",
+        },
+        {
+          pergunta: "Quem projetou o Castillo de Piria?",
+          certa: "Aquiles Monzani",
+          erradas: [
+            "Pierre Guichot",
+            "Carlos Ott",
+            "Rafael Viñoly",
+          ],
+          explica: "Uma fonte escreve Manzari.",
+        },
+        {
+          pergunta: "Qual colecionador deu origem ao acervo do MAPI?",
+          certa: "Matteo Goretti",
+          erradas: [
+            "Harry Recanati",
+            "Pablo Etchegaray",
+            "Alberto Gómez Ruano",
+          ],
+          explica: "O museu abriu em 2004.",
+        },
+        {
+          pergunta: "Quem criou o Museo del Mar?",
+          certa: "Pablo Etchegaray",
+          erradas: [
+            "Pablo Atchugarry",
+            "Carlos Páez Vilaró",
+            "Mario Irarrázabal",
+          ],
+          explica: "Foi inaugurado em 1996.",
+        },
+        {
+          pergunta: "Para que o prédio do MAPI foi construído?",
+          certa: "Um centro de hidroterapia",
+          erradas: [
+            "Um banco",
+            "Um teatro",
+            "Uma estação de trem",
+          ],
+          explica: "Nunca abriu com essa função.",
+        },
+        {
+          pergunta: "Qual cacique sobreviveu a Salsipuedes e foi levado a Paris?",
+          certa: "Vaimaca Pirú",
+          erradas: [
+            "Venado",
+            "Rondeau",
+            "Polidoro",
+          ],
+          explica: "Morreu em cativeiro.",
+        },
+        {
+          pergunta: "Em que data aconteceu o terremoto de Montevidéu?",
+          certa: "5 de junho de 1888",
+          erradas: [
+            "13 de dezembro de 1939",
+            "18 de julho de 1830",
+            "5 de julho de 1907",
+          ],
+          explica: "É o único registrado pela cidade.",
+        },
+        {
+          pergunta: "Quem marcou o último gol da Copa de 1930?",
+          certa: "Héctor Castro",
+          erradas: [
+            "José Nasazzi",
+            "Pedro Cea",
+            "José Leandro Andrade",
+          ],
+          explica: "Foi aos 89 minutos da final.",
+        },
+        {
+          pergunta: "Quem marcou o primeiro gol uruguaio em Copas?",
+          certa: "Héctor Castro",
+          erradas: [
+            "Alcides Ghiggia",
+            "Juan Schiaffino",
+            "José Nasazzi",
+          ],
+          explica: "Foi contra o Peru, em 1930.",
+        },
+        {
+          pergunta: "Qual foi a data do primeiro clássico oficial?",
+          certa: "28 de abril de 1901",
+          erradas: [
+            "15 de julho de 1900",
+            "14 de maio de 1899",
+            "14 de dezembro de 1913",
+          ],
+          explica: "O CURCC venceu por 1 a 0.",
+        },
+        {
+          pergunta: "Quem marcou o primeiro gol no Campeón del Siglo?",
+          certa: "Diego Forlán",
+          erradas: [
+            "Nicolás Albarracín",
+            "Luis Suárez",
+            "Edinson Cavani",
+          ],
+          explica: "Foi no amistoso de abertura, em 2016.",
+        },
+        {
+          pergunta: "Quem apitou a final de 1950?",
+          certa: "George Reader",
+          erradas: [
+            "Jean Langenus",
+            "Pierluigi Collina",
+            "Arnaldo Coelho",
+          ],
+          explica: "O árbitro era inglês.",
         },
       ],
     },

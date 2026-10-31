@@ -53,7 +53,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `checklist[]` | `id`, `texto` | `nota` | `id` |
 | `guia[]` | `id`, `lugar`, `coords`, `revisado`, `resumo`, `historia`, `reparar`, `fontes` | | `id` |
 | `guia[].fontes[]` | `titulo`, `url` | | |
-| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | | `id` |
+| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | `fundacao` | `id` |
 | `historias[].momentos[]`, `datas[]` | `data`, `titulo`, `texto` | | |
 | `historias[].costumes[]` | `titulo`, `texto` | | |
 | `historias[].pessoas[]` | `nome`, `origem`, `texto` | | |
