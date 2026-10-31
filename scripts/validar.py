@@ -29,7 +29,16 @@ PAIS = {
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
+    "historias": False, "quiz": False,
 }
+HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "momentos": True, "costumes": True,
+            "pessoas": True, "estrelas": True, "datas": True, "fontes": True}
+MOMENTO = {"data": True, "titulo": True, "texto": True}
+COSTUME = {"titulo": True, "texto": True}
+PESSOA = {"nome": True, "origem": True, "texto": True}
+ESTRELA = {"nome": True, "area": True, "origem": True, "texto": True}
+NIVEL = {"id": True, "titulo": True, "icone": True, "descricao": True, "perguntas": True}
+PERGUNTA = {"pergunta": True, "certa": True, "erradas": True, "explica": True}
 GUIA = {"id": True, "lugar": True, "coords": True, "revisado": True, "resumo": True, "historia": True, "reparar": True, "fontes": True}
 FONTE = {"titulo": True, "url": True}
 CONVERSA = {"id": True, "icone": True, "titulo": True, "passos": True}
@@ -376,6 +385,30 @@ def checar_pais(r, chave, p, esperado):
         for m, f in enumerate(lista_de(r, g, "fontes", onde, minimo=1)):
             if checar_campos(r, f, FONTE, f"{onde}.fontes[{m}]", g.linha) and not str(f.get("url")).startswith("https://"):
                 r.erro(f.linha, f"{onde}.fontes[{m}]", "url deveria começar com https://")
+    historias = lista_de(r, p, "historias", "historias")
+    checar_unicos(r, historias, "id", "historias")
+    for n, h in enumerate(historias):
+        onde = f"historias[{n}]"
+        if not checar_campos(r, h, HISTORIA, onde, p.linha):
+            continue
+        for campo, spec in (("momentos", MOMENTO), ("costumes", COSTUME), ("pessoas", PESSOA), ("estrelas", ESTRELA), ("datas", MOMENTO)):
+            for m, item in enumerate(lista_de(r, h, campo, onde)):
+                checar_campos(r, item, spec, f"{onde}.{campo}[{m}]", h.linha)
+        for m, f in enumerate(lista_de(r, h, "fontes", onde, minimo=1)):
+            if checar_campos(r, f, FONTE, f"{onde}.fontes[{m}]", h.linha) and not str(f.get("url")).startswith("https://"):
+                r.erro(f.linha, f"{onde}.fontes[{m}]", "url deveria começar com https://")
+    niveis = lista_de(r, p, "quiz", "quiz")
+    checar_unicos(r, niveis, "id", "quiz")
+    for n, nivel in enumerate(niveis):
+        onde = f"quiz[{n}]"
+        if not checar_campos(r, nivel, NIVEL, onde, p.linha):
+            continue
+        for m, q in enumerate(lista_de(r, nivel, "perguntas", onde, minimo=1)):
+            lugar = f"{onde}.perguntas[{m}]"
+            if checar_campos(r, q, PERGUNTA, lugar, nivel.linha):
+                erradas = lista_de(r, q, "erradas", lugar, minimo=3)
+                if q.get("certa") in erradas or len(set(erradas)) != len(erradas):
+                    r.erro(q.linha, lugar, "opções repetidas na pergunta")
     for n, e in enumerate(lista_de(r, p, "etiqueta", "etiqueta")):
         checar_campos(r, e, ETIQUETA, f"etiqueta[{n}]", p.linha)
     itens = lista_de(r, p, "checklist", "checklist")

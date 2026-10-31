@@ -29,7 +29,7 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `intro` | texto | Uma ou duas frases sobre o espanhol local. |
 | `situacoes` | lista | Pelo menos 1. |
 | `girias`, `ditados`, `falsosAmigos`, `pronuncia`, `comidas`, `lugares` | lista | Podem estar vazias (gera aviso e a tela fica em branco), mas precisam existir. |
-| `conversas`, `etiqueta`, `checklist`, `guia` | lista | Opcionais. |
+| `conversas`, `etiqueta`, `checklist`, `guia`, `historias`, `quiz` | lista | Opcionais. |
 
 ## Itens de cada lista
 
@@ -52,6 +52,13 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `checklist[]` | `id`, `texto` | `nota` | `id` |
 | `guia[]` | `id`, `lugar`, `coords`, `revisado`, `resumo`, `historia`, `reparar`, `fontes` | | `id` |
 | `guia[].fontes[]` | `titulo`, `url` | | |
+| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | | `id` |
+| `historias[].momentos[]`, `datas[]` | `data`, `titulo`, `texto` | | |
+| `historias[].costumes[]` | `titulo`, `texto` | | |
+| `historias[].pessoas[]` | `nome`, `origem`, `texto` | | |
+| `historias[].estrelas[]` | `nome`, `area`, `origem`, `texto` | | |
+| `quiz[]` | `id`, `titulo`, `icone`, `descricao`, `perguntas` | | `id` |
+| `quiz[].perguntas[]` | `pergunta`, `certa`, `erradas` (3 ou mais), `explica` | | |
 
 - **`id` da situação:** só `a-z`, `0-9` e `-`, porque vai na URL (`#/s/comer`).
 - **`frases`:** pelo menos 1 em cada situação e em cada lugar.

@@ -168,6 +168,18 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .check small { display: block; margin-top: 2px; }
 .check input:checked + span strong { text-decoration: line-through; }
 .btn-gps { min-height: 44px; }
+a.btn { text-decoration: none; }
+.filtros a.btn { min-height: 44px; }
+.linha-tempo { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 3px solid var(--sol); }
+.linha-tempo li { margin-bottom: 16px; }
+.linha-tempo p { margin: 2px 0 0; font-size: 15px; }
+.linha-data { display: block; font-size: 13px; font-weight: 600; color: var(--celeste); }
+.quiz-pergunta { font-size: 22px; margin: 10px 0 16px; }
+.quiz-opcoes { display: grid; gap: 10px; margin-bottom: 14px; }
+.quiz-opcao { min-height: 48px; padding: 10px 14px; text-align: left; border: 1px solid var(--linha); border-radius: 12px; background: var(--cartao); cursor: pointer; }
+.quiz-opcao:disabled { cursor: default; color: var(--texto); }
+.quiz-opcao.certa { border: 2px solid #1b7f4b; background: #dff5e8; color: #123; }
+.quiz-opcao.errada { border: 2px solid #c0392b; background: #fbe4e1; color: #123; }
 .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .filtros .btn { min-height: 44px; }
 .ver-todos { margin-top: 16px; width: 100%; justify-content: center; }

@@ -5,6 +5,7 @@
   const CHAVE_FAV = "viajador:favoritos";
   const CHAVE_ESCALA = "viajador:escala";
   const CHAVE_CHECK = "viajador:checklist";
+  const CHAVE_QUIZ = "viajador:quiz";
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
   // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
   const RAPIDAS = [
@@ -277,7 +278,89 @@
     return null;
   };
 
+  // Quiz: perguntas e opções embaralhadas a cada rodada; o recorde fica no aparelho.
+  let quizAtual = null;
+  let recordes = {};
+  try { recordes = JSON.parse(localStorage.getItem(CHAVE_QUIZ)) || {}; } catch (e) {}
+  const embaralhar = (lista) => {
+    const a = [...lista];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+  function iniciarQuiz(nivel) {
+    quizAtual = {
+      id: nivel.id,
+      i: 0,
+      acertos: 0,
+      escolhida: null,
+      perguntas: embaralhar(nivel.perguntas).map((q) => ({ ...q, opcoes: embaralhar([q.certa, ...q.erradas]) })),
+    };
+  }
+
   const telas = {
+    historia(id) {
+      const lista = pais.historias || [];
+      const h = lista.find((x) => x.id === id) || lista[0];
+      const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
+        <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
+      const pessoas = (itens) => `<div class="tabela">${itens.map((p) => `
+        <div class="item"><h3>${esc(p.nome)}</h3><p class="ponto-dist">${p.area ? `${esc(p.area)} · ` : ""}${esc(p.origem)}</p><p class="suave">${esc(p.texto)}</p></div>`).join("")}</div>`;
+      const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
+      return `<h1>${h.icone} ${esc(h.titulo)}</h1>
+        <p class="lead">${esc(h.intro)}</p>
+        <div class="filtros" role="group" aria-label="Escolher país ou cidade">${lista.map((x) => `
+          <a class="btn ${x.id === h.id ? "on" : ""}" href="#/historia/${x.id}"${x.id === h.id ? ' aria-current="page"' : ""}>${esc(x.titulo)}</a>`).join("")}
+        </div>
+        ${secao("Momentos históricos", h.momentos, momentos)}
+        ${secao("Costumes", h.costumes, (i) => `<div class="tabela">${i.map((c) => `<div class="item"><h3>${esc(c.titulo)}</h3><p class="suave">${esc(c.texto)}</p></div>`).join("")}</div>`)}
+        ${secao("Pessoas históricas", h.pessoas, pessoas)}
+        ${secao("Estrelas", h.estrelas, pessoas)}
+        ${secao("Datas importantes", h.datas, momentos)}
+        <a class="btn btn-gps ver-todos" href="#/quiz">Testar o que aprendi no quiz</a>
+        <h2>Fontes</h2>
+        <ul class="fontes">${h.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
+    },
+    quiz(id) {
+      const niveis = pais.quiz || [];
+      const nivel = niveis.find((x) => x.id === id);
+      if (!nivel) {
+        return `<h1>Quiz do Uruguai</h1>
+          <p class="lead">Três níveis, com perguntas tiradas da seção de História.</p>
+          <div class="tabela">${niveis.map((n) => `
+            <a class="item ponto" href="#/quiz/${n.id}">
+              <span class="emoji" aria-hidden="true">${n.icone}</span>
+              <span class="ponto-texto">
+                <strong>${esc(n.titulo)}</strong>
+                <small class="suave">${esc(n.descricao)}</small>
+                <small class="ponto-dist">${recordes[n.id] === undefined ? `${n.perguntas.length} perguntas` : `Recorde: ${recordes[n.id]} de ${n.perguntas.length}`}</small>
+              </span>
+            </a>`).join("")}
+          </div>`;
+      }
+      if (!quizAtual || quizAtual.id !== nivel.id) iniciarQuiz(nivel);
+      const z = quizAtual;
+      if (z.i >= z.perguntas.length) {
+        return `<a class="voltar" href="#/quiz">← Níveis</a>
+          <h1>${nivel.icone} ${z.acertos} de ${z.perguntas.length}</h1>
+          <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
+          <button class="btn btn-gps ver-todos" data-acao="quiz-repetir">Jogar de novo</button>
+          <a class="btn btn-gps ver-todos" href="#/historia">Rever a História</a>`;
+      }
+      const q = z.perguntas[z.i];
+      const respondida = z.escolhida !== null;
+      return `<a class="voltar" href="#/quiz">← Níveis</a>
+        <p class="ponto-dist">${esc(nivel.titulo)} · Pergunta ${z.i + 1} de ${z.perguntas.length} · ${z.acertos} ${z.acertos === 1 ? "acerto" : "acertos"}</p>
+        <h1 class="quiz-pergunta">${esc(q.pergunta)}</h1>
+        <div class="quiz-opcoes">${q.opcoes.map((o, i) => {
+          const classe = !respondida ? "" : o === q.certa ? "certa" : i === z.escolhida ? "errada" : "";
+          return `<button class="quiz-opcao ${classe}" data-acao="quiz-responder" data-op="${i}" ${respondida ? "disabled" : ""}>${esc(o)}</button>`;
+        }).join("")}</div>
+        ${respondida ? `<p class="frase-dica" role="status"><strong>${q.opcoes[z.escolhida] === q.certa ? "Acertou." : `Era: ${esc(q.certa)}.`}</strong> ${esc(q.explica)}</p>
+          <button class="btn btn-gps ver-todos" data-acao="quiz-proxima">${z.i + 1 < z.perguntas.length ? "Próxima pergunta" : "Ver resultado"}</button>` : ""}`;
+    },
     guia(id) {
       const g = pontos().find((x) => x.id === id);
       if (g) {
@@ -440,16 +523,24 @@
     busca(termo) {
       const t = normal(termo);
       const achou = todas.filter((f) => normal(f.es + " " + f.pt + " " + (f.dica || "") + " " + (f.ex || "")).includes(t));
+      const naHistoria = (pais.historias || []).flatMap((h) =>
+        [...h.momentos, ...h.costumes, ...h.pessoas, ...h.estrelas, ...h.datas]
+          .filter((x) => normal([x.titulo, x.nome, x.texto].filter(Boolean).join(" ")).includes(t))
+          .map((x) => ({ h, x })));
       const lugaresAchados = pontos().filter((g) => normal([g.lugar, g.resumo, ...g.historia].join(" ")).includes(t));
       return `<h1>Resultados para “${esc(termo)}”</h1>
-        <p class="lead">${achou.length} frase(s) · ${lugaresAchados.length} lugar(es)</p>
+        <p class="lead">${achou.length} frase(s) · ${lugaresAchados.length} lugar(es) · ${naHistoria.length} na História</p>
         ${lugaresAchados.length ? `<div class="tabela">${lugaresAchados.map((g) => `
           <a class="item ponto" href="#/guia/${g.id}">
             <span class="emoji" aria-hidden="true">${lugarDo(g).icone}</span>
             <span class="ponto-texto"><strong lang="es">${destacar(g.lugar)}</strong><small class="suave">${destacar(g.resumo)}</small></span>
           </a>`).join("")}</div>` : ""}
         ${achou.length ? lista(achou) : ""}
-        ${achou.length || lugaresAchados.length ? "" : `<p class="vazio">Nada encontrado. Tente outra palavra, em português ou espanhol.</p>`}`;
+        ${naHistoria.length ? `<h2>Na História</h2><div class="tabela">${naHistoria.map(({ h, x }) => `
+          <a class="item ponto" href="#/historia/${h.id}">
+            <span class="ponto-texto"><strong>${destacar(x.titulo || x.nome)}</strong><small class="suave">${destacar(x.texto)}</small><small class="ponto-dist">${esc(h.titulo)}</small></span>
+          </a>`).join("")}</div>` : ""}
+        ${achou.length || lugaresAchados.length || naHistoria.length ? "" : `<p class="vazio">Nada encontrado. Tente outra palavra, em português ou espanhol.</p>`}`;
     },
   };
 
@@ -480,6 +571,27 @@
       pedidoInstalar = null;
       render();
       return;
+    }
+    if (b.dataset.acao === "quiz-responder") {
+      if (quizAtual.escolhida !== null) return;
+      quizAtual.escolhida = +b.dataset.op;
+      const q = quizAtual.perguntas[quizAtual.i];
+      if (q.opcoes[quizAtual.escolhida] === q.certa) quizAtual.acertos++;
+      return render();
+    }
+    if (b.dataset.acao === "quiz-proxima") {
+      quizAtual.i++;
+      quizAtual.escolhida = null;
+      if (quizAtual.i >= quizAtual.perguntas.length) {
+        recordes[quizAtual.id] = Math.max(recordes[quizAtual.id] || 0, quizAtual.acertos);
+        try { localStorage.setItem(CHAVE_QUIZ, JSON.stringify(recordes)); } catch (err) {}
+      }
+      render();
+      return window.scrollTo(0, 0);
+    }
+    if (b.dataset.acao === "quiz-repetir") {
+      quizAtual = null;
+      return render();
     }
     if (b.dataset.acao === "gps") return pedirPosicao();
     if (b.dataset.acao === "filtro") {
@@ -524,6 +636,7 @@
   $("#busca").addEventListener("input", render);
   window.addEventListener("hashchange", () => {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
+    quizAtual = null;
     $("#busca").value = "";
     render();
     window.scrollTo(0, 0);
