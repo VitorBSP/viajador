@@ -30,6 +30,7 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `situacoes` | lista | Pelo menos 1. |
 | `girias`, `ditados`, `falsosAmigos`, `pronuncia`, `comidas`, `lugares` | lista | Podem estar vazias (gera aviso e a tela fica em branco), mas precisam existir. |
 | `conversas`, `etiqueta`, `checklist`, `guia`, `historias`, `quiz` | lista | Opcionais. |
+| `imagens` | objeto | Opcional: créditos em `lugares` (por id do guia), `pessoas` (por nome) e `origem`. |
 | `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 
 ## Itens de cada lista
@@ -59,7 +60,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `historias[].pessoas[]` | `nome`, `origem`, `texto` | | |
 | `historias[].estrelas[]` | `nome`, `area`, `origem`, `texto` | | |
 | `quiz[]` | `id`, `titulo`, `icone`, `descricao`, `perguntas` | | `id` |
-| `quiz[].perguntas[]` | `pergunta`, `certa`, `erradas` (3 ou mais), `explica` | | |
+| `quiz[].perguntas[]` | `pergunta`, `certa`, `erradas` (3 ou mais), `explica` | `imagem` | |
 
 - **`id` da situação:** só `a-z`, `0-9` e `-`, porque vai na URL (`#/s/comer`).
 - **`frases`:** pelo menos 1 em cada situação e em cada lugar.

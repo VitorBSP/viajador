@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "15";
+  const VERSAO_APP = "16";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -396,17 +396,39 @@
     };
   }
 
+  // Imagens: cada foto traz crédito na tela de Créditos, e sem internet o texto continua lá.
+  const imgs = pais.imagens || { lugares: {}, pessoas: {} };
+  const fotoLugar = (id) => (imgs.lugares[id] ? `img/guia/${id}.jpg` : null);
+  const fotoPessoa = (nome) => (imgs.pessoas[nome] ? `img/pessoas/${imgs.pessoas[nome].id}.jpg` : null);
+  const creditoFoto = (c) => (c ? `<p class="credito">Foto: ${esc(c.autor || "Wikimedia Commons")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></p>` : "");
+  const heroi = (src, alt, credito) => (src ? `<figure class="heroi"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${creditoFoto(credito)}</figure>` : "");
+  const miniatura = (src, icone) => (src ? `<img class="mini" src="${esc(src)}" alt="" loading="lazy">` : `<span class="emoji" aria-hidden="true">${icone}</span>`);
+  const corDoIndice = (i) => `hsl(${Math.round((i * 137.5) % 360)} 68% 42%)`;
+  const CAPAS = { "": "inicio", guia: "guia", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos" };
+  const capa = (nome) => `<img class="capa" src="img/arte/${nome}.svg" alt="" aria-hidden="true">`;
   const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
     <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
   const pessoas = (itens) => `<div class="tabela">${itens.map((p) => `
-    <div class="item"><h3>${esc(p.nome)}</h3><p class="ponto-dist">${p.area ? `${esc(p.area)} · ` : ""}${esc(p.origem)}</p><p class="suave">${esc(p.texto)}</p></div>`).join("")}</div>`;
+    <div class="item pessoa">${fotoPessoa(p.nome) ? `<img class="retrato" src="${fotoPessoa(p.nome)}" alt="${esc(p.nome)}" loading="lazy">` : ""}<div><h3>${esc(p.nome)}</h3><p class="ponto-dist">${p.area ? `${esc(p.area)} · ` : ""}${esc(p.origem)}</p><p class="suave">${esc(p.texto)}</p></div></div>`).join("")}</div>`;
   const cartoes = (itens) => `<div class="tabela">${itens.map((c) => `<div class="item"><h3>${esc(c.titulo)}</h3><p class="suave">${esc(c.texto)}</p></div>`).join("")}</div>`;
   const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
 
   const telas = {
+    creditos() {
+      const linha = (nome, c) => `<li>${esc(nome)}: ${esc(c.autor || "autor não informado")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></li>`;
+      return `<h1>Créditos das imagens</h1>
+        <p class="lead">Fotos do Wikimedia Commons, reduzidas para o app, com as licenças indicadas. Ilustrações feitas para o Viajador.</p>
+        <h2>Lugares</h2>
+        <ul class="fontes">${pontos().filter((g) => imgs.lugares[g.id]).map((g) => linha(g.lugar, imgs.lugares[g.id])).join("")}</ul>
+        <h2>Pessoas</h2>
+        <ul class="fontes">${Object.entries(imgs.pessoas).map(([n, c]) => linha(n, c)).join("")}</ul>
+        <h2>Origem do país</h2>
+        <ul class="fontes">${imgs.origem ? linha("O Juramento dos Treinta y Tres Orientais", imgs.origem) : ""}</ul>`;
+    },
     origem() {
       const h = (pais.historias || [])[0];
-      return `<h1>🇺🇾 Como nasceu o Uruguai</h1>
+      return `<figure class="heroi"><img src="img/arte/origem.jpg" alt="O Juramento dos Treinta y Tres Orientais, de Juan Manuel Blanes"><figcaption class="credito">O Juramento dos Treinta y Tres Orientais, de Juan Manuel Blanes. Domínio público.</figcaption></figure>
+        <h1>🇺🇾 Como nasceu o Uruguai</h1>
         <p class="lead">Banda Oriental, Província Oriental, Províncias Unidas, e o papel de Argentina, Brasil e Inglaterra.</p>
         ${cartoes(h.fundacao || [])}
         ${secao("Linha do tempo", h.momentos.filter((m) => /^1[6-8]/.test(m.data)), momentos)}
@@ -458,8 +480,8 @@
         return `<h1>Quiz do Uruguai</h1>
           <p class="lead">Quatro níveis de dificuldade e um de futebol. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
           <div class="tabela">${niveis.map((n) => `
-            <a class="item ponto" href="#/quiz/${n.id}">
-              <span class="emoji" aria-hidden="true">${n.icone}</span>
+            <a class="item ponto nivel nivel-${n.id}" href="#/quiz/${n.id}">
+              <img class="selo" src="img/arte/nivel-${n.id}.svg" alt="">
               <span class="ponto-texto">
                 <strong>${esc(n.titulo)}</strong>
                 <small class="suave">${esc(n.descricao)}</small>
@@ -475,6 +497,7 @@
       const z = quizAtual;
       if (z.i >= z.perguntas.length) {
         return `<a class="voltar" href="#/quiz">← Níveis</a>
+          <img class="medalha" src="img/arte/${z.acertos >= 9 ? "medalha-ouro" : z.acertos >= 7 ? "medalha-prata" : z.acertos >= 5 ? "medalha-bronze" : "mate-consolo"}.svg" alt="">
           <h1>${nivel.icone} ${z.acertos} de ${z.perguntas.length}</h1>
           <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
           ${z.salvo ? "" : `<label class="ranking-nome">Seu nome no ranking${rankingOnline() ? " (fica visível para todos)" : ""}
@@ -488,14 +511,24 @@
       }
       const q = z.perguntas[z.i];
       const respondida = z.escolhida !== null;
+      // Depois da resposta, mostra a foto do lugar ou da pessoa citada.
+      const citado = !respondida || q.imagem ? null : pontos().find((g) => fotoLugar(g.id) && (q.pergunta.includes(g.lugar) || q.pergunta.includes(g.resumo) || q.certa === g.lugar));
+      const citada = !respondida || q.imagem || citado ? null : Object.keys(imgs.pessoas).find((n) => q.pergunta.includes(n) || q.certa === n);
+      const revelada = citado ? `<img class="quiz-revela" src="${fotoLugar(citado.id)}" alt="${esc(citado.lugar)}">` : citada ? `<img class="quiz-revela quiz-revela-pessoa" src="${fotoPessoa(citada)}" alt="${esc(citada)}">` : "";
       return `<a class="voltar" href="#/quiz">← Níveis</a>
-        <p class="ponto-dist">${esc(nivel.titulo)} · Pergunta ${z.i + 1} de ${z.perguntas.length} · ${z.acertos} ${z.acertos === 1 ? "acerto" : "acertos"}</p>
+        <div class="quiz-topo nivel-${nivel.id}">
+          <img class="selo" src="img/arte/nivel-${nivel.id}.svg" alt="">
+          <p class="ponto-dist">${esc(nivel.titulo)} · Pergunta ${z.i + 1} de ${z.perguntas.length} · ${z.acertos} ${z.acertos === 1 ? "acerto" : "acertos"}</p>
+        </div>
+        <div class="quiz-barra" role="progressbar" aria-valuemin="0" aria-valuemax="${z.perguntas.length}" aria-valuenow="${z.i + (respondida ? 1 : 0)}"><span style="width:${((z.i + (respondida ? 1 : 0)) / z.perguntas.length) * 100}%"></span></div>
         <h1 class="quiz-pergunta">${esc(q.pergunta)}</h1>
+        ${q.imagem ? `<img class="quiz-imagem" src="${esc(q.imagem)}" alt="Imagem da pergunta">` : ""}
         <div class="quiz-opcoes">${q.opcoes.map((o, i) => {
           const classe = !respondida ? "" : o === q.certa ? "certa" : i === z.escolhida ? "errada" : "";
           return `<button class="quiz-opcao ${classe}" data-acao="quiz-responder" data-op="${i}" ${respondida ? "disabled" : ""}>${esc(o)}</button>`;
         }).join("")}</div>
         ${respondida ? `<p class="frase-dica" role="status"><strong>${q.opcoes[z.escolhida] === q.certa ? "Acertou." : `Era: ${esc(q.certa)}.`}</strong> ${esc(q.explica)}</p>
+          ${revelada}
           <button class="btn btn-gps ver-todos" data-acao="quiz-proxima">${z.i + 1 < z.perguntas.length ? "Próxima pergunta" : "Ver resultado"}</button>` : ""}`;
     },
     guia(id) {
@@ -503,6 +536,7 @@
       if (g) {
         const l = lugarDo(g);
         return `<a class="voltar" href="#/guia">← Perto de você</a>
+          ${heroi(fotoLugar(g.id), g.lugar, imgs.lugares[g.id])}
           <h1 lang="es">${l.icone} ${esc(g.lugar)}</h1>
           <p class="lead">${esc(l.cidade)}${posicao ? ` · a ${formatarDist(distanciaKm(posicao, g.coords))} de você` : ""}</p>
           <div class="frase-acoes"><button class="btn" data-acao="narrar" data-guia="${esc(g.id)}"><span aria-hidden="true">🔊</span> Ouvir a história</button></div>
@@ -531,7 +565,7 @@
         </div>
         <div class="tabela">${visiveis.map(({ p, km, l }) => `
           <a class="item ponto" href="#/guia/${p.id}">
-            <span class="emoji" aria-hidden="true">${l.icone}</span>
+            ${miniatura(fotoLugar(p.id), l.icone)}
             <span class="ponto-texto">
               <strong lang="es">${esc(p.lugar)}</strong>
               <small class="suave">${esc(p.resumo)}</small>
@@ -546,8 +580,8 @@
         <div class="intro">${esc(pais.intro)}</div>
         <h1>O que você precisa agora?</h1>
         <p class="lead">Toque na situação, ouça a frase ou mostre a tela.</p>
-        <div class="grade">${pais.situacoes.map((s) => `
-          <a class="categoria" href="#/s/${s.id}">
+        <div class="grade">${pais.situacoes.map((s, i) => `
+          <a class="categoria" style="--cor:${corDoIndice(i)}" href="#/s/${s.id}">
             <span class="emoji" aria-hidden="true">${s.icone}</span>
             <strong>${esc(s.titulo)}</strong>
             <small>${s.frases.length} frases</small>
@@ -568,8 +602,8 @@
       if (!c) {
         return `<h1>Conversas prontas</h1>
           <p class="lead">O que dizer e o que vão te responder, na ordem em que acontece.</p>
-          <div class="grade">${(pais.conversas || []).map((x) => `
-            <a class="categoria" href="#/conversas/${x.id}">
+          <div class="grade">${(pais.conversas || []).map((x, i) => `
+            <a class="categoria" style="--cor:${corDoIndice(i + 5)}" href="#/conversas/${x.id}">
               <span class="emoji" aria-hidden="true">${x.icone}</span>
               <strong>${esc(x.titulo)}</strong>
               <small>${x.passos.length} etapas</small>
@@ -607,6 +641,7 @@
           <h2>${esc(c.cidade)}</h2>
           ${c.itens.map((l) => `
             <section class="item lugar">
+              ${pontos().filter((g) => g.lugar === l.nome).map((g) => (fotoLugar(g.id) ? `<img class="lugar-foto" src="${fotoLugar(g.id)}" alt="${esc(l.nome)}" loading="lazy">` : "")).join("")}
               <div class="lugar-topo"><span aria-hidden="true">${l.icone}</span><h3 lang="es">${esc(l.nome)}</h3></div>
               <p class="suave">${esc(l.dica)}</p>
               ${pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("")}
@@ -691,7 +726,8 @@
     else if (rota === "s") html = telas.situacao(param);
     else if (telas[rota]) html = telas[rota](param);
     else html = telas.inicio();
-    main.innerHTML = `${html}<p class="versao">Viajador · versão ${VERSAO_APP}</p>`;
+    const arte = !termo && !param && CAPAS[rota];
+    main.innerHTML = `${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
     document.querySelectorAll("#abas a").forEach((a) => {
       const ativa = !termo && (a.dataset.aba === rota || (a.dataset.aba === "" && rota === "s"));
       a.classList.toggle("ativa", ativa);

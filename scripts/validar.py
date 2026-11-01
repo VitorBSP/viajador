@@ -29,7 +29,7 @@ PAIS = {
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
-    "historias": False, "quiz": False, "futebol": False,
+    "historias": False, "quiz": False, "futebol": False, "imagens": False,
 }
 FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
            "cultura": True, "jogo": True, "frases": True, "fontes": True}
@@ -40,7 +40,7 @@ COSTUME = {"titulo": True, "texto": True}
 PESSOA = {"nome": True, "origem": True, "texto": True}
 ESTRELA = {"nome": True, "area": True, "origem": True, "texto": True}
 NIVEL = {"id": True, "titulo": True, "icone": True, "descricao": True, "perguntas": True}
-PERGUNTA = {"pergunta": True, "certa": True, "erradas": True, "explica": True}
+PERGUNTA = {"pergunta": True, "imagem": False, "certa": True, "erradas": True, "explica": True}
 GUIA = {"id": True, "lugar": True, "coords": True, "revisado": True, "resumo": True, "historia": True, "reparar": True, "fontes": True}
 FONTE = {"titulo": True, "url": True}
 CONVERSA = {"id": True, "icone": True, "titulo": True, "passos": True}
@@ -422,6 +422,8 @@ def checar_pais(r, chave, p, esperado):
             lugar = f"{onde}.perguntas[{m}]"
             if checar_campos(r, q, PERGUNTA, lugar, nivel.linha):
                 erradas = lista_de(r, q, "erradas", lugar, minimo=3)
+                if q.get("imagem") and not Path(q["imagem"]).exists():
+                    r.erro(q.linha, lugar, f'imagem não existe: {q["imagem"]}')
                 if q.get("certa") in erradas or len(set(erradas)) != len(erradas):
                     r.erro(q.linha, lugar, "opções repetidas na pergunta")
     for n, e in enumerate(lista_de(r, p, "etiqueta", "etiqueta")):

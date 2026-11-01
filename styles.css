@@ -168,6 +168,39 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .check small { display: block; margin-top: 2px; }
 .check input:checked + span strong { text-decoration: line-through; }
 .btn-gps { min-height: 44px; }
+.capa { display: block; width: 100%; height: auto; max-height: 150px; object-fit: cover; border-radius: var(--raio); margin-bottom: 16px; }
+.heroi { margin: 0 0 14px; }
+.heroi img { display: block; width: 100%; max-height: 300px; object-fit: cover; border-radius: var(--raio); background: var(--linha); }
+.credito { margin: 6px 0 0; font-size: 12px; color: var(--suave); }
+.credito a, .versao a { color: inherit; }
+.mini { flex: none; width: 76px; height: 76px; object-fit: cover; border-radius: 12px; background: var(--linha); }
+.lugar-foto { display: block; width: 100%; max-height: 190px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; background: var(--linha); }
+.pessoa { display: flex; gap: 12px; align-items: flex-start; }
+.retrato { flex: none; width: 68px; height: 68px; object-fit: cover; object-position: top; border-radius: 50%; border: 3px solid var(--sol); background: var(--linha); }
+.categoria { border-top: 5px solid var(--cor, var(--sol)); }
+.categoria .emoji { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: color-mix(in srgb, var(--cor, var(--sol)) 18%, transparent); }
+.selo { flex: none; width: 56px; height: 56px; border-radius: 14px; }
+.nivel { border-left: 6px solid var(--cor-nivel); }
+.nivel-turista { --cor-nivel: #2a9d8f; }
+.nivel-viajante { --cor-nivel: #2f6fd0; }
+.nivel-uruguaio { --cor-nivel: #7a4a24; }
+.nivel-extreme { --cor-nivel: #e4441a; }
+.nivel-futebol { --cor-nivel: #2e8b3d; }
+.quiz-topo { display: flex; align-items: center; gap: 10px; }
+.quiz-topo .selo { width: 44px; height: 44px; }
+.quiz-topo p { margin: 0; }
+.quiz-barra { height: 10px; margin: 12px 0; border-radius: 999px; background: var(--linha); overflow: hidden; }
+.quiz-barra span { display: block; height: 100%; background: var(--sol); transition: width .35s; }
+.quiz-imagem, .quiz-revela { display: block; width: 100%; max-height: 300px; object-fit: cover; border-radius: var(--raio); margin-bottom: 14px; background: var(--linha); }
+.quiz-revela { margin-top: 12px; animation: surgir .35s ease-out; }
+.quiz-revela-pessoa { width: 140px; height: 140px; border-radius: 50%; object-position: top; }
+.quiz-opcao.certa { animation: certo .4s ease-out; }
+.quiz-opcao.errada { animation: errado .35s ease-out; }
+.medalha { display: block; width: 110px; height: 110px; margin: 8px auto 12px; animation: surgir .45s ease-out; }
+@keyframes surgir { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes certo { 50% { transform: scale(1.03); } }
+@keyframes errado { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .quiz-revela, .quiz-opcao.certa, .quiz-opcao.errada, .medalha { animation: none; } }
 .versao { margin-top: 28px; text-align: center; font-size: 13px; color: var(--suave); }
 .ranking { margin: 8px 0 16px; padding-left: 22px; }
 .ranking li { margin-bottom: 6px; }
