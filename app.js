@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "14";
+  const VERSAO_APP = "15";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -456,7 +456,7 @@
       const nivel = niveis.find((x) => x.id === id);
       if (!nivel) {
         return `<h1>Quiz do Uruguai</h1>
-          <p class="lead">Três níveis gerais e um de futebol. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
+          <p class="lead">Quatro níveis de dificuldade e um de futebol. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
           <div class="tabela">${niveis.map((n) => `
             <a class="item ponto" href="#/quiz/${n.id}">
               <span class="emoji" aria-hidden="true">${n.icone}</span>
