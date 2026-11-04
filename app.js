@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "19";
+  const VERSAO_APP = "20";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -426,8 +426,9 @@
   let lerEmVoz = false;
   const TAM_CONTEXTO = 12000;
   const palavras = (s) => normal(s).split(/[^a-z0-9ñ]+/).filter((p) => p.length >= 4);
-  function montarContexto(pergunta) {
-    const chave = new Set(palavras(pergunta));
+  // `assunto` traz as mensagens anteriores, para perguntas como "e quem projetou?" manterem o tema.
+  function montarContexto(pergunta, assunto = "") {
+    const chave = new Set(palavras(`${pergunta} ${assunto}`));
     const pontua = (txt) => palavras(txt).reduce((n, p) => n + (chave.has(p) ? 1 : 0), 0);
     const partes = [`País: ${pais.nome}. ${pais.intro}`];
     const descreve = (g) => {
@@ -436,7 +437,7 @@
     };
     const escolhidos = new Map();
     if (posicao) [...pontos()].sort((a, b) => distanciaKm(posicao, a.coords) - distanciaKm(posicao, b.coords)).slice(0, 3).forEach((g) => escolhidos.set(g.id, g));
-    pontos().map((g) => ({ g, n: pontua(`${g.lugar} ${g.resumo} ${g.historia.join(" ")}`) + (normal(pergunta).includes(normal(g.lugar.split(" (")[0])) ? 5 : 0) }))
+    pontos().map((g) => ({ g, n: pontua(`${g.lugar} ${g.resumo} ${g.historia.join(" ")}`) + (normal(`${pergunta} ${assunto}`).includes(normal(g.lugar.split(" (")[0])) ? 5 : 0) }))
       .filter((x) => x.n >= 2).sort((a, b) => b.n - a.n).slice(0, 3).forEach((x) => escolhidos.set(x.g.id, x.g));
     if (posicao) partes.push(`O viajante está perto destes lugares, em ordem de distância.`);
     escolhidos.forEach((g) => partes.push(descreve(g)));
@@ -453,6 +454,12 @@
     if (escolhidos.size + hist.length === 0) partes.push(`LUGARES DO GUIA: ${pontos().map((g) => `${g.lugar} (${lugarDo(g).cidade}): ${g.resumo}`).join(" | ")}`);
     return partes.join("\n\n").slice(0, TAM_CONTEXTO);
   }
+  // O guia não percebe sozinho que a conversa continua e cumprimenta toda vez; a orientação vai junto do contexto.
+  const orientacaoDaConversa = (continua) =>
+    (continua
+      ? "ESTA CONVERSA JÁ ESTÁ EM ANDAMENTO: não cumprimente nem diga Hola, che ou Olá. Responda direto, continuando o assunto."
+      : "PRIMEIRA MENSAGEM DA CONVERSA: pode cumprimentar em poucas palavras.") +
+    " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.";
   async function perguntarAoGuia(pergunta) {
     if (!rankingOnline()) return avisar("O Guia IA ainda não foi configurado");
     if (!navigator.onLine) return avisar("O Guia IA precisa de internet");
@@ -466,7 +473,9 @@
         method: "POST",
         signal: AbortSignal.timeout ? AbortSignal.timeout(90000) : undefined,
         headers: { apikey: SUPABASE.chave, "Content-Type": "application/json" },
-        body: JSON.stringify({ pergunta, contexto: montarContexto(pergunta), historico, aparelho }),
+        body: JSON.stringify({ pergunta, contexto: `${orientacaoDaConversa(historico.length > 0)}
+
+${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`, historico, aparelho }),
       });
       const j = await r.json().catch(() => ({}));
       texto = j.resposta || j.erro || (r.status === 404 ? "O Guia IA ainda não está ligado no servidor." : "Não consegui responder agora.");
@@ -480,9 +489,15 @@
       render();
       const ultima = main.querySelector(".chat-msg:last-of-type");
       if (ultima) ultima.scrollIntoView({ block: "start" });
-      if (lerEmVoz && conversa[conversa.length - 1].quem === "guia") narrar([texto]);
+      if (lerEmVoz && conversa[conversa.length - 1].quem === "guia") narrar([texto.replace(/[*_#]/g, "")]);
     }
   }
+  // O Gemini escreve com **negrito** e *itálico*; vira HTML depois de escapar o texto.
+  const formatarResposta = (t) =>
+    esc(t)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*(?!\s)([^*\n]+?)\*(?!\*)/g, "$1<em>$2</em>")
+      .replace(/^\s*[-*]\s+/gm, "• ");
   const Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
   function ouvirPergunta() {
     const rec = new Reconhecimento();
@@ -507,7 +522,7 @@
         ${rankingOnline() ? "" : `<p class="frase-dica">O Guia IA ainda não foi configurado.</p>`}
         <div class="chat">${conversa.length ? conversa.map((m, i) => `
           <div class="chat-msg chat-${m.quem}">
-            <p>${esc(m.texto)}</p>
+            <p>${m.quem === "guia" ? formatarResposta(m.texto) : esc(m.texto)}</p>
             ${m.quem === "guia" ? `<button class="btn" data-acao="ia-ouvir" data-i="${i}"><span aria-hidden="true">🔊</span> Ouvir</button>` : ""}
           </div>`).join("") : `<div class="chat-sugestoes">${sugestoes.map((s) => `<button class="btn" data-acao="ia-sugestao">${esc(s)}</button>`).join("")}</div>`}
           ${pensando ? `<div class="chat-msg chat-guia chat-pensando" role="status"><p>Pensando…</p></div>` : ""}
@@ -887,7 +902,7 @@
     }
     if (b.dataset.acao === "ia-sugestao") return perguntarAoGuia(b.textContent.trim());
     if (b.dataset.acao === "ia-falar") return ouvirPergunta();
-    if (b.dataset.acao === "ia-ouvir") return narrar([conversa[+b.dataset.i].texto]);
+    if (b.dataset.acao === "ia-ouvir") return narrar([conversa[+b.dataset.i].texto.replace(/[*_#]/g, "")]);
     if (b.dataset.acao === "ia-limpar") {
       conversa = [];
       return render();
