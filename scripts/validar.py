@@ -30,7 +30,9 @@ PAIS = {
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
     "historias": False, "quiz": False, "futebol": False, "imagens": False,
+    "artigo": False, "origem": False, "sugestoesIA": False,
 }
+ORIGEM = {"lead": True, "imagem": True, "alt": True, "legenda": True, "quiz": False}
 FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
            "cultura": True, "jogo": True, "frases": True, "fontes": True}
 HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "fundacao": False, "momentos": True, "costumes": True,
@@ -426,6 +428,19 @@ def checar_pais(r, chave, p, esperado):
                     r.erro(q.linha, lugar, f'imagem não existe: {q["imagem"]}')
                 if q.get("certa") in erradas or len(set(erradas)) != len(erradas):
                     r.erro(q.linha, lugar, "opções repetidas na pergunta")
+    if "artigo" in p and p["artigo"] not in ("o", "a", "os", "as"):
+        r.erro(p.linha, "artigo", f'deveria ser "o", "a", "os" ou "as", veio {p["artigo"]!r}')
+    for n, s in enumerate(lista_de(r, p, "sugestoesIA", "sugestoesIA", minimo=1)):
+        if not (isinstance(s, str) and s.strip()):
+            r.erro(p.linha, f"sugestoesIA[{n}]", "deveria ser um texto não vazio")
+    origem = p.get("origem")
+    if origem is not None and checar_campos(r, origem, ORIGEM, "origem", p.linha):
+        if not (historias and isinstance(historias[0], Obj) and historias[0].get("fundacao")):
+            r.erro(origem.linha, "origem", 'precisa de "fundacao" na primeira história')
+        if isinstance(origem.get("imagem"), str) and not (RAIZ / origem["imagem"]).exists():
+            r.erro(origem.linha, "origem", f'imagem não existe: {origem["imagem"]}')
+        if "quiz" in origem and origem["quiz"] not in [n.get("id") for n in niveis if isinstance(n, Obj)]:
+            r.erro(origem.linha, "origem", f'quiz não existe: "{origem["quiz"]}"')
     for n, e in enumerate(lista_de(r, p, "etiqueta", "etiqueta")):
         checar_campos(r, e, ETIQUETA, f"etiqueta[{n}]", p.linha)
     itens = lista_de(r, p, "checklist", "checklist")

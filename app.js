@@ -1,18 +1,40 @@
 (function () {
-  const pais = window.VIAJADOR.paises.uy;
+  const paises = window.VIAJADOR.paises;
   const $ = (s) => document.querySelector(s);
   const main = $("#conteudo");
-  const CHAVE_FAV = "viajador:favoritos";
+  const CHAVE_PAIS = "viajador:pais";
+  // O país padrão é o primeiro <script> de dados em index.html. Trocar de país recarrega a página.
+  let pais = paises[Object.keys(paises)[0]];
+  try { pais = paises[localStorage.getItem(CHAVE_PAIS)] || pais; } catch (e) {}
+  // "o Uruguai", "do Uruguai"; sem `artigo`, "de Cuba".
+  const comArtigo = pais.artigo ? `${pais.artigo} ${pais.nome}` : pais.nome;
+  const doNome = pais.artigo ? `d${pais.artigo} ${pais.nome}` : `de ${pais.nome}`;
+
+  // Favoritos, checklist, quiz e ranking são de cada país. Antes do seletor só existia o Uruguai,
+  // então as chaves antigas passam para ":uy"; a antiga só sai depois de copiada.
+  const doPais = (chave) => `${chave}:${pais.codigo}`;
+  const POR_PAIS = ["viajador:favoritos", "viajador:checklist", "viajador:quiz", "viajador:quiz-vistas", "viajador:ranking"];
+  try {
+    for (const chave of POR_PAIS) {
+      const antigo = localStorage.getItem(chave);
+      if (antigo === null) continue;
+      if (localStorage.getItem(chave + ":uy") === null) localStorage.setItem(chave + ":uy", antigo);
+      if (localStorage.getItem(chave + ":uy") === antigo) localStorage.removeItem(chave);
+    }
+  } catch (e) {}
+  const CHAVE_FAV = doPais("viajador:favoritos");
   const CHAVE_ESCALA = "viajador:escala";
-  const CHAVE_CHECK = "viajador:checklist";
-  const CHAVE_QUIZ = "viajador:quiz";
-  const CHAVE_QUIZ_VISTAS = "viajador:quiz-vistas";
+  const CHAVE_CHECK = doPais("viajador:checklist");
+  const CHAVE_QUIZ = doPais("viajador:quiz");
+  const CHAVE_QUIZ_VISTAS = doPais("viajador:quiz-vistas");
   const RODADA = 10;
-  const CHAVE_RANKING = "viajador:ranking";
+  const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "21";
+  const VERSAO_APP = "22";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
-  const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
+  const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
+  // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
+  const rankingOnline = () => supabaseOnline() && pais.codigo === "uy";
   const TAM_RANKING = 10;
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
   // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
@@ -99,7 +121,7 @@
     if (!("speechSynthesis" in window)) return avisar("Seu navegador não tem voz");
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(texto.replace(/[¿¡…]/g, ""));
-    u.lang = voz ? voz.lang : "es-UY";
+    u.lang = voz ? voz.lang : pais.voz[0];
     if (voz) u.voice = voz;
     u.rate = 0.85;
     speechSynthesis.speak(u);
@@ -244,6 +266,16 @@
 
   // Guia: a posição só é pedida ao tocar no botão, fica na memória e nunca sai do aparelho.
   const pontos = () => pais.guia || [];
+  // Seções opcionais: sem conteúdo no país, a aba some e a rota volta ao início.
+  const temSecao = {
+    guia: pontos().length > 0,
+    historia: (pais.historias || []).length > 0,
+    origem: Boolean(pais.origem && pais.historias && pais.historias[0] && pais.historias[0].fundacao),
+    futebol: Boolean(pais.futebol),
+    quiz: (pais.quiz || []).length > 0,
+    conversas: (pais.conversas || []).length > 0,
+    preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0,
+  };
   let posicao = null;
   let estadoGps = "";
   let filtroCidade = "";
@@ -461,7 +493,7 @@
       : "PRIMEIRA MENSAGEM DA CONVERSA: pode cumprimentar em poucas palavras.") +
     " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.";
   async function perguntarAoGuia(pergunta) {
-    if (!rankingOnline()) return avisar("O Guia IA ainda não foi configurado");
+    if (!supabaseOnline()) return avisar("O Guia IA ainda não foi configurado");
     if (!navigator.onLine) return avisar("O Guia IA precisa de internet");
     pensando = true;
     const historico = conversa.slice(-6).map((m) => ({ papel: m.quem === "eu" ? "user" : "model", texto: m.texto }));
@@ -516,10 +548,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
 
   const telas = {
     ia() {
-      const sugestoes = ["O que tem de interessante perto de mim?", "Me conta a história do Teatro Solís", "Por que o país se chama Oriental?", "Como peço um chivito?"];
+      const sugestoes = pais.sugestoesIA || ["O que tem de interessante perto de mim?", "Como peço a conta?", "Que gírias eu preciso saber?", `Me conta como nasceu ${comArtigo}`];
       return `<h1>Guia IA</h1>
         <p class="lead">Pergunte sobre os lugares, a história e como falar. As respostas usam o conteúdo do Viajador.</p>
-        ${rankingOnline() ? "" : `<p class="frase-dica">O Guia IA ainda não foi configurado.</p>`}
+        ${supabaseOnline() ? "" : `<p class="frase-dica">O Guia IA ainda não foi configurado.</p>`}
         <div class="chat">${conversa.length ? conversa.map((m, i) => `
           <div class="chat-msg chat-${m.quem}">
             <p>${m.quem === "guia" ? formatarResposta(m.texto) : esc(m.texto)}</p>
@@ -551,35 +583,38 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <h2>Pessoas</h2>
         <ul class="fontes">${Object.entries(imgs.pessoas).map(([n, c]) => linha(n, c)).join("")}</ul>
         <h2>Origem do país</h2>
-        <ul class="fontes">${imgs.origem ? linha("O Juramento dos Treinta y Tres Orientais", imgs.origem) : ""}</ul>`;
+        <ul class="fontes">${imgs.origem && pais.origem ? linha(pais.origem.alt, imgs.origem) : ""}</ul>`;
     },
     origem() {
-      const h = (pais.historias || [])[0];
-      return `<figure class="heroi"><img src="img/arte/origem.jpg" alt="O Juramento dos Treinta y Tres Orientais, de Juan Manuel Blanes"><figcaption class="credito">O Juramento dos Treinta y Tres Orientais, de Juan Manuel Blanes. Domínio público.</figcaption></figure>
-        <h1>🇺🇾 Como nasceu o Uruguai</h1>
-        <p class="lead">Banda Oriental, Província Oriental, Províncias Unidas, e o papel de Argentina, Brasil e Inglaterra.</p>
-        ${cartoes(h.fundacao || [])}
+      const o = pais.origem;
+      const h = pais.historias[0];
+      const quiz = (pais.quiz || []).find((n) => n.id === o.quiz);
+      return `<figure class="heroi"><img src="${esc(o.imagem)}" alt="${esc(o.alt)}"><figcaption class="credito">${esc(o.legenda)}</figcaption></figure>
+        <h1>${pais.bandeira} Como nasceu ${esc(comArtigo)}</h1>
+        <p class="lead">${esc(o.lead)}</p>
+        ${cartoes(h.fundacao)}
         ${secao("Linha do tempo", h.momentos.filter((m) => /^1[6-8]/.test(m.data)), momentos)}
-        <a class="btn btn-gps ver-todos" href="#/historia/uruguai">Ver a História completa</a>
-        <a class="btn btn-gps ver-todos" href="#/quiz/uruguaio">Fazer o quiz Quase uruguaio</a>
+        <a class="btn btn-gps ver-todos" href="#/historia/${h.id}">Ver a História completa</a>
+        ${quiz ? `<a class="btn btn-gps ver-todos" href="#/quiz/${quiz.id}">Fazer o quiz ${esc(quiz.titulo)}</a>` : ""}
         <h2>Fontes</h2>
         <ul class="fontes">${h.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
     },
     futebol() {
       const f = pais.futebol;
-      return `<h1>⚽ Futebol uruguaio</h1>
+      const estadios = f.estadios.map((e) => pontos().find((g) => g.lugar.includes(e.titulo)) && e).filter(Boolean);
+      return `<h1>⚽ Futebol ${esc(doNome)}</h1>
         <p class="lead">${esc(f.intro)}</p>
         ${secao("Títulos", f.titulos, cartoes)}
         ${secao("Momentos que marcaram", f.momentos, momentos)}
-        ${secao("Peñarol, Nacional e os outros", f.clubes, cartoes)}
+        ${secao("Clubes", f.clubes, cartoes)}
         ${secao("Estádios", f.estadios, cartoes)}
-        <a class="btn btn-gps ver-todos" href="#/guia/estadio-centenario">Ver a história do Centenario</a>
+        ${estadios.map((e) => `<a class="btn btn-gps ver-todos" href="#/guia/${pontos().find((g) => g.lugar.includes(e.titulo)).id}">Ver a história do ${esc(e.titulo)}</a>`).join("")}
         ${secao("Ídolos", f.idolos, pessoas)}
         ${secao("Cultura do futebol", f.cultura, cartoes)}
         ${secao("Como ir a um jogo", f.jogo, cartoes)}
         <h2>Frases para o jogo</h2>
         ${lista(f.frases)}
-        <a class="btn btn-gps ver-todos" href="#/quiz/futebol">Fazer o quiz de futebol</a>
+        ${(pais.quiz || []).some((n) => n.id === "futebol") ? `<a class="btn btn-gps ver-todos" href="#/quiz/futebol">Fazer o quiz de futebol</a>` : ""}
         <h2>Fontes</h2>
         <ul class="fontes">${f.fontes.map((x) => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.titulo)}</a></li>`).join("")}</ul>`;
     },
@@ -591,13 +626,13 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <div class="filtros" role="group" aria-label="Escolher país ou cidade">${lista.map((x) => `
           <a class="btn ${x.id === h.id ? "on" : ""}" href="#/historia/${x.id}"${x.id === h.id ? ' aria-current="page"' : ""}>${esc(x.titulo)}</a>`).join("")}
         </div>
-        ${secao("Como nasceu o Uruguai", h.fundacao || [], cartoes)}
+        ${secao(`Como nasceu ${esc(comArtigo)}`, h.fundacao || [], cartoes)}
         ${secao("Momentos históricos", h.momentos, momentos)}
         ${secao("Costumes", h.costumes, cartoes)}
         ${secao("Pessoas históricas", h.pessoas, pessoas)}
         ${secao("Estrelas", h.estrelas, pessoas)}
         ${secao("Datas importantes", h.datas, momentos)}
-        <a class="btn btn-gps ver-todos" href="#/quiz">Testar o que aprendi no quiz</a>
+        ${temSecao.quiz ? `<a class="btn btn-gps ver-todos" href="#/quiz">Testar o que aprendi no quiz</a>` : ""}
         <h2>Fontes</h2>
         <ul class="fontes">${h.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
     },
@@ -605,8 +640,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const niveis = pais.quiz || [];
       const nivel = niveis.find((x) => x.id === id);
       if (!nivel) {
-        return `<h1>Quiz do Uruguai</h1>
-          <p class="lead">Quatro níveis de dificuldade e um de futebol. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
+        return `<h1>Quiz ${esc(doNome)}</h1>
+          <p class="lead">${niveis.length} ${niveis.length === 1 ? "nível" : "níveis"}. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
           <div class="tabela">${niveis.map((n) => `
             <a class="item ponto nivel nivel-${n.id}" href="#/quiz/${n.id}">
               <img class="selo" src="img/arte/nivel-${n.id}.svg" alt="">
@@ -635,7 +670,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <h2>Ranking de ${esc(nivel.titulo)}</h2>
           ${tabelaRanking(nivel.id)}
           <button class="btn btn-gps ver-todos" data-acao="quiz-repetir">Jogar com novas perguntas</button>
-          <a class="btn btn-gps ver-todos" href="#/historia">Rever a História</a>`;
+          ${temSecao.historia ? `<a class="btn btn-gps ver-todos" href="#/historia">Rever a História</a>` : ""}`;
       }
       const q = z.perguntas[z.i];
       const respondida = z.escolhida !== null;
@@ -785,7 +820,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         </div>`;
     },
     girias() {
-      return `<h1>Gírias uruguaias</h1>
+      return `<h1>Gírias ${esc(doNome)}</h1>
         <p class="lead">Para entender a conversa (e soltar uma de vez em quando).</p>
         ${lista(pais.girias.map(giriaFrase))}`;
     },
@@ -852,7 +887,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     let html;
     if (termo) html = telas.busca(termo);
     else if (rota === "s") html = telas.situacao(param);
-    else if (telas[rota]) html = telas[rota](param);
+    else if (telas[rota] && temSecao[rota] !== false) html = telas[rota](param);
     else html = telas.inicio();
     const arte = !termo && !param && CAPAS[rota];
     main.innerHTML = `${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
@@ -1037,6 +1072,18 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (primeiraVez) navigator.serviceWorker.ready.then(() => avisar("Pronto para usar sem internet"));
   }
 
-  $("#pais").textContent = `${pais.bandeira} ${pais.nome}`;
+  // Seletor de país: a troca recarrega, porque quase todo o estado acima depende do país.
+  $("#pais").innerHTML = Object.values(paises)
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt"))
+    .map((p) => `<option value="${esc(p.codigo)}">${esc(p.bandeira + " " + p.nome)}</option>`)
+    .join("");
+  $("#pais").value = pais.codigo;
+  $("#pais").addEventListener("change", (e) => {
+    try { localStorage.setItem(CHAVE_PAIS, e.target.value); } catch (err) {}
+    history.replaceState(null, "", "#/");
+    location.reload();
+  });
+  document.querySelectorAll("#abas [data-aba]").forEach((a) => { a.hidden = temSecao[a.dataset.aba] === false; });
+  document.title = `Viajador · ${pais.nome}`;
   render();
 })();

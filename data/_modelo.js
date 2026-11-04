@@ -7,6 +7,7 @@ window.VIAJADOR = window.VIAJADOR || { paises: {} };
 window.VIAJADOR.paises.xx = {
   codigo: "xx", // 2 letras minúsculas, igual ao nome do arquivo
   nome: "", // em português
+  // artigo: "a", // opcional: "o", "a", "os" ou "as" ("Quiz da Argentina")
   bandeira: "", // emoji
   voz: ["es-419", "es-ES", "es"], // ponha o idioma local primeiro (ex.: "es-AR")
   cidades: [], // devem bater com lugares[].cidade

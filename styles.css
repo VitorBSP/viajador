@@ -74,7 +74,12 @@ button { font: inherit; color: inherit; }
   background: var(--sol);
   box-shadow: 0 0 0 4px rgba(242, 169, 0, .35);
 }
-.pais { font-size: 14px; opacity: .9; }
+.pais select {
+  min-height: 36px; border: 0; border-radius: 8px; padding: 0 6px;
+  font: 500 16px Inter, system-ui, sans-serif;
+  background: rgba(255, 255, 255, .15); color: #fff; cursor: pointer;
+}
+.pais option { background: #fff; color: #1b2433; }
 .busca { display: block; order: 3; flex: 1 0 100%; margin: 4px 0 0; }
 .busca input {
   width: 100%; border: 0; border-radius: 12px;
@@ -96,7 +101,7 @@ button { font: inherit; color: inherit; }
 .abas > a:hover, .aba-mais:hover { color: #fff; }
 .abas > a.ativa, .aba-mais.ativa { color: #fff; border-color: var(--sol); }
 .abas :focus-visible { outline-offset: -3px; }
-.aba-icone, .aba-curto { display: none; }
+.aba-icone, .aba-curto, .abas [hidden] { display: none; }
 .aba-mais { margin-left: auto; }
 .aba-seta { font-size: 11px; transition: transform .15s; }
 .aba-mais[aria-expanded="true"] .aba-seta { transform: rotate(180deg); }

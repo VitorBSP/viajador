@@ -31,6 +31,9 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `girias`, `ditados`, `falsosAmigos`, `pronuncia`, `comidas`, `lugares` | lista | Podem estar vazias (gera aviso e a tela fica em branco), mas precisam existir. |
 | `conversas`, `etiqueta`, `checklist`, `guia`, `historias`, `quiz` | lista | Opcionais. |
 | `imagens` | objeto | Opcional: créditos em `lugares` (por id do guia), `pessoas` (por nome) e `origem`. |
+| `artigo` | texto | Opcional: `o`, `a`, `os` ou `as`, para o app escrever "Quiz do Uruguai" e "Como nasceu a Argentina". Sem ele, "Quiz de Cuba". |
+| `origem` | objeto | Opcional: aba "Origem do país". `lead`, `imagem` (caminho no repositório), `alt`, `legenda` e, se quiser, `quiz` (id de um nível). Exige `fundacao` na primeira história. |
+| `sugestoesIA` | lista de textos | Opcional: perguntas prontas do Guia IA. Sem ela, o app usa sugestões genéricas. |
 | `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 
 ## Itens de cada lista
@@ -85,11 +88,15 @@ Escrita do jeito brasileiro, com a sílaba tônica em MAIÚSCULA: `DON-de es-TÁ
 
 Frases iguais em `situacoes`, `lugares` ou `comidas[].pedir` geram aviso porque os favoritos guardam o texto de `es`: salvar uma marca as duas.
 
-## Falta para o segundo país aparecer no site
+## Como um país aparece no site
 
-O formato já aceita vários países, mas o frontend ainda não:
+1. Inclua `<script src="data/<código>.js"></script>` em `index.html`, depois do Uruguai. O primeiro script é o país padrão.
+2. Inclua o arquivo em `NUCLEO`, no `sw.js`, e suba `VERSAO`, para funcionar sem internet.
+3. O seletor no topo lista os países carregados. A escolha, os favoritos, o checklist, o quiz e o ranking do aparelho ficam guardados por país.
+4. As abas de seções opcionais (`guia`, `historias`, `origem`, `futebol`, `quiz`, `conversas`, `checklist`/`etiqueta`) somem quando o país não as tem.
 
-- `index.html` carrega só `data/uy.js`.
-- `app.js` fixa `window.VIAJADOR.paises.uy` e não tem seletor de país.
-- `app.js` traz textos do Uruguai, como "Gírias uruguaias" e o idioma de reserva `es-UY`.
-- A chave `viajador:favoritos` é uma só para todos os países.
+Ainda só do Uruguai, no backend:
+
+- **Ranking online:** `supabase/ranking.sql` só aceita os níveis do Uruguai, então os outros países usam só o ranking do aparelho.
+- **Guia IA:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio". Para outro país, o texto precisa vir do país.
+- **Fotos:** ficam em `img/guia/<id>.jpg` e `img/pessoas/<id>.jpg`, sem pasta por país, então os ids não podem se repetir entre países.

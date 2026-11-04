@@ -6,6 +6,7 @@ window.VIAJADOR = window.VIAJADOR || { paises: {} };
 window.VIAJADOR.paises.uy = {
   codigo: "uy",
   nome: "Uruguai",
+  artigo: "o",
   bandeira: "🇺🇾",
   voz: ["es-UY", "es-AR", "es-419", "es-ES", "es"],
   cidades: ["Montevidéu", "Punta del Este", "Arredores de Punta", "Piriápolis"],
@@ -2059,6 +2060,16 @@ window.VIAJADOR.paises.uy = {
       { titulo: "Wikipédia: Héctor Castro", url: "https://es.wikipedia.org/wiki/H%C3%A9ctor_Castro" },
     ],
   },
+
+  origem: {
+    lead: "Banda Oriental, Província Oriental, Províncias Unidas, e o papel de Argentina, Brasil e Inglaterra.",
+    imagem: "img/arte/origem.jpg",
+    alt: "O Juramento dos Treinta y Tres Orientais, de Juan Manuel Blanes",
+    legenda: "O Juramento dos Treinta y Tres Orientais, de Juan Manuel Blanes. Domínio público.",
+    quiz: "uruguaio",
+  },
+
+  sugestoesIA: ["O que tem de interessante perto de mim?", "Me conta a história do Teatro Solís", "Por que o país se chama Oriental?", "Como peço um chivito?"],
 
   // História do país e das cidades. Só fatos das `fontes`; datas disputadas são avisadas no texto.
   historias: [
