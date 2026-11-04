@@ -35,7 +35,7 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 180px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 130px; }
 body {
   margin: 0;
   background: var(--fundo);
@@ -67,7 +67,7 @@ button { font: inherit; color: inherit; }
   padding: 12px 16px 0;
   padding-top: max(12px, env(safe-area-inset-top));
 }
-.topo-linha { display: flex; align-items: center; justify-content: space-between; max-width: 760px; margin: 0 auto; }
+.topo-linha { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; max-width: 760px; margin: 0 auto; }
 .marca { display: flex; align-items: center; gap: 10px; min-height: 44px; text-decoration: none; font: 700 22px Fraunces, Georgia, serif; }
 .sol {
   width: 22px; height: 22px; border-radius: 50%;
@@ -75,7 +75,7 @@ button { font: inherit; color: inherit; }
   box-shadow: 0 0 0 4px rgba(242, 169, 0, .35);
 }
 .pais { font-size: 14px; opacity: .9; }
-.busca { display: block; max-width: 760px; margin: 4px auto 0; }
+.busca { display: block; order: 3; flex: 1 0 100%; margin: 4px 0 0; }
 .busca input {
   width: 100%; border: 0; border-radius: 12px;
   padding: 12px 14px; font-size: 16px;
@@ -83,18 +83,75 @@ button { font: inherit; color: inherit; }
 }
 .busca input { min-height: 44px; }
 .busca input::placeholder { color: #5d6878; opacity: 1; }
+/* Abas: no PC, uma linha no topo; o menu "Mais" abre um painel com as outras seções. */
 .abas {
-  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  position: relative; display: flex; gap: 4px;
   max-width: 760px; margin: 8px auto 0;
 }
-.abas::-webkit-scrollbar { display: none; }
-.abas a {
-  flex: none; display: flex; align-items: center; min-height: 44px; padding: 0 12px; text-decoration: none;
+.abas > a, .aba-mais {
+  flex: none; display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; text-decoration: none;
   font-size: 14px; font-weight: 500; color: #dfe7f5;
-  border-bottom: 3px solid transparent;
+  background: none; border: 0; border-bottom: 3px solid transparent; cursor: pointer;
 }
-.abas a.ativa { color: #fff; border-color: var(--sol); }
-.abas a:focus-visible { outline-offset: -3px; }
+.abas > a:hover, .aba-mais:hover { color: #fff; }
+.abas > a.ativa, .aba-mais.ativa { color: #fff; border-color: var(--sol); }
+.abas :focus-visible { outline-offset: -3px; }
+.aba-icone, .aba-curto { display: none; }
+.aba-mais { margin-left: auto; }
+.aba-seta { font-size: 11px; transition: transform .15s; }
+.aba-mais[aria-expanded="true"] .aba-seta { transform: rotate(180deg); }
+
+.mais {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 2;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px;
+  padding: 16px; border-radius: var(--raio);
+  background: var(--cartao); color: var(--texto);
+  box-shadow: 0 12px 40px rgba(10, 20, 40, .25);
+}
+.mais[hidden] { display: none; }
+.mais-titulo { margin: 0 0 4px; padding: 0 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+.mais a {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border-radius: 10px;
+  text-decoration: none; font-weight: 500;
+}
+.mais a:hover { background: var(--celeste-claro); }
+.mais a.ativa { background: var(--sol-claro); box-shadow: inset 3px 0 0 var(--sol); }
+.mais :focus-visible { outline-color: var(--foco); outline-offset: -3px; }
+
+/* PC e notebook: busca na mesma linha da marca, para o topo ocupar menos altura. */
+@media (min-width: 700px) {
+  .busca { order: 0; flex: 1 1 auto; max-width: 420px; margin: 0; }
+}
+
+/* Celular: as abas viram uma barra fixa embaixo, ao alcance do polegar. */
+@media (max-width: 699px) {
+  .abas {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    max-width: none; margin: 0; gap: 0;
+    padding: 4px 4px max(4px, env(safe-area-inset-bottom));
+    background: var(--topo); box-shadow: 0 -2px 12px rgba(10, 20, 40, .2);
+  }
+  .abas > a, .aba-mais {
+    flex: 1 1 0; min-width: 0; flex-direction: column; justify-content: center; gap: 2px;
+    min-height: 56px; padding: 0 2px; margin: 0;
+    font-size: 11px; line-height: 1.2; text-align: center;
+    border-bottom: 0; border-top: 3px solid transparent;
+  }
+  .aba-icone { display: block; font-size: 20px; line-height: 1; }
+  .aba-longo, .aba-seta { display: none; }
+  .aba-curto { display: inline; }
+  .mais {
+    position: fixed; top: auto; bottom: calc(64px + env(safe-area-inset-bottom)); left: 8px; right: 8px;
+    max-height: calc(100vh - 140px); overflow-y: auto;
+    grid-template-columns: 1fr; gap: 12px;
+  }
+  .mais-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
+  .mais-titulo { grid-column: 1 / -1; }
+  .conteudo { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .aviso { bottom: calc(80px + env(safe-area-inset-bottom)); }
+  /* Com o teclado aberto, a barra só atrapalharia. */
+  body:has(input:focus, textarea:focus) .abas { display: none; }
+}
 
 /* Conteúdo */
 .conteudo { max-width: 760px; margin: 0 auto; padding: 20px 16px 80px; outline: none; }

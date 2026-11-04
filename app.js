@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "20";
+  const VERSAO_APP = "21";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -862,7 +862,18 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       if (ativa) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
+    $("#mais-botao").classList.toggle("ativa", !!$("#mais a.ativa"));
   }
+
+  // Menu "Mais": fecha ao escolher uma seção, ao tocar fora ou com Esc.
+  function abrirMais(abrir) {
+    $("#mais").hidden = !abrir;
+    $("#mais-botao").setAttribute("aria-expanded", abrir);
+  }
+  $("#mais-botao").addEventListener("click", () => abrirMais($("#mais").hidden));
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#mais-botao") && (!e.target.closest("#mais") || e.target.closest("a"))) abrirMais(false);
+  });
 
   main.addEventListener("click", (e) => {
     const b = e.target.closest("[data-acao]");
@@ -969,7 +980,14 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   $("#mostrar-girar").addEventListener("click", () => girar(!$("#mostrar").classList.contains("girada")));
   $("#mostrar-ouvir").addEventListener("click", () => falar(fraseAberta.es));
   $("#mostrar").addEventListener("click", (e) => { if (e.target.id === "mostrar") fecharMostrar(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") fecharMostrar(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    fecharMostrar();
+    if (!$("#mais").hidden) {
+      abrirMais(false);
+      $("#mais-botao").focus();
+    }
+  });
 
   $("#busca").addEventListener("input", render);
   window.addEventListener("hashchange", () => {
