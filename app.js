@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "18";
+  const VERSAO_APP = "19";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -464,7 +464,7 @@
     try {
       const r = await fetch(`${SUPABASE.url}/functions/v1/guia`, {
         method: "POST",
-        signal: AbortSignal.timeout ? AbortSignal.timeout(60000) : undefined,
+        signal: AbortSignal.timeout ? AbortSignal.timeout(90000) : undefined,
         headers: { apikey: SUPABASE.chave, "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta, contexto: montarContexto(pergunta), historico, aparelho }),
       });
