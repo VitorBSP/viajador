@@ -1,6 +1,6 @@
 // Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-v22";
+const VERSAO = "viajador-v23";
 const NUCLEO = [
   "./",
   "styles.css",
@@ -104,7 +104,7 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  // Perguntas ao Guia IA vão direto para a rede.
+  // Perguntas ao GuIA Turístico vão direto para a rede.
   if (url.pathname.includes("/functions/v1/")) return;
   if (HOSTS_FONTES.includes(url.hostname)) {
     event.respondWith(primeiroCache(request));

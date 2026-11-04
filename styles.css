@@ -100,6 +100,8 @@ button { font: inherit; color: inherit; }
 }
 .abas > a:hover, .aba-mais:hover { color: #fff; }
 .abas > a.ativa, .aba-mais.ativa { color: #fff; border-color: var(--sol); }
+/* "GuIA": o IA em destaque, para o I maiúsculo não ser lido como l na fonte sem serifa. */
+.abas .ia { color: var(--sol); font-weight: 700; }
 .abas :focus-visible { outline-offset: -3px; }
 .aba-icone, .aba-curto, .abas [hidden] { display: none; }
 .aba-mais { margin-left: auto; }

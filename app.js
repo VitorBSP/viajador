@@ -30,7 +30,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "22";
+  const VERSAO_APP = "23";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -445,7 +445,7 @@
   const cartoes = (itens) => `<div class="tabela">${itens.map((c) => `<div class="item"><h3>${esc(c.titulo)}</h3><p class="suave">${esc(c.texto)}</p></div>`).join("")}</div>`;
   const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
 
-  // Guia IA: o app escolhe os trechos do guia que importam e a função do Supabase pergunta ao Gemini.
+  // GuIA Turístico: o app escolhe os trechos do guia que importam e a função do Supabase pergunta ao Gemini.
   const CHAVE_APARELHO = "viajador:aparelho";
   let aparelho = "";
   try { aparelho = localStorage.getItem(CHAVE_APARELHO) || ""; } catch (e) {}
@@ -493,8 +493,8 @@
       : "PRIMEIRA MENSAGEM DA CONVERSA: pode cumprimentar em poucas palavras.") +
     " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.";
   async function perguntarAoGuia(pergunta) {
-    if (!supabaseOnline()) return avisar("O Guia IA ainda não foi configurado");
-    if (!navigator.onLine) return avisar("O Guia IA precisa de internet");
+    if (!supabaseOnline()) return avisar("O GuIA Turístico ainda não foi configurado");
+    if (!navigator.onLine) return avisar("O GuIA Turístico precisa de internet");
     pensando = true;
     const historico = conversa.slice(-6).map((m) => ({ papel: m.quem === "eu" ? "user" : "model", texto: m.texto }));
     conversa.push({ quem: "eu", texto: pergunta });
@@ -510,7 +510,7 @@
 ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`, historico, aparelho }),
       });
       const j = await r.json().catch(() => ({}));
-      texto = j.resposta || j.erro || (r.status === 404 ? "O Guia IA ainda não está ligado no servidor." : "Não consegui responder agora.");
+      texto = j.resposta || j.erro || (r.status === 404 ? "O GuIA Turístico ainda não está ligado no servidor." : "Não consegui responder agora.");
       conversa.push({ quem: j.resposta ? "guia" : "erro", texto });
     } catch (e) {
       texto = e && e.name === "TimeoutError" ? "O guia demorou demais para responder. Tente de novo." : "Sem conexão com o guia. Tente de novo.";
@@ -549,9 +549,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   const telas = {
     ia() {
       const sugestoes = pais.sugestoesIA || ["O que tem de interessante perto de mim?", "Como peço a conta?", "Que gírias eu preciso saber?", `Me conta como nasceu ${comArtigo}`];
-      return `<h1>Guia IA</h1>
+      return `<h1>GuIA Turístico</h1>
         <p class="lead">Pergunte sobre os lugares, a história e como falar. As respostas usam o conteúdo do Viajador.</p>
-        ${supabaseOnline() ? "" : `<p class="frase-dica">O Guia IA ainda não foi configurado.</p>`}
+        ${supabaseOnline() ? "" : `<p class="frase-dica">O GuIA Turístico ainda não foi configurado.</p>`}
         <div class="chat">${conversa.length ? conversa.map((m, i) => `
           <div class="chat-msg chat-${m.quem}">
             <p>${m.quem === "guia" ? formatarResposta(m.texto) : esc(m.texto)}</p>

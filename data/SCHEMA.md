@@ -33,7 +33,7 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `imagens` | objeto | Opcional: créditos em `lugares` (por id do guia), `pessoas` (por nome) e `origem`. |
 | `artigo` | texto | Opcional: `o`, `a`, `os` ou `as`, para o app escrever "Quiz do Uruguai" e "Como nasceu a Argentina". Sem ele, "Quiz de Cuba". |
 | `origem` | objeto | Opcional: aba "Origem do país". `lead`, `imagem` (caminho no repositório), `alt`, `legenda` e, se quiser, `quiz` (id de um nível). Exige `fundacao` na primeira história. |
-| `sugestoesIA` | lista de textos | Opcional: perguntas prontas do Guia IA. Sem ela, o app usa sugestões genéricas. |
+| `sugestoesIA` | lista de textos | Opcional: perguntas prontas do GuIA Turístico. Sem ela, o app usa sugestões genéricas. |
 | `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 
 ## Itens de cada lista
@@ -98,5 +98,5 @@ Frases iguais em `situacoes`, `lugares` ou `comidas[].pedir` geram aviso porque 
 Ainda só do Uruguai, no backend:
 
 - **Ranking online:** `supabase/ranking.sql` só aceita os níveis do Uruguai, então os outros países usam só o ranking do aparelho.
-- **Guia IA:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio". Para outro país, o texto precisa vir do país.
+- **GuIA Turístico:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio". Para outro país, o texto precisa vir do país.
 - **Fotos:** ficam em `img/guia/<id>.jpg` e `img/pessoas/<id>.jpg`, sem pasta por país, então os ids não podem se repetir entre países.
