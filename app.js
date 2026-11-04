@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "16";
+  const VERSAO_APP = "17";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -404,7 +404,7 @@
   const heroi = (src, alt, credito) => (src ? `<figure class="heroi"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${creditoFoto(credito)}</figure>` : "");
   const miniatura = (src, icone) => (src ? `<img class="mini" src="${esc(src)}" alt="" loading="lazy">` : `<span class="emoji" aria-hidden="true">${icone}</span>`);
   const corDoIndice = (i) => `hsl(${Math.round((i * 137.5) % 360)} 68% 42%)`;
-  const CAPAS = { "": "inicio", guia: "guia", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos" };
+  const CAPAS = { "": "inicio", guia: "guia", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos", ia: "ia" };
   const capa = (nome) => `<img class="capa" src="img/arte/${nome}.svg" alt="" aria-hidden="true">`;
   const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
     <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
@@ -413,7 +413,119 @@
   const cartoes = (itens) => `<div class="tabela">${itens.map((c) => `<div class="item"><h3>${esc(c.titulo)}</h3><p class="suave">${esc(c.texto)}</p></div>`).join("")}</div>`;
   const secao = (titulo, itens, html) => (itens.length ? `<h2>${titulo}</h2>${html(itens)}` : "");
 
+  // Guia IA: o app escolhe os trechos do guia que importam e a função do Supabase pergunta ao Gemini.
+  const CHAVE_APARELHO = "viajador:aparelho";
+  let aparelho = "";
+  try { aparelho = localStorage.getItem(CHAVE_APARELHO) || ""; } catch (e) {}
+  if (!aparelho) {
+    aparelho = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now());
+    try { localStorage.setItem(CHAVE_APARELHO, aparelho); } catch (e) {}
+  }
+  let conversa = [];
+  let pensando = false;
+  let lerEmVoz = false;
+  const TAM_CONTEXTO = 12000;
+  const palavras = (s) => normal(s).split(/[^a-z0-9ñ]+/).filter((p) => p.length >= 4);
+  function montarContexto(pergunta) {
+    const chave = new Set(palavras(pergunta));
+    const pontua = (txt) => palavras(txt).reduce((n, p) => n + (chave.has(p) ? 1 : 0), 0);
+    const partes = [`País: ${pais.nome}. ${pais.intro}`];
+    const descreve = (g) => {
+      const l = lugarDo(g);
+      return `LUGAR: ${g.lugar} (${l.cidade})${posicao ? `, a ${formatarDist(distanciaKm(posicao, g.coords))} do viajante` : ""}\n${g.historia.join(" ")}\nO que reparar: ${g.reparar}\nDica: ${l.dica}\nFrases: ${l.frases.map((f) => `${f.es} (${f.pr}) = ${f.pt}`).join("; ")}`;
+    };
+    const escolhidos = new Map();
+    if (posicao) [...pontos()].sort((a, b) => distanciaKm(posicao, a.coords) - distanciaKm(posicao, b.coords)).slice(0, 3).forEach((g) => escolhidos.set(g.id, g));
+    pontos().map((g) => ({ g, n: pontua(`${g.lugar} ${g.resumo} ${g.historia.join(" ")}`) + (normal(pergunta).includes(normal(g.lugar.split(" (")[0])) ? 5 : 0) }))
+      .filter((x) => x.n >= 2).sort((a, b) => b.n - a.n).slice(0, 3).forEach((x) => escolhidos.set(x.g.id, x.g));
+    if (posicao) partes.push(`O viajante está perto destes lugares, em ordem de distância.`);
+    escolhidos.forEach((g) => partes.push(descreve(g)));
+    const hist = (pais.historias || []).flatMap((h) => [...(h.fundacao || []), ...h.momentos, ...h.costumes, ...h.pessoas, ...h.estrelas, ...h.datas]
+      .map((x) => ({ x, h, n: pontua(`${x.titulo || x.nome} ${x.texto}`) })))
+      .filter((y) => y.n >= 1).sort((a, b) => b.n - a.n).slice(0, 8);
+    hist.forEach(({ x, h }) => partes.push(`HISTÓRIA (${h.titulo}): ${x.data ? x.data + " - " : ""}${x.titulo || x.nome}${x.origem ? ` (${x.origem})` : ""}: ${x.texto}`));
+    const f = pais.futebol;
+    if (f && pontua(["futebol futbol gol copa mundial peñarol penarol nacional celeste estadio clasico jogo partido", ...f.clubes.map((c) => c.titulo)].join(" ")) >= 1) {
+      partes.push(`FUTEBOL: ${[...f.titulos, ...f.clubes, ...f.jogo].map((c) => `${c.titulo}: ${c.texto}`).join(" | ")}`);
+    }
+    const frases = todas.map((fr) => ({ fr, n: pontua(`${fr.es} ${fr.pt}`) })).filter((y) => y.n >= 1).sort((a, b) => b.n - a.n).slice(0, 6);
+    if (frases.length) partes.push(`FRASES ÚTEIS: ${frases.map(({ fr }) => `${fr.es}${fr.pr ? ` (${fr.pr})` : ""} = ${fr.pt}`).join("; ")}`);
+    if (escolhidos.size + hist.length === 0) partes.push(`LUGARES DO GUIA: ${pontos().map((g) => `${g.lugar} (${lugarDo(g).cidade}): ${g.resumo}`).join(" | ")}`);
+    return partes.join("\n\n").slice(0, TAM_CONTEXTO);
+  }
+  async function perguntarAoGuia(pergunta) {
+    if (!rankingOnline()) return avisar("O Guia IA ainda não foi configurado");
+    if (!navigator.onLine) return avisar("O Guia IA precisa de internet");
+    pensando = true;
+    const historico = conversa.slice(-6).map((m) => ({ papel: m.quem === "eu" ? "user" : "model", texto: m.texto }));
+    conversa.push({ quem: "eu", texto: pergunta });
+    render();
+    let texto;
+    try {
+      const r = await fetch(`${SUPABASE.url}/functions/v1/guia`, {
+        method: "POST",
+        headers: { apikey: SUPABASE.chave, "Content-Type": "application/json" },
+        body: JSON.stringify({ pergunta, contexto: montarContexto(pergunta), historico, aparelho }),
+      });
+      const j = await r.json().catch(() => ({}));
+      texto = j.resposta || j.erro || (r.status === 404 ? "O Guia IA ainda não está ligado no servidor." : "Não consegui responder agora.");
+      conversa.push({ quem: j.resposta ? "guia" : "erro", texto });
+    } catch (e) {
+      texto = "Sem conexão com o guia. Tente de novo.";
+      conversa.push({ quem: "erro", texto });
+    }
+    pensando = false;
+    if (location.hash.startsWith("#/ia")) {
+      render();
+      const ultima = main.querySelector(".chat-msg:last-of-type");
+      if (ultima) ultima.scrollIntoView({ block: "start" });
+      if (lerEmVoz && conversa[conversa.length - 1].quem === "guia") narrar([texto]);
+    }
+  }
+  const Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function ouvirPergunta() {
+    const rec = new Reconhecimento();
+    rec.lang = "pt-BR";
+    rec.interimResults = false;
+    rec.onresult = (e) => {
+      const falado = e.results[0][0].transcript;
+      const campo = $("#pergunta-ia");
+      if (campo) campo.value = falado;
+      perguntarAoGuia(falado);
+    };
+    rec.onerror = () => avisar("Não entendi. Tente de novo ou escreva.");
+    rec.start();
+    avisar("Pode falar…");
+  }
+
   const telas = {
+    ia() {
+      const sugestoes = ["O que tem de interessante perto de mim?", "Me conta a história do Teatro Solís", "Por que o país se chama Oriental?", "Como peço um chivito?"];
+      return `<h1>Guia IA</h1>
+        <p class="lead">Pergunte sobre os lugares, a história e como falar. As respostas usam o conteúdo do Viajador.</p>
+        ${rankingOnline() ? "" : `<p class="frase-dica">O Guia IA ainda não foi configurado.</p>`}
+        <div class="chat">${conversa.length ? conversa.map((m, i) => `
+          <div class="chat-msg chat-${m.quem}">
+            <p>${esc(m.texto)}</p>
+            ${m.quem === "guia" ? `<button class="btn" data-acao="ia-ouvir" data-i="${i}"><span aria-hidden="true">🔊</span> Ouvir</button>` : ""}
+          </div>`).join("") : `<div class="chat-sugestoes">${sugestoes.map((s) => `<button class="btn" data-acao="ia-sugestao">${esc(s)}</button>`).join("")}</div>`}
+          ${pensando ? `<div class="chat-msg chat-guia chat-pensando" role="status"><p>Pensando…</p></div>` : ""}
+        </div>
+        <div class="chat-entrada">
+          <label class="sr" for="pergunta-ia">Sua pergunta</label>
+          <textarea id="pergunta-ia" rows="2" maxlength="500" placeholder="Pergunte ao guia…" ${pensando ? "disabled" : ""}></textarea>
+          <div class="chat-botoes">
+            ${Reconhecimento ? `<button class="btn btn-gps" data-acao="ia-falar" ${pensando ? "disabled" : ""}><span aria-hidden="true">🎤</span> Falar</button>` : ""}
+            <button class="btn btn-gps on" data-acao="ia-enviar" ${pensando ? "disabled" : ""}>Perguntar</button>
+          </div>
+          <label class="chat-opcao"><input type="checkbox" data-acao="ia-voz" ${lerEmVoz ? "checked" : ""}> Ler as respostas em voz alta</label>
+          <div class="chat-botoes">
+            <button class="btn" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
+            ${conversa.length ? `<button class="btn" data-acao="ia-limpar">Nova conversa</button>` : ""}
+          </div>
+        </div>
+        <p class="gps-nota">O guia pode errar. Confirme horários e preços no local. Até 30 perguntas por dia neste aparelho, e as perguntas passam pelo Google Gemini.</p>`;
+    },
     creditos() {
       const linha = (nome, c) => `<li>${esc(nome)}: ${esc(c.autor || "autor não informado")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></li>`;
       return `<h1>Créditos das imagens</h1>
@@ -767,6 +879,22 @@
       render();
       return window.scrollTo(0, 0);
     }
+    if (b.dataset.acao === "ia-enviar") {
+      const p = $("#pergunta-ia").value.trim();
+      if (p && !pensando) perguntarAoGuia(p);
+      return;
+    }
+    if (b.dataset.acao === "ia-sugestao") return perguntarAoGuia(b.textContent.trim());
+    if (b.dataset.acao === "ia-falar") return ouvirPergunta();
+    if (b.dataset.acao === "ia-ouvir") return narrar([conversa[+b.dataset.i].texto]);
+    if (b.dataset.acao === "ia-limpar") {
+      conversa = [];
+      return render();
+    }
+    if (b.dataset.acao === "ia-voz") {
+      lerEmVoz = b.checked;
+      return;
+    }
     if (b.dataset.acao === "quiz-salvar") {
       const nome = $("#nome-ranking").value.trim().slice(0, 20);
       if (!nome) return avisar("Escreva um nome");
@@ -801,6 +929,14 @@
       b.setAttribute("aria-pressed", on);
       b.innerHTML = marcaFav(on) + " Salvar";
       avisar(on ? "Frase salva" : "Removida dos salvos");
+    }
+  });
+
+  main.addEventListener("keydown", (e) => {
+    if (e.target.id === "pergunta-ia" && e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      const p = e.target.value.trim();
+      if (p && !pensando) perguntarAoGuia(p);
     }
   });
 

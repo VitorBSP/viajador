@@ -168,6 +168,21 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .check small { display: block; margin-top: 2px; }
 .check input:checked + span strong { text-decoration: line-through; }
 .btn-gps { min-height: 44px; }
+.chat { display: grid; gap: 10px; margin-bottom: 14px; }
+.chat-msg { max-width: 88%; padding: 10px 14px; border-radius: 16px; background: var(--cartao); box-shadow: var(--sombra); }
+.chat-msg p { margin: 0; white-space: pre-wrap; }
+.chat-msg .btn { margin-top: 8px; }
+.chat-eu { justify-self: end; background: var(--celeste); color: #fff; border-bottom-right-radius: 4px; }
+.chat-guia { justify-self: start; border-bottom-left-radius: 4px; }
+.chat-erro { justify-self: start; background: var(--sol-claro); }
+.chat-pensando p { animation: pulsar 1.2s infinite; }
+@keyframes pulsar { 50% { opacity: .4; } }
+.chat-sugestoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.chat-sugestoes .btn { min-height: 44px; text-align: left; }
+.chat-entrada textarea { width: 100%; padding: 12px; font: inherit; font-size: 16px; border: 1px solid var(--borda-btn); border-radius: 12px; background: var(--cartao); color: var(--texto); resize: vertical; }
+.chat-botoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chat-opcao { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .chat-pensando p { animation: none; } }
 .capa { display: block; width: 100%; height: auto; max-height: 150px; object-fit: cover; border-radius: var(--raio); margin-bottom: 16px; }
 .heroi { margin: 0 0 14px; }
 .heroi img { display: block; width: 100%; max-height: 300px; object-fit: cover; border-radius: var(--raio); background: var(--linha); }

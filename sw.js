@@ -1,6 +1,6 @@
 // Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-v16";
+const VERSAO = "viajador-v17";
 const NUCLEO = [
   "./",
   "styles.css",
@@ -13,6 +13,7 @@ const NUCLEO = [
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
   "img/arte/inicio.svg",
+  "img/arte/ia.svg",
   "img/arte/guia.svg",
   "img/arte/historia.svg",
   "img/arte/futebol.svg",
@@ -103,6 +104,8 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
+  // Perguntas ao Guia IA vão direto para a rede.
+  if (url.pathname.includes("/functions/v1/")) return;
   if (HOSTS_FONTES.includes(url.hostname)) {
     event.respondWith(primeiroCache(request));
   } else if (url.origin === self.location.origin) {
