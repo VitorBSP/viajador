@@ -76,7 +76,8 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: INSTRUCOES }] },
         contents,
-        generationConfig: { maxOutputTokens: 800 },
+        // O limite também conta o raciocínio interno do modelo; com pouco espaço a resposta sai cortada.
+        generationConfig: { maxOutputTokens: 4096 },
       }),
     });
     if (r.ok) {

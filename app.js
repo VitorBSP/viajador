@@ -10,7 +10,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = "viajador:ranking";
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "17";
+  const VERSAO_APP = "18";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const rankingOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   const TAM_RANKING = 10;
@@ -464,6 +464,7 @@
     try {
       const r = await fetch(`${SUPABASE.url}/functions/v1/guia`, {
         method: "POST",
+        signal: AbortSignal.timeout ? AbortSignal.timeout(60000) : undefined,
         headers: { apikey: SUPABASE.chave, "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta, contexto: montarContexto(pergunta), historico, aparelho }),
       });
@@ -471,7 +472,7 @@
       texto = j.resposta || j.erro || (r.status === 404 ? "O Guia IA ainda não está ligado no servidor." : "Não consegui responder agora.");
       conversa.push({ quem: j.resposta ? "guia" : "erro", texto });
     } catch (e) {
-      texto = "Sem conexão com o guia. Tente de novo.";
+      texto = e && e.name === "TimeoutError" ? "O guia demorou demais para responder. Tente de novo." : "Sem conexão com o guia. Tente de novo.";
       conversa.push({ quem: "erro", texto });
     }
     pensando = false;
