@@ -321,7 +321,7 @@ def checar_pais(r, chave, p, esperado):
     frase_spec = {**FRASE, "pr": False} if em_portugues else FRASE
     giria_spec = {**GIRIA, "pr": False} if em_portugues else GIRIA
 
-    situacoes =lista_de(r, p, "situacoes", "situacoes", minimo=1)
+    situacoes = lista_de(r, p, "situacoes", "situacoes", minimo=1)
     checar_unicos(r, situacoes, "id", "situacoes")
     frases = []
     for n, s in enumerate(situacoes):

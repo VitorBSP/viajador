@@ -34,7 +34,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "24";
+  const VERSAO_APP = "25";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -717,7 +717,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <div class="historia">${g.historia.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
           <p class="frase-dica"><strong>O que reparar:</strong> ${esc(g.reparar)}</p>
           <p class="frase-dica"><strong>Dica:</strong> ${esc(l.dica)}</p>
-          <h2>Frases para este lugar</h2>
+          <h2>${semTraducao ? "Palavra do lugar" : "Frases para este lugar"}</h2>
           ${lista(l.frases)}
           <h2>Fontes</h2>
           <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>
@@ -729,7 +729,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       if (posicao) ordem.sort((a, b) => a.km - b.km);
       // Com GPS só o entorno importa; a lista completa fica a um toque.
       const visiveis = posicao && !verTodos ? ordem.slice(0, LIMITE_PERTO) : ordem;
-      const filtros = [["", "Todas"], ...pais.lugares.map((c) => [c.cidade, c.cidade])];
+      // Só cidades com algum ponto no guia: as outras dariam uma lista vazia.
+      const filtros = [["", "Todas"], ...pais.lugares.filter((c) => pontos().some((p) => lugarDo(p).cidade === c.cidade)).map((c) => [c.cidade, c.cidade])];
       return `<h1>Perto de você</h1>
         <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
         <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
@@ -752,13 +753,13 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     inicio() {
       return `${rapidas()}
         <div class="intro">${esc(pais.intro)}</div>
-        <h1>O que você precisa agora?</h1>
+        <h1>${semTraducao ? "Palavras do dia a dia" : "O que você precisa agora?"}</h1>
         <p class="lead">${semTraducao ? "Toque na situação e veja o que você vai ouvir por lá." : "Toque na situação, ouça a frase ou mostre a tela."}</p>
         <div class="grade">${pais.situacoes.map((s, i) => `
           <a class="categoria" style="--cor:${corDoIndice(i)}" href="#/s/${s.id}">
             <span class="emoji" aria-hidden="true">${s.icone}</span>
             <strong>${esc(s.titulo)}</strong>
-            <small>${s.frases.length} frases</small>
+            <small>${s.frases.length} ${semTraducao ? "palavras" : "frases"}</small>
           </a>`).join("")}
         </div>
         ${instalar()}`;
@@ -766,9 +767,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     situacao(id) {
       const s = pais.situacoes.find((x) => x.id === id);
       if (!s) return telas.inicio();
-      return `<a class="voltar" href="#/">← Situações</a>
+      return `<a class="voltar" href="#/">← ${semTraducao ? "Palavras" : "Situações"}</a>
         <h1>${s.icone} ${esc(s.titulo)}</h1>
-        <p class="lead">${s.frases.length} frases úteis</p>
+        <p class="lead">${s.frases.length} ${semTraducao ? "palavras" : "frases úteis"}</p>
         ${lista(s.frases)}`;
     },
     conversas(id) {
@@ -810,7 +811,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     },
     lugares() {
       return `<h1>Lugares</h1>
-        <p class="lead">Dicas e frases para cada ponto turístico.</p>
+        <p class="lead">${semTraducao ? "Dicas para cada lugar." : "Dicas e frases para cada ponto turístico."}</p>
         ${pais.lugares.map((c) => `
           <h2>${esc(c.cidade)}</h2>
           ${c.itens.map((l) => `
@@ -1110,6 +1111,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   document.title = `Viajador · ${pais.nome}`;
   $("#mostrar-es").lang = LANG;
   if (semTraducao) {
+    // Destino em português é turismo, não comunicação: abre em Perto de você (ou Lugares), e Situações vira Palavras.
+    const abertura = temSecao.guia ? "#/guia" : "#/lugares";
+    if (["", "#", "#/"].includes(location.hash)) history.replaceState(null, "", abertura);
+    $(".marca").setAttribute("href", abertura);
+    $('#abas a[data-aba=""]').innerHTML = `<span class="aba-icone" aria-hidden="true">💬</span>Palavras`;
     $("#busca").placeholder = `Buscar: ${pais.girias.slice(0, 3).map((g) => g.es.toLowerCase()).join(", ")}…`;
     $("#mais a[data-aba=dicas]").textContent = "🗣️ Jeito de falar";
   }
