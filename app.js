@@ -245,6 +245,17 @@
   }
   const lista = (frases) => `<div class="lista">${frases.map(cartaoFrase).join("")}</div>`;
 
+  // Filtro de palavras, gírias e ditados. "Todas" mostra tudo; uma região mostra só o que é dela,
+  // sem o que vale para o país todo. Região sem itens nesta lista conta como "Todas".
+  function porRegiao(itens) {
+    const regioes = pais.cidades.filter((c) => itens.some((x) => (x.regioes || []).includes(c)));
+    const ativa = regioes.includes(filtroRegiao) ? filtroRegiao : "";
+    const botoes = regioes.length ? `<div class="filtros" role="group" aria-label="Filtrar por região">${[["", "Todas"], ...regioes.map((c) => [c, c])].map(([v, r]) => `
+      <button class="btn ${v === ativa ? "on" : ""}" data-acao="regiao" data-regiao="${esc(v)}" aria-pressed="${v === ativa}">${esc(r)}</button>`).join("")}
+    </div>` : "";
+    return { botoes, itens: ativa ? itens.filter((x) => (x.regioes || []).includes(ativa)) : itens };
+  }
+
   function rapidas() {
     const botoes = RAPIDAS.map((r) => {
       const f = r.es ? todas.find((x) => x.es === r.es) : todas.find((x) => normal(x.es).includes(normal(r.chave)));
@@ -765,26 +776,35 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ${visiveis.length < ordem.length ? `<button class="btn btn-gps ver-todos" data-acao="ver-todos">Ver todos os ${ordem.length}</button>` : ""}`;
     },
     inicio() {
+      // Com uma região escolhida, as palavras de todos os temas aparecem juntas, só as daquela região.
+      const { botoes } = porRegiao(pais.situacoes.flatMap((s) => s.frases));
+      const daRegiao = filtroRegiao && botoes
+        ? pais.situacoes.map((s) => ({ s, frases: s.frases.filter((f) => (f.regioes || []).includes(filtroRegiao)) })).filter((x) => x.frases.length)
+        : null;
       return `${rapidas()}
         <div class="intro">${esc(pais.intro)}</div>
         <h1>${semTraducao ? "Palavras do dia a dia" : "O que você precisa agora?"}</h1>
-        <p class="lead">${semTraducao ? "Toque na situação e veja o que você vai ouvir por lá." : "Toque na situação, ouça a frase ou mostre a tela."}</p>
+        <p class="lead">${semTraducao ? "Toque no tema e veja o que você vai ouvir por lá." : "Toque na situação, ouça a frase ou mostre a tela."}</p>
+        ${botoes}
+        ${daRegiao && daRegiao.length ? daRegiao.map(({ s, frases }) => `<h2>${s.icone} ${esc(s.titulo)}</h2>${lista(frases)}`).join("") : `
         <div class="grade">${pais.situacoes.map((s, i) => `
           <a class="categoria" style="--cor:${corDoIndice(i)}" href="#/s/${s.id}">
             <span class="emoji" aria-hidden="true">${s.icone}</span>
             <strong>${esc(s.titulo)}</strong>
             <small>${s.frases.length} ${semTraducao ? "palavras" : "frases"}</small>
           </a>`).join("")}
-        </div>
+        </div>`}
         ${instalar()}`;
     },
     situacao(id) {
       const s = pais.situacoes.find((x) => x.id === id);
       if (!s) return telas.inicio();
+      const { botoes, itens } = porRegiao(s.frases);
       return `<a class="voltar" href="#/">← ${semTraducao ? "Palavras" : "Situações"}</a>
         <h1>${s.icone} ${esc(s.titulo)}</h1>
-        <p class="lead">${s.frases.length} ${semTraducao ? "palavras" : "frases úteis"}</p>
-        ${lista(s.frases)}`;
+        <p class="lead">${itens.length} ${semTraducao ? "palavras" : "frases úteis"}</p>
+        ${botoes}
+        ${lista(itens)}`;
     },
     conversas(id) {
       const c = (pais.conversas || []).find((x) => x.id === id);
@@ -846,26 +866,18 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         </div>`;
     },
     girias() {
-      // Gíria sem `regioes` vale para o país todo e aparece em qualquer filtro.
-      const regioes = pais.cidades.filter((c) => pais.girias.some((g) => (g.regioes || []).includes(c)));
-      const girias = pais.girias.filter((g) => !filtroRegiao || !g.regioes || g.regioes.includes(filtroRegiao));
+      const { botoes, itens } = porRegiao(pais.girias);
       return `<h1>Gírias ${esc(doNome)}</h1>
         <p class="lead">Para entender a conversa (e soltar uma de vez em quando).</p>
-        ${regioes.length ? `<div class="filtros" role="group" aria-label="Filtrar por região">${[["", "Todas"], ...regioes.map((c) => [c, c])].map(([v, r]) => `
-          <button class="btn ${v === filtroRegiao ? "on" : ""}" data-acao="regiao" data-regiao="${esc(v)}" aria-pressed="${v === filtroRegiao}">${esc(r)}</button>`).join("")}
-        </div>` : ""}
-        ${lista(girias.map(giriaFrase))}`;
+        ${botoes}
+        ${lista(itens.map(giriaFrase))}`;
     },
     ditados() {
-      // Ditado sem `regioes` vale para o país todo e aparece em qualquer filtro.
-      const regioes = pais.cidades.filter((c) => pais.ditados.some((d) => (d.regioes || []).includes(c)));
-      const ditados = pais.ditados.filter((d) => !filtroRegiao || !d.regioes || d.regioes.includes(filtroRegiao));
+      const { botoes, itens } = porRegiao(pais.ditados);
       return `<h1>Ditados e expressões</h1>
         <p class="lead">Frases feitas que você vai ouvir por aí.</p>
-        ${regioes.length ? `<div class="filtros" role="group" aria-label="Filtrar por região">${[["", "Todas"], ...regioes.map((c) => [c, c])].map(([v, r]) => `
-          <button class="btn ${v === filtroRegiao ? "on" : ""}" data-acao="regiao" data-regiao="${esc(v)}" aria-pressed="${v === filtroRegiao}">${esc(r)}</button>`).join("")}
-        </div>` : ""}
-        ${lista(ditados.map(ditadoFrase))}
+        ${botoes}
+        ${lista(itens.map(ditadoFrase))}
         <h2>Cuidado: falsos amigos</h2>
         <p class="lead">${semTraducao ? "Palavras que existem no resto do Brasil, mas aqui querem dizer outra coisa." : "Palavras parecidas com o português, mas com outro sentido."}</p>
         <div class="tabela">${pais.falsosAmigos.map((f) => `

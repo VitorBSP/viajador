@@ -15,7 +15,7 @@ from pathlib import Path
 RAIZ = Path(__file__).resolve().parent.parent
 
 # Campos de cada tipo de item: True = obrigatório, False = opcional.
-FRASE = {"es": True, "pt": True, "pr": True, "dica": False}
+FRASE = {"es": True, "pt": True, "pr": True, "dica": False, "regioes": False}
 SITUACAO = {"id": True, "icone": True, "titulo": True, "frases": True}
 GIRIA = {"es": True, "pt": True, "pr": True, "ex": False, "dica": False, "regioes": False}
 DITADO = {"es": True, "pt": True, "uso": True, "regioes": False}
@@ -452,8 +452,9 @@ def checar_pais(r, chave, p, esperado):
                 if q.get("certa") in erradas or len(set(erradas)) != len(erradas):
                     r.erro(q.linha, lugar, "opções repetidas na pergunta")
     cidades = p.get("cidades") if isinstance(p.get("cidades"), list) else []
-    for secao in ("girias", "ditados", "comidas"):
-        for n, g in enumerate(p.get(secao) or []):
+    palavras = [f for s in (p.get("situacoes") or []) if isinstance(s, Obj) for f in (s.get("frases") or [])]
+    for secao, lista_secao in (("girias", p.get("girias")), ("ditados", p.get("ditados")), ("comidas", p.get("comidas")), ("situacoes.frases", palavras)):
+        for n, g in enumerate(lista_secao or []):
             if isinstance(g, Obj) and "regioes" in g:
                 for reg in lista_de(r, g, "regioes", f"{secao}[{n}]", minimo=1):
                     if reg not in cidades:
