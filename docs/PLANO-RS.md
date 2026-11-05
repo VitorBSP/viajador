@@ -62,6 +62,10 @@ Escrito no schema atual, sem mudar o código, e validado (`python scripts/valida
 
 Fatos que mudam com o tempo (horário do Som e Luz, da Maria Fumaça, do Mercado Público, cota do free shop) estão sem número e pedem para confirmar na hora.
 
+## Combinado com a sessão de ideias
+
+A seção 6 de `docs/IDEIAS.md` (branch `claude/ideias-roadmap-93e9a5`) adota este plano e pede o schema novo antes de publicar o RS: id `br-rs`, campo `tipo` (país ou região), `pr` opcional, rótulos vindos do dado, atalhos por `tag` em vez de "baño", `recursos` por coleção e `regioes` nas gírias. Enquanto esse schema não existir, `data/rs.js` continua com `codigo: "rs"`, porque o validador atual só aceita 2 letras.
+
 ## Falta (outras sessões)
 
 1. **Frontend:** incluir `data/rs.js` em `index.html` e em `NUCLEO` do `sw.js`.
