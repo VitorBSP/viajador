@@ -402,12 +402,12 @@ a.btn { text-decoration: none; }
 .roteiro-fora { margin-top: 16px; }
 .roteiro-fora summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
 
-/* Álbum "Por onde andei" */
+/* Álbum "Por onde andei": capa, páginas de papel e figurinhas, no espírito dos álbuns de banca. */
 .album-barra { display: grid; grid-template-columns: minmax(90px, auto) 1fr auto; gap: 10px; align-items: center; margin: 10px 0; }
 .album-rotulo { font-weight: 600; }
 .album-rotulo small { display: block; font-weight: 400; font-size: 12px; color: var(--suave, #5b6475); }
 .album-trilho { height: 10px; border-radius: 999px; background: var(--celeste-claro); overflow: hidden; }
-.album-trilho > span { display: block; height: 100%; background: var(--sol); border-radius: inherit; }
+.album-trilho > span { display: block; height: 100%; background: var(--sol); border-radius: inherit; transition: width .6s ease; }
 .album-num { font-variant-numeric: tabular-nums; font-size: 14px; }
 .album-mapa { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 64px; gap: 6px; margin: 14px 0; }
 .album-peca { display: flex; flex-direction: column; justify-content: center; padding: 6px 8px; border-radius: 12px; text-decoration: none; color: var(--texto);
@@ -415,20 +415,186 @@ a.btn { text-decoration: none; }
 .album-peca { min-width: 0; }
 .album-peca span { font-size: 11px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
 .album-peca strong { font-size: 15px; }
-.album-regiao { align-items: center; }
-.anel { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
-  background: conic-gradient(var(--sol) calc(var(--p) * 1%), var(--celeste-claro) 0); }
-.anel span { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--fundo, #fff); font-size: 12px; font-weight: 600; }
-.album-carimbo { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px dashed var(--sol); background: var(--sol-claro); }
-.album-carimbo .suave { display: block; margin-top: 2px; }
-.album-figurinhas { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 14px; }
-.figurinha { display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 14px; border: 2px dashed color-mix(in srgb, var(--texto) 30%, transparent); background: var(--celeste-claro); filter: grayscale(1); opacity: .75; }
-.figurinha.colada { border-style: solid; border-color: var(--sol); background: var(--sol-claro); filter: none; opacity: 1; }
-.figurinha-icone { font-size: 32px; }
-.figurinha strong { font-size: 14px; line-height: 1.25; }
-.figurinha small { font-size: 12px; }
-.figurinha .btn { margin-top: auto; }
+
+/* Capa */
+.album-capa {
+  position: relative; overflow: hidden; display: grid; justify-items: center; gap: 4px; text-align: center;
+  margin-bottom: 16px; padding: 28px 20px 24px; border-radius: 20px; color: #fff;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255, 255, 255, .14) 0 2px, transparent 3px) 0 0 / 34px 34px,
+    linear-gradient(150deg, var(--topo), #072456 70%);
+  box-shadow: inset 0 0 0 6px rgba(255, 255, 255, .08), var(--sombra);
+}
+.album-capa::before { /* lombada */
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 14px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, .35), rgba(255, 255, 255, .08) 60%, transparent);
+}
+.capa-bandeira .bandeira { width: 54px; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+.capa-kicker { margin: 6px 0 0; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #ffd166; }
+.album-capa h1 {
+  margin: 0; font-size: clamp(30px, 7vw, 44px);
+  background: linear-gradient(100deg, #fff 40%, #ffe7a3 50%, #fff 60%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: capa-brilho 3.5s ease-in-out 1 .3s;
+}
+.capa-sub { margin: 0; opacity: .85; }
+.capa-selo {
+  position: absolute; top: 14px; right: 14px; margin: 0; width: 76px; height: 76px; border-radius: 50%;
+  display: grid; place-content: center; text-align: center; line-height: 1.05;
+  background: var(--sol); color: #1b2433; transform: rotate(10deg);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, .25), 0 4px 10px rgba(0, 0, 0, .3);
+}
+.capa-selo strong { font: 700 26px Fraunces, Georgia, serif; }
+.capa-selo small { font-size: 11px; font-weight: 600; }
+.capa-abrir { margin-top: 12px; background: #fff; color: #0b2a63; border-color: #fff; font-weight: 600; min-height: 44px; }
+.capa-abrir:hover { background: #ffe7a3; }
+@media (max-width: 420px) { .album-capa { padding-top: 96px; } .capa-selo { width: 64px; height: 64px; } .capa-selo strong { font-size: 22px; } }
+
+/* Índice de páginas */
+.album-indice { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.miniatura {
+  position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 120px; padding: 12px 12px 10px 18px;
+  border-radius: 6px 14px 14px 6px; text-decoration: none; color: var(--texto); background: var(--cartao); box-shadow: var(--sombra);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.miniatura::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; border-radius: 6px 0 0 6px; background: var(--topo); }
+.miniatura:hover { transform: translateY(-3px) rotate(-.6deg); box-shadow: 0 10px 24px rgba(20, 30, 50, .15); }
+.miniatura.completa::after { content: "✓"; position: absolute; top: 8px; right: 10px; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--sol); color: #1b2433; font-weight: 700; font-size: 13px; }
+.mini-num { font: 700 12px Inter, system-ui, sans-serif; color: var(--suave); letter-spacing: .06em; }
+.mini-num::before { content: "Pág. "; }
+.miniatura strong { font-family: Fraunces, Georgia, serif; line-height: 1.2; }
+.mini-slots { display: flex; flex-wrap: wrap; gap: 3px; margin-top: auto; }
+.mini-slots i { width: 12px; height: 16px; border-radius: 2px; border: 1px dashed color-mix(in srgb, var(--texto) 35%, transparent); }
+.mini-slots i.on { border: 0; background: var(--sol); box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+
+/* Página */
+.album-pagina {
+  position: relative; padding: 18px 16px 16px; border-radius: 6px 18px 18px 6px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 27px, color-mix(in srgb, var(--celeste) 7%, transparent) 27px 28px),
+    var(--cartao);
+  box-shadow: inset 10px 0 14px -10px rgba(0, 0, 0, .25), var(--sombra);
+  transform-origin: left center;
+}
+.album-pagina.vira-frente { animation: virar-frente .5s cubic-bezier(.2, .7, .3, 1); }
+.album-pagina.vira-tras { animation: virar-tras .5s cubic-bezier(.2, .7, .3, 1); transform-origin: right center; }
+.pagina-topo { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 2px 12px; margin-bottom: 8px; padding-bottom: 10px; border-bottom: 2px solid var(--sol); }
+.pagina-num { grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+.pagina-topo h1 { margin: 0; }
+.pagina-conta { font: 600 15px Inter, system-ui, sans-serif; color: var(--suave); }
+.pagina-conta strong { font: 700 26px Fraunces, Georgia, serif; color: var(--texto); }
+.pagina-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
+.pagina-nav .btn { min-height: 44px; }
+
+/* Carimbo de página completa */
+.carimbos { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 4px; }
+.carimbo {
+  display: grid; justify-items: center; margin: 0; padding: 8px 14px; border: 3px double #c0392b; border-radius: 10px;
+  color: #c0392b; text-transform: uppercase; transform: rotate(var(--gira)); opacity: .85; mix-blend-mode: multiply;
+}
+@media (prefers-color-scheme: dark) { .carimbo { color: #ff8a7a; border-color: #ff8a7a; mix-blend-mode: normal; } }
+.carimbo-nivel { font: 700 18px Fraunces, Georgia, serif; letter-spacing: .06em; }
+.carimbo-data { font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+.carimbo-giria { font-size: 12px; text-transform: none; font-style: italic; }
+.carimbo.batendo { animation: carimbar .55s cubic-bezier(.3, 1.5, .5, 1) both; }
+
+/* Figurinhas */
+.album-figurinhas { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 18px 14px; margin-top: 16px; }
+.figurinha { display: flex; flex-direction: column; gap: 8px; }
+.fig-cartao { position: relative; aspect-ratio: 3 / 4; border-radius: 10px; }
+.figurinha.vaga .fig-cartao {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px; text-align: center;
+  border: 2px dashed color-mix(in srgb, var(--texto) 30%, transparent);
+  background: repeating-linear-gradient(-45deg, transparent 0 8px, color-mix(in srgb, var(--texto) 4%, transparent) 8px 16px);
+  color: var(--suave);
+}
+.figurinha.vaga .fig-num { position: static; font: 700 22px Fraunces, Georgia, serif; color: color-mix(in srgb, var(--texto) 45%, transparent); background: none; box-shadow: none; padding: 0; }
+.fig-silhueta { font-size: 38px; filter: grayscale(1); opacity: .28; }
+.figurinha.vaga strong { font-size: 13px; line-height: 1.25; color: var(--texto); opacity: .75; }
+.figurinha.vaga small { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+
+.figurinha.colada .fig-cartao {
+  display: flex; flex-direction: column; overflow: hidden; padding: 6px; background: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .15), 0 6px 14px rgba(20, 30, 50, .18);
+  transform: perspective(700px) rotate(var(--gira)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.figurinha.colada .fig-cartao.inclinada { transition: none; transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) scale(1.04); box-shadow: 0 16px 30px rgba(20, 30, 50, .28); z-index: 1; }
+.fig-arte {
+  flex: 1; min-height: 0; display: grid; place-items: center; border-radius: 6px 6px 0 0; overflow: hidden;
+  background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--cor) 55%, #fff), var(--cor));
+  font-size: 54px;
+}
+.fig-arte img { width: 100%; height: 100%; object-fit: cover; }
+.fig-faixa { display: grid; padding: 6px 6px 2px; border-radius: 0 0 6px 6px; background: var(--cor); color: #fff; text-align: center; }
+.fig-faixa strong { font-size: 13px; line-height: 1.2; }
+.fig-faixa small { font-size: 10px; opacity: .85; }
+.fig-num {
+  position: absolute; top: 10px; left: 10px; z-index: 2; padding: 1px 6px; border-radius: 4px;
+  background: rgba(255, 255, 255, .92); color: #1b2433; font: 700 10px Inter, system-ui, sans-serif; letter-spacing: .04em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+.fig-selo {
+  position: absolute; top: 10px; right: -26px; z-index: 2; padding: 2px 28px; transform: rotate(35deg);
+  background: var(--sol); color: #1b2433; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+}
+/* Reflexo: segue o mouse e passa uma vez quando a figurinha é colada. */
+.fig-brilho {
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: 0; transition: opacity .25s ease;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgba(255, 255, 255, .55), transparent 55%);
+  mix-blend-mode: soft-light;
+}
+.fig-cartao.inclinada .fig-brilho { opacity: 1; }
+/* Especial: brilho holográfico, como as figurinhas brilhantes. */
+.figurinha.especial .fig-cartao::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 20%, rgba(255, 0, 128, .25) 35%, rgba(255, 230, 0, .3) 45%, rgba(0, 220, 255, .3) 55%, rgba(140, 0, 255, .25) 65%, transparent 80%) 0 0 / 300% 300%;
+  mix-blend-mode: color-dodge; opacity: .55; animation: holo 5s linear infinite;
+}
+.figurinha.especial .fig-cartao { box-shadow: 0 0 0 2px var(--sol), 0 6px 14px rgba(20, 30, 50, .2); }
+
+/* Colar: a figurinha cai, assenta na página e um reflexo atravessa. */
+.figurinha.nova .fig-cartao { animation: colar .75s cubic-bezier(.2, .9, .3, 1.25) both; }
+.figurinha.nova .fig-brilho {
+  opacity: 1; mix-blend-mode: normal;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, .8) 50%, transparent 65%) 0 0 / 250% 100%;
+  animation: varrer .9s ease .55s both;
+}
+.fig-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.fig-acoes .btn { min-height: 40px; }
 .figurinha-link { font-size: 13px; color: var(--celeste); }
+
+/* Confete */
+.confete { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+.confete i {
+  position: absolute; top: -20px; left: var(--x); width: 9px; height: 14px; border-radius: 2px; background: var(--cor);
+  animation: cair 2.2s cubic-bezier(.25, .6, .4, 1) var(--atraso) forwards;
+}
+
+@keyframes colar {
+  0% { transform: perspective(700px) translateY(-46px) rotate(-14deg) scale(1.3); opacity: 0; box-shadow: 0 30px 40px rgba(20, 30, 50, .35); }
+  55% { opacity: 1; transform: perspective(700px) translateY(4px) rotate(var(--gira)) scale(.95); }
+  75% { transform: perspective(700px) rotate(var(--gira)) scale(1.03); }
+  100% { transform: perspective(700px) rotate(var(--gira)) scale(1); }
+}
+@keyframes varrer { from { background-position: 120% 0; } to { background-position: -120% 0; opacity: 0; } }
+@keyframes holo { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
+@keyframes capa-brilho { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+@keyframes virar-frente { from { transform: perspective(1400px) rotateY(-28deg) translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes virar-tras { from { transform: perspective(1400px) rotateY(28deg) translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes carimbar {
+  0% { transform: rotate(var(--gira)) scale(2.6); opacity: 0; }
+  70% { transform: rotate(var(--gira)) scale(.92); opacity: .95; }
+  100% { transform: rotate(var(--gira)) scale(1); opacity: .85; }
+}
+@keyframes cair {
+  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--deriva), 105vh) rotate(var(--giro)); opacity: .9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .album-capa h1, .album-pagina, .carimbo.batendo, .figurinha.nova .fig-cartao, .figurinha.nova .fig-brilho, .figurinha.especial .fig-cartao::after { animation: none; }
+  .figurinha.nova .fig-brilho { opacity: 0; }
+}
 
 /* Destaque do Roteiro (assistente) e do álbum: etiqueta no computador, ícone dourado no celular, selo no topo da tela. */
 .aba-selo { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--sol); color: #1b2433;

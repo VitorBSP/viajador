@@ -356,6 +356,25 @@
   const BATE_VOLTA = 180; // estrada de até 3h cabe no mesmo dia de um passeio de dia inteiro
   let roteiro = { cidades: [], dias: 3, modo: "auto" };
   let nivelAlbum = "turista";
+  // Três níveis do álbum, a partir da `prioridade` que o lugar já tem: nada de campo novo no dado.
+  const NIVEIS_ALBUM = [
+    ["turista", "Turista", "os obrigatórios", (l) => l.prioridade === "obrigatorio"],
+    ["viajante", "Viajante", "os recomendados", (l) => l.prioridade !== "obrigatorio"],
+    ["explorador", "Explorador", "todos os lugares", () => true],
+  ];
+  const contaAlbum = (itens, f) => {
+    const alvo = itens.filter(f);
+    const feitos = alvo.filter((l) => jaFui[l.nome]);
+    return { feitos: feitos.length, total: alvo.length, pct: alvo.length ? Math.round((feitos.length / alvo.length) * 100) : 0, ultima: feitos.map((l) => jaFui[l.nome]).sort().pop() };
+  };
+  // Páginas completas, como "cidade|nível", para saber quando uma acabou de completar.
+  const paginasCompletas = () => new Set(pais.lugares.flatMap((c) => NIVEIS_ALBUM
+    .filter(([, , , f]) => { const k = contaAlbum(c.itens, f); return k.total && k.feitos === k.total; })
+    .map(([id]) => `${c.cidade}|${id}`)));
+  // Animações do álbum: valem só para a próxima tela desenhada.
+  let recemColado = null; // figurinha que acabou de ser colada
+  let comemorar = null; // "cidade|nível" que acabou de completar: carimbo e confete
+  let direcaoPagina = ""; // "frente" ou "tras", para virar a página
   try { roteiro = { ...roteiro, ...JSON.parse(localStorage.getItem(CHAVE_ROTEIRO)) }; } catch (e) {}
   const salvarRoteiro = () => { try { localStorage.setItem(CHAVE_ROTEIRO, JSON.stringify(roteiro)); } catch (e) {} };
 
@@ -1289,17 +1308,6 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           ${!meu && r.sobras.length ? `<h2>Se sobrar tempo</h2><ol class="roteiro-lista">${r.sobras.map(lugar).join("")}</ol>` : ""}`}`;
     },
     album(param) {
-      // Três níveis, a partir da `prioridade` que o lugar já tem: nada de campo novo no dado.
-      const NIVEIS = [
-        ["turista", "Turista", "os obrigatórios", (l) => l.prioridade === "obrigatorio"],
-        ["viajante", "Viajante", "os recomendados", (l) => l.prioridade !== "obrigatorio"],
-        ["explorador", "Explorador", "todos os lugares", () => true],
-      ];
-      const conta = (itens, f) => {
-        const alvo = itens.filter(f);
-        const feitos = alvo.filter((l) => jaFui[l.nome]);
-        return { feitos: feitos.length, total: alvo.length, pct: alvo.length ? Math.round((feitos.length / alvo.length) * 100) : 0, ultima: feitos.map((l) => jaFui[l.nome]).sort().pop() };
-      };
       const barra = (k, rotulo) => `<div class="album-barra">
           <span class="album-rotulo">${rotulo}</span>
           <span class="album-trilho" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${k.pct}"><span style="width:${k.pct}%"></span></span>
@@ -1311,51 +1319,110 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         const lista = pais.parabens || ["Parabéns"];
         return lista[(pais.cidades.indexOf(cidade) + n) % lista.length];
       };
+      const todos = pais.lugares.flatMap((x) => x.itens);
+      const coladas = todos.filter((l) => jaFui[l.nome]).length;
+      // Como no álbum de papel: cada figurinha tem sigla e número, na ordem das páginas.
+      const numero = (l) => `${pais.codigo.toUpperCase()} ${String(todos.indexOf(l) + 1).padStart(2, "0")}`;
+      const figurinha = (l) => {
+        const n = todos.indexOf(l);
+        const fui = jaFui[l.nome];
+        const g = pontos().find((p) => p.lugar === l.nome);
+        const foto = g && fotoLugar(g.id);
+        const especial = l.prioridade === "obrigatorio";
+        const historia = g ? `<a class="figurinha-link" href="#/guia/${g.id}">História</a>` : "";
+        if (!fui) {
+          return `<div class="figurinha vaga">
+            <div class="fig-cartao">
+              <span class="fig-num">${numero(l)}</span>
+              <span class="fig-silhueta" aria-hidden="true">${l.icone}</span>
+              <strong lang="${LANG}">${esc(l.nome)}</strong>
+              <small>${especial ? "Especial" : "Comum"}</small>
+            </div>
+            <div class="fig-acoes">
+              <button class="btn" data-acao="fui" data-lugar="${esc(l.nome)}" aria-pressed="false">Colar: já fui</button>
+              ${historia}
+            </div>
+          </div>`;
+        }
+        // Inclinação fixa por figurinha, de -2° a 2°: parece colada à mão, mas não pula a cada visita.
+        return `<div class="figurinha colada ${especial ? "especial" : ""} ${l.nome === recemColado ? "nova" : ""}" style="--cor:${corDoIndice(n)};--gira:${((n * 7) % 5) - 2}deg">
+            <div class="fig-cartao">
+              <span class="fig-num">${numero(l)}</span>
+              <span class="fig-arte">${foto ? `<img src="${foto}" alt="" loading="lazy">` : `<span aria-hidden="true">${l.icone}</span>`}</span>
+              <span class="fig-faixa"><strong lang="${LANG}">${esc(l.nome)}</strong><small>${dataBr(fui)}</small></span>
+              ${especial ? `<span class="fig-selo">Especial</span>` : ""}
+              <span class="fig-brilho" aria-hidden="true"></span>
+            </div>
+            <div class="fig-acoes">
+              <button class="btn on" data-acao="fui" data-lugar="${esc(l.nome)}" aria-pressed="true">✓ Já fui</button>
+              ${historia}
+            </div>
+          </div>`;
+      };
       const c = param === undefined ? null : pais.lugares[+param];
       if (c) {
-        const k = NIVEIS.map(([, rotulo, desc, f], n) => ({ rotulo, desc, n, ...conta(c.itens, f) }));
-        return `<a class="voltar" href="#/album">← ${NOME_ALBUM}</a>
-          <h1>${esc(c.cidade)}</h1>
-          ${k.map((x) => barra(x, `${x.rotulo} <small>${x.desc}</small>`)).join("")}
-          ${k.filter((x) => x.total && x.feitos === x.total).map((x) => `
-            <p class="album-carimbo"><span aria-hidden="true">🏅</span> <strong>${x.rotulo}</strong> em ${esc(c.cidade)} · ${dataBr(x.ultima)}
-              <span class="suave">${esc(giria(c.cidade, x.n))} Você conheceu ${x.desc}.</span></p>`).join("")}
-          <div class="album-figurinhas">${c.itens.map((l) => {
-            const fui = jaFui[l.nome];
-            const g = pontos().find((p) => p.lugar === l.nome);
-            return `<div class="figurinha ${fui ? "colada" : ""}">
-              <span class="figurinha-icone" aria-hidden="true">${l.icone}</span>
-              <strong lang="${LANG}">${esc(l.nome)}</strong>
-              <small>${l.prioridade === "obrigatorio" ? "Turista" : "Viajante"}${fui ? ` · ${dataBr(fui)}` : ""}</small>
-              <button class="btn ${fui ? "on" : ""}" data-acao="fui" data-lugar="${esc(l.nome)}" aria-pressed="${Boolean(fui)}">${fui ? "✓ Já fui" : "Já fui"}</button>
-              ${g ? `<a class="figurinha-link" href="#/guia/${g.id}">História</a>` : ""}
-            </div>`;
-          }).join("")}</div>`;
+        const i = +param;
+        const k = NIVEIS_ALBUM.map(([id, rotulo, desc, f], n) => ({ id, rotulo, desc, n, ...contaAlbum(c.itens, f) }));
+        const feitos = c.itens.filter((l) => jaFui[l.nome]).length;
+        const vizinha = (j, seta) => {
+          const x = pais.lugares[j];
+          if (!x) return "<span></span>";
+          const rotulo = seta === "←" ? `← ${esc(x.cidade)}` : `${esc(x.cidade)} →`;
+          return `<a class="btn" href="#/album/${j}" data-virar="${seta === "←" ? "tras" : "frente"}">${rotulo}</a>`;
+        };
+        return `<a class="voltar" href="#/album" data-virar="tras">← Capa do álbum</a>
+          <article class="album-pagina ${direcaoPagina ? `vira-${direcaoPagina}` : ""}" aria-labelledby="pagina-titulo">
+            <header class="pagina-topo">
+              <span class="pagina-num">Página ${i + 1} de ${pais.lugares.length}</span>
+              <h1 id="pagina-titulo">${esc(c.cidade)}</h1>
+              <span class="pagina-conta"><strong>${feitos}</strong>/${c.itens.length}</span>
+            </header>
+            ${k.map((x) => barra(x, `${x.rotulo} <small>${x.desc}</small>`)).join("")}
+            <div class="carimbos">${k.filter((x) => x.total && x.feitos === x.total).map((x) => `
+              <p class="carimbo ${comemorar === `${c.cidade}|${x.id}` ? "batendo" : ""}" style="--gira:${-6 + x.n * 5}deg">
+                <span class="carimbo-nivel">${x.rotulo}</span>
+                <span class="carimbo-data">${dataBr(x.ultima)}</span>
+                <span class="carimbo-giria">${esc(giria(c.cidade, x.n))}</span>
+              </p>`).join("")}
+            </div>
+            <div class="album-figurinhas">${c.itens.map(figurinha).join("")}</div>
+            <nav class="pagina-nav" aria-label="Páginas do álbum">${vizinha(i - 1, "←")}${vizinha(i + 1, "→")}</nav>
+          </article>`;
       }
-      const nivel = NIVEIS.find((n) => n[0] === nivelAlbum) || NIVEIS[0];
-      const k = conta(pais.lugares.flatMap((x) => x.itens), nivel[3]);
+      const nivel = NIVEIS_ALBUM.find((n) => n[0] === nivelAlbum) || NIVEIS_ALBUM[0];
+      const k = contaAlbum(todos, nivel[3]);
       // Mapa esquemático: cada cidade ou região é uma peça, na posição de `mapa` no dado, colorida pela %.
       const colunas = pais.mapa ? Math.max(...Object.values(pais.mapa).map(([col, , larg = 1]) => col + larg - 1)) : 0;
       const mapa = pais.mapa ? `<div class="album-mapa" aria-hidden="true" style="grid-template-columns:repeat(${colunas}, minmax(0, 1fr))">${pais.lugares.map((x, i) => {
         const pos = pais.mapa[x.cidade];
         if (!pos) return "";
         const [col, lin, larg = 1, alt = 1] = pos;
-        const p = conta(x.itens, nivel[3]).pct;
-        return `<a class="album-peca" href="#/album/${i}" tabindex="-1" style="grid-column:${col} / span ${larg};grid-row:${lin} / span ${alt};--p:${p}"><span>${esc(x.cidade)}</span><strong>${p}%</strong></a>`;
+        const p = contaAlbum(x.itens, nivel[3]).pct;
+        return `<a class="album-peca" href="#/album/${i}" data-virar="frente" tabindex="-1" style="grid-column:${col} / span ${larg};grid-row:${lin} / span ${alt};--p:${p}"><span>${esc(x.cidade)}</span><strong>${p}%</strong></a>`;
       }).join("")}</div>` : "";
-      return `<p class="kicker"><span aria-hidden="true">📔</span> Álbum de figurinhas</p>
-        <h1>${NOME_ALBUM}</h1>
-        <p class="lead">Marque com “Já fui” os lugares que você conheceu ${esc(doNome)} e complete as figurinhas. Fica só neste aparelho.</p>
-        <div class="filtros" role="group" aria-label="Nível do álbum">${NIVEIS.map(([id, rotulo]) => `
+      return `<section class="album-capa">
+          <span class="capa-bandeira">${bandeira(pais)}</span>
+          <p class="capa-kicker">Álbum de figurinhas</p>
+          <h1>${NOME_ALBUM}</h1>
+          <p class="capa-sub">${esc(pais.nome)} · ${pais.lugares.length} páginas</p>
+          <p class="capa-selo"><strong>${coladas}</strong><small>de ${todos.length}</small></p>
+          <a class="btn capa-abrir" href="#/album/0" data-virar="frente">Abrir o álbum</a>
+        </section>
+        <p class="lead">Marque com “Já fui” os lugares que você conheceu ${esc(doNome)} e cole as figurinhas. Fica só neste aparelho.</p>
+        <div class="filtros" role="group" aria-label="Nível do álbum">${NIVEIS_ALBUM.map(([id, rotulo]) => `
           <button class="btn ${id === nivel[0] ? "on" : ""}" data-acao="album-nivel" data-nivel="${id}" aria-pressed="${id === nivel[0]}">${rotulo}</button>`).join("")}
         </div>
         ${barra(k, `${nivel[1]} <small>${nivel[2]}</small>`)}
         ${mapa}
-        <div class="tabela">${pais.lugares.map((x, i) => {
-          const p = conta(x.itens, nivel[3]);
-          return `<a class="item ponto album-regiao" href="#/album/${i}">
-            <span class="anel" style="--p:${p.pct}" aria-hidden="true"><span>${p.pct}%</span></span>
-            <span class="ponto-texto"><strong>${esc(x.cidade)}</strong><small class="ponto-dist">${p.feitos} de ${p.total} · ${nivel[1]}</small></span>
+        <h2>Páginas</h2>
+        <div class="album-indice">${pais.lugares.map((x, i) => {
+          const p = contaAlbum(x.itens, nivel[3]);
+          const completa = p.total && p.feitos === p.total;
+          return `<a class="miniatura ${completa ? "completa" : ""}" href="#/album/${i}" data-virar="frente">
+            <span class="mini-num">${i + 1}</span>
+            <strong>${esc(x.cidade)}</strong>
+            <span class="mini-slots" aria-hidden="true">${x.itens.map((l) => `<i class="${jaFui[l.nome] ? "on" : ""}"></i>`).join("")}</span>
+            <small class="ponto-dist">${p.feitos} de ${p.total} · ${nivel[1]}${completa ? " · completa" : ""}</small>
           </a>`;
         }).join("")}</div>`;
     },
@@ -1403,6 +1470,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     const nomeArte = !termo && !param && CAPAS[rota];
     const arte = nomeArte && (!pais.capas || pais.capas.includes(nomeArte)) ? nomeArte : "";
     main.innerHTML = `${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
+    if (comemorar && rota === "album") confete();
+    recemColado = null;
+    comemorar = null;
+    direcaoPagina = "";
     document.querySelectorAll("#abas a").forEach((a) => {
       const ativa = !termo && (a.dataset.aba === rota || (a.dataset.aba === "" && rota === "s"));
       a.classList.toggle("ativa", ativa);
@@ -1411,6 +1482,65 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     });
     $("#mais-botao").classList.toggle("ativa", !!$("#mais a.ativa"));
   }
+
+  // Confete de página completa: pedaços de papel com queda, giro e cor sorteados, que somem sozinhos.
+  const semMovimento = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function confete() {
+    if (semMovimento()) return;
+    const cores = ["#f2a900", "#0b3d91", "#e4002b", "#00843d", "#8fb6ff", "#ff8a7a"];
+    const caixa = document.createElement("div");
+    caixa.className = "confete";
+    caixa.setAttribute("aria-hidden", "true");
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement("i");
+      p.style.cssText = `--x:${Math.random() * 100}vw;--deriva:${Math.random() * 120 - 60}px;--giro:${Math.random() * 720 - 360}deg;--atraso:${Math.random() * 0.4}s;--cor:${cores[i % cores.length]}`;
+      caixa.append(p);
+    }
+    document.body.append(caixa);
+    setTimeout(() => caixa.remove(), 2800);
+  }
+
+  // Álbum: a página vira para a frente ou para trás conforme o link, e dá para folhear deslizando o dedo.
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-virar]");
+    if (a) direcaoPagina = a.dataset.virar;
+  });
+  let toque = null;
+  main.addEventListener("touchstart", (e) => { toque = e.touches.length === 1 ? [e.touches[0].clientX, e.touches[0].clientY] : null; }, { passive: true });
+  main.addEventListener("touchend", (e) => {
+    const [, rota, param] = location.hash.split("/");
+    if (!toque || rota !== "album" || param === undefined) return;
+    const dx = e.changedTouches[0].clientX - toque[0];
+    const dy = e.changedTouches[0].clientY - toque[1];
+    toque = null;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    const j = +param + (dx < 0 ? 1 : -1);
+    if (!pais.lugares[j]) return;
+    direcaoPagina = dx < 0 ? "frente" : "tras";
+    location.hash = `#/album/${j}`;
+  });
+  // Figurinha colada inclina na direção do mouse, com o reflexo acompanhando (só com mouse).
+  main.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse" || semMovimento()) return;
+    const cartao = e.target.closest(".figurinha.colada .fig-cartao");
+    if (!cartao) return;
+    const r = cartao.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    cartao.style.setProperty("--ry", `${(x - 0.5) * 18}deg`);
+    cartao.style.setProperty("--rx", `${(0.5 - y) * 18}deg`);
+    cartao.style.setProperty("--mx", `${x * 100}%`);
+    cartao.style.setProperty("--my", `${y * 100}%`);
+    cartao.classList.add("inclinada");
+  });
+  main.addEventListener("pointerout", (e) => {
+    const cartao = e.target.closest(".fig-cartao.inclinada");
+    if (cartao && !cartao.contains(e.relatedTarget)) {
+      cartao.classList.remove("inclinada");
+      cartao.style.removeProperty("--rx");
+      cartao.style.removeProperty("--ry");
+    }
+  });
 
   // Menu "Mais": fecha ao escolher uma seção, ao tocar fora ou com Esc.
   function abrirMais(abrir) {
@@ -1519,9 +1649,14 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       // Já fui tira o lugar do "Quero ir": não faz sentido ir de novo no mesmo roteiro.
       const nome = b.dataset.lugar;
       const on = !jaFui[nome];
+      const antes = paginasCompletas();
       if (on) { jaFui[nome] = new Date().toISOString().slice(0, 10); queroIr = queroIr.filter((x) => x !== nome); }
       else delete jaFui[nome];
       salvarMarcas();
+      if (on) {
+        recemColado = nome;
+        comemorar = [...paginasCompletas()].find((x) => !antes.has(x)) || null;
+      }
       avisar(on ? `Figurinha colada em ${NOME_ALBUM}` : `Tirado de ${NOME_ALBUM}`);
       return render();
     }
