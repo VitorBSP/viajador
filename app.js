@@ -314,14 +314,26 @@
   }
   const formatarDist = (km) => (km < 1 ? `${Math.round(km * 100) * 10} m` : `${km < 10 ? km.toFixed(1).replace(".", ",") : Math.round(km)} km`);
 
-  // Roteiro: o viajante escolhe cidades (ou regiões) e dias, e o app distribui os lugares em manhãs e tardes.
-  // No dado, cada lugar pode ter `prioridade: "obrigatorio"` (o resto é recomendado) e `periodos: 2` (dia inteiro).
+  // Roteiro: o viajante escolhe cidades (ou regiões) e dias, e o app distribui os lugares em manhã, tarde e noite.
+  // No dado, cada lugar pode ter `prioridade: "obrigatorio"` (o resto é recomendado), `minutos` (tempo sugerido no lugar),
+  // `turno: "noite"` (só faz sentido à noite) e `alternativa` (nome de outro lugar, o plano B).
   const CHAVE_ROTEIRO = doPais("viajador:roteiro");
-  const KM_DESLOCAMENTO = 60; // acima disso, trocar de cidade custa meio dia de estrada
-  const KM_DIA_DE_ESTRADA = 250; // acima disso, o dia inteiro
+  const TURNOS = [["manha", "Manhã", 210], ["tarde", "Tarde", 270], ["noite", "Noite", 180]]; // minutos úteis de cada turno
+  const MIN_PADRAO = 90;
+  const DIA_INTEIRO = 270; // acima disso, o lugar ocupa manhã e tarde
   let roteiro = { cidades: [], dias: 3 };
   try { roteiro = { ...roteiro, ...JSON.parse(localStorage.getItem(CHAVE_ROTEIRO)) }; } catch (e) {}
   const salvarRoteiro = () => { try { localStorage.setItem(CHAVE_ROTEIRO, JSON.stringify(roteiro)); } catch (e) {} };
+
+  const formatarTempo = (min) => (min < 60 ? `${min} min` : `${Math.floor(min / 60)}h${min % 60 ? String(min % 60).padStart(2, "0") : ""}`);
+  // Estrada: distância em linha reta x 1,3 (curvas da estrada), a 70 km/h de média, arredondada a 10 min.
+  const estradaEntre = (a, b) => {
+    if (!a || !b) return null;
+    const km = distanciaKm(a, b) * 1.3;
+    return { km: Math.round(km), min: Math.max(10, Math.round(km / 70 * 6) * 10) };
+  };
+  const lugarPorNome = (nome) => { for (const c of pais.lugares) for (const l of c.itens) if (l.nome === nome) return { l, cidade: c.cidade }; return null; };
+  const coordsDoLugar = (l) => l.coords || (pontos().find((g) => g.lugar === l.nome) || {}).coords;
 
   function centroDe(itens) {
     const cs = itens.map((x) => x.coords).filter(Boolean);
@@ -344,24 +356,26 @@
   }
 
   function montarRoteiro(cidades, dias) {
-    const coordsDe = (nome) => (pontos().find((g) => g.lugar === nome) || {}).coords;
     let grupos = pais.lugares.filter((c) => cidades.includes(c.cidade)).map((c) => ({
       cidade: c.cidade,
-      itens: c.itens.map((l) => ({ l, obrig: l.prioridade === "obrigatorio", periodos: l.periodos === 2 ? 2 : 1, coords: coordsDe(l.nome) })),
+      itens: c.itens.map((l) => ({
+        l, cidade: c.cidade, obrig: l.prioridade === "obrigatorio", noite: l.turno === "noite",
+        min: l.minutos || MIN_PADRAO, coords: coordsDoLugar(l),
+      })),
     }));
     grupos.forEach((g) => { g.centro = centroDe(g.itens); });
     grupos = porProximidade(grupos, (g) => g.centro);
-    grupos.forEach((g, i) => {
-      const km = i > 0 && g.centro && grupos[i - 1].centro ? distanciaKm(grupos[i - 1].centro, g.centro) : 0;
-      g.viagem = i === 0 ? 0 : km > KM_DIA_DE_ESTRADA ? 2 : km > KM_DESLOCAMENTO || !km ? 1 : 0;
-    });
-    const estrada = grupos.reduce((s, g) => s + g.viagem, 0);
 
-    // Primeiro o obrigatório, depois o recomendado. Nos dois, um de cada cidade por vez, enquanto couber,
-    // para nenhuma cidade escolhida ficar sem nada.
-    let livres = dias * 2 - estrada;
+    // Escolha: primeiro o obrigatório, depois o recomendado, um de cada cidade por vez, até o tempo acabar.
+    // A estrada entre as cidades entra na conta; a de dentro da cidade, numa folga de 20%.
+    const estradaGrupos = grupos.slice(1).reduce((s, g, i) => s + ((estradaEntre(grupos[i].centro, g.centro) || {}).min || 0), 0);
+    const tempo = { dia: dias * (TURNOS[0][2] + TURNOS[1][2]) * 0.8 - estradaGrupos, noite: dias * TURNOS[2][2] };
     const escolhidos = new Set();
-    const caber = (x) => { if (x.periodos > livres) return false; escolhidos.add(x); livres -= x.periodos; return true; };
+    const caber = (x) => {
+      const k = x.noite ? "noite" : "dia";
+      if (x.min > tempo[k]) return false;
+      escolhidos.add(x); tempo[k] -= x.min; return true;
+    };
     const revezar = (filas) => {
       const fora = [];
       for (let i = 0; filas.some((f) => i < f.length); i++) filas.forEach((f) => { if (f[i] && !caber(f[i])) fora.push(f[i]); });
@@ -371,37 +385,60 @@
     const faltam = revezar(grupos.map((g) => g.itens.filter((x) => x.obrig)));
     revezar(grupos.map((g) => g.itens.filter((x) => !x.obrig)));
 
-    // Monta os períodos. Dia inteiro sempre começa de manhã: se a cidade começa à tarde, um passeio curto vem antes.
-    const periodos = [];
+    // Distribuição: cada dia tem três turnos com tempo útil; a estrada até o próximo lugar entra no turno dele.
+    const agenda = Array.from({ length: dias }, () => TURNOS.map(([id, , cap]) => ({ id, cap, usado: 0, itens: [] })));
+    let d = 0, t = 0, antes = null;
+    const avancar = () => { t++; if (t > 1) { t = 0; d++; } };
+    const noites = [];
+    const fora = [];
     for (const g of grupos) {
-      const meus = g.itens.filter((x) => escolhidos.has(x)).sort((a, b) => b.obrig - a.obrig);
-      if (!meus.length) continue;
-      if (g.viagem && periodos.length) {
-        // Dia inteiro de estrada só quando começa de manhã; à tarde, vira dois meios períodos seguidos.
-        const v = { viagem: g.cidade, periodos: g.viagem === 2 && periodos.length % 2 === 0 ? 2 : 1 };
-        periodos.push(v);
-        if (v.periodos === 2) periodos.push({ continua: v });
-        else if (g.viagem === 2) periodos.push({ viagem: g.cidade, periodos: 1 });
-      }
-      const curtos = porProximidade(meus.filter((x) => x.periodos === 1), (x) => x.coords);
-      const longos = meus.filter((x) => x.periodos === 2);
-      const fila = periodos.length % 2 === 1 && curtos.length ? [curtos.shift(), ...longos, ...curtos] : [...longos, ...curtos];
+      const meus = g.itens.filter((x) => escolhidos.has(x));
+      const deDia = porProximidade(meus.filter((x) => !x.noite).sort((a, b) => b.obrig - a.obrig), (x) => x.coords);
+      // Passeio de dia inteiro começa de manhã: o obrigatório vem antes dos curtos quando a cidade começa de manhã;
+      // o recomendado de dia inteiro fica para o fim, depois do que é obrigatório.
+      const longos = deDia.filter((x) => x.min > DIA_INTEIRO && x.obrig);
+      const longosRec = deDia.filter((x) => x.min > DIA_INTEIRO && !x.obrig);
+      const curtos = deDia.filter((x) => x.min <= DIA_INTEIRO);
+      const fila = d < dias && t === 0 && agenda[d][0].usado === 0
+        ? [...longos, ...curtos, ...longosRec]
+        : [...curtos.slice(0, 1), ...longos, ...curtos.slice(1), ...longosRec];
       for (const x of fila) {
-        if (x.periodos === 2 && periodos.length % 2 === 1) periodos.push({ livre: true });
-        x.cidade = g.cidade;
-        periodos.push(x);
-        if (x.periodos === 2) periodos.push({ continua: x });
+        const estrada = antes ? estradaEntre(antes, x.coords) : null;
+        const ida = estrada && estrada.min >= 20 ? estrada : null;
+        const precisa = (ida ? ida.min : 0) + Math.min(x.min, DIA_INTEIRO);
+        if (x.min > DIA_INTEIRO) {
+          if (d < dias && (t !== 0 || agenda[d][0].usado > 0)) { t = 0; d++; }
+        } else {
+          while (d < dias && agenda[d][t].usado + precisa > agenda[d][t].cap && agenda[d][t].usado > 0) avancar();
+        }
+        if (d >= dias) { fora.push(x); continue; }
+        const turno = agenda[d][t];
+        if (ida) turno.itens.push({ estrada: ida, ate: x });
+        turno.itens.push(x);
+        turno.usado += precisa;
+        x.dia = d;
+        if (x.min > DIA_INTEIRO) { agenda[d][1].itens.push({ continua: x }); agenda[d][1].usado = agenda[d][1].cap; t = 0; d++; }
+        else if (turno.usado >= turno.cap) avancar();
+        antes = x.coords || antes;
       }
+      meus.filter((x) => x.noite).forEach((x) => noites.push(x));
     }
-    // Se as tardes livres empurraram algo para além do último dia, ele sai do roteiro.
-    const sobraram = periodos.splice(dias * 2);
-    if (periodos.length && periodos[periodos.length - 1].periodos === 2) sobraram.unshift(periodos.pop());
-    sobraram.filter((p) => p.l).forEach((x) => { escolhidos.delete(x); if (x.obrig) faltam.push(x); });
+    // Noite: só nas noites em que o dia termina na cidade do lugar (é lá que o viajante dorme).
+    const cidadeDaNoite = (dia) => {
+      const deDia = [...dia[0].itens, ...dia[1].itens].map((y) => y.cidade || (y.continua && y.continua.cidade)).filter(Boolean);
+      return deDia[deDia.length - 1];
+    };
+    agenda.forEach((dia, i) => { dia.cidade = cidadeDaNoite(dia) || (i ? agenda[i - 1].cidade : grupos[0] && grupos[0].cidade); });
+    for (const x of noites) {
+      const dia = agenda.find((dia) => dia.cidade === x.cidade && dia[2].usado + x.min <= dia[2].cap);
+      if (!dia) { fora.push(x); continue; }
+      dia[2].itens.push(x); dia[2].usado += x.min;
+    }
+    fora.forEach((x) => { escolhidos.delete(x); if (x.obrig) faltam.push(x); });
     const sobras = grupos.flatMap((g) => g.itens.filter((x) => !x.obrig && !escolhidos.has(x)));
-    const minimo = Math.ceil((obrig.reduce((s, x) => s + x.periodos, 0) + estrada) / 2);
-    const lista = [];
-    for (let i = 0; i < periodos.length; i += 2) lista.push([periodos[i], periodos[i + 1]]);
-    return { dias: lista, faltam, sobras, minimo, escolhidos };
+    const minutosObrig = obrig.reduce((s, x) => s + (x.noite ? 0 : x.min), 0) + estradaGrupos;
+    const minimo = Math.max(1, Math.ceil(minutosObrig / ((TURNOS[0][2] + TURNOS[1][2]) * 0.8)));
+    return { agenda, faltam, sobras, minimo, escolhidos };
   }
   function pedirPosicao() {
     if (!("geolocation" in navigator)) {
@@ -996,26 +1033,43 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const r = cidades.length ? montarRoteiro(cidades, roteiro.dias) : null;
       const nome = semTraducao ? "regiões" : "cidades";
       const historia = (l) => pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("");
-      const lugar = (x, quando) => `
+      // Para o jantar, uma comida da região (ou do país), sem repetir entre as noites.
+      const comidas = (cidade) => pais.comidas.filter((c) => !c.regioes || c.regioes.includes(cidade));
+      let jantares = 0;
+      const planoB = (l) => {
+        const alt = l.alternativa && lugarPorNome(l.alternativa);
+        if (!alt) return "";
+        const g = pontos().find((p) => p.lugar === alt.l.nome);
+        return `<p class="roteiro-b"><span aria-hidden="true">🔁</span> Plano B: ${g ? `<a href="#/guia/${g.id}">${esc(alt.l.nome)}</a>` : esc(alt.l.nome)}${alt.l.minutos ? ` · ${formatarTempo(alt.l.minutos)}` : ""}</p>`;
+      };
+      const lugar = (x) => `
         <li class="roteiro-item">
-          <span class="roteiro-quando">${quando}</span>
-          <div>
-            <strong><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span></strong>
-            <span class="etiqueta-roteiro ${x.obrig ? "obrig" : ""}">${x.obrig ? "Obrigatório" : "Recomendado"}</span>
-            <p class="suave">${esc(x.l.dica)}</p>
-            ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
-            ${historia(x.l)}
-          </div>
+          <strong><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span></strong>
+          <span class="etiqueta-roteiro ${x.obrig ? "obrig" : ""}">${x.obrig ? "Obrigatório" : "Recomendado"}</span>
+          <span class="etiqueta-roteiro"><span aria-hidden="true">⏱️</span> ${x.min > DIA_INTEIRO ? "Dia inteiro" : formatarTempo(x.min)}</span>
+          <p class="suave">${esc(x.l.dica)}</p>
+          ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
+          ${planoB(x.l)}
+          ${historia(x.l)}
         </li>`;
-      const periodo = (p, quando) => {
-        if (!p || p.continua) return "";
-        if (p.viagem) return `<li class="roteiro-item"><span class="roteiro-quando">${p.periodos === 2 ? "Dia inteiro" : quando}</span><div><strong><span aria-hidden="true">🚗</span> Estrada até ${esc(p.viagem)}</strong><p class="suave">Reserve este período para o deslocamento.</p></div></li>`;
-        if (p.livre) return `<li class="roteiro-item"><span class="roteiro-quando">${quando}</span><div><strong>Tempo livre</strong><p class="suave">Bom para descansar, comer bem ou voltar a um lugar de que gostou.</p></div></li>`;
-        return lugar(p, p.periodos === 2 ? "Dia inteiro" : quando);
+      const item = (y) => {
+        if (y.continua) return `<li class="roteiro-item"><strong>Continua: ${esc(y.continua.l.nome)}</strong></li>`;
+        if (y.estrada) return `<li class="roteiro-item roteiro-estrada"><span aria-hidden="true">🚗</span> ${formatarTempo(y.estrada.min)} de estrada até ${esc(y.ate.l.nome)} <span class="suave">(cerca de ${y.estrada.km} km)</span></li>`;
+        return lugar(y);
+      };
+      const turno = (tu, rotulo, cidade) => {
+        let corpo = tu.itens.map(item).join("");
+        if (!corpo && tu.id === "noite" && cidade) {
+          const lista = comidas(cidade);
+          const c = lista.length ? lista[jantares++ % lista.length] : null;
+          corpo = `<li class="roteiro-item"><strong><span aria-hidden="true">🍽️</span> Jantar${c ? `: ${esc(c.nome)}` : ""}</strong>${c ? `<p class="suave">${esc(c.desc)}</p>` : ""}</li>`;
+        }
+        if (!corpo) corpo = `<li class="roteiro-item"><strong>Tempo livre</strong><p class="suave">Para descansar, comer bem ou voltar a um lugar de que gostou.</p></li>`;
+        return `<div class="roteiro-turno"><h3>${rotulo}</h3><ol class="roteiro-lista">${corpo}</ol></div>`;
       };
       const qtd = r ? [...r.escolhidos].filter((x) => x.obrig).length : 0;
       return `<h1>Roteiro</h1>
-        <p class="lead">Escolha as ${nome} e quantos dias vai ficar. O roteiro se monta sozinho: primeiro o obrigatório, depois o recomendado, na ordem do caminho.</p>
+        <p class="lead">Escolha as ${nome} e quantos dias vai ficar. O roteiro se monta sozinho, em manhã, tarde e noite: primeiro o obrigatório, depois o recomendado, na ordem do caminho e com o tempo de estrada.</p>
         <div class="filtros" role="group" aria-label="${semTraducao ? "Regiões" : "Cidades"}">${pais.cidades.map((c) => `
           <button class="btn ${cidades.includes(c) ? "on" : ""}" data-acao="roteiro-cidade" data-cidade="${esc(c)}" aria-pressed="${cidades.includes(c)}">${esc(c)}</button>`).join("")}
         </div>
@@ -1025,16 +1079,17 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <button class="btn" data-acao="roteiro-dias" data-delta="1" aria-label="Mais um dia" ${roteiro.dias >= 30 ? "disabled" : ""}>+</button>
         </div>
         ${!r ? `<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>` : `
-          <p class="lead">${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}.</p>
-          ${r.faltam.length ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são pelo menos ${r.minimo} dias.</p>` : ""}
-          ${r.dias.map(([manha, tarde], i) => {
-            const onde = [...new Set([manha, tarde].map((p) => p && (p.cidade || p.viagem || (p.continua && p.continua.cidade))).filter(Boolean))];
+          <p class="lead">${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}. Tempos e estradas são estimativas.</p>
+          ${r.faltam.length ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</p>` : ""}
+          ${r.agenda.map((dia, i) => {
+            const onde = [...new Set(dia.flatMap((tu) => tu.itens.map((y) => y.cidade || (y.ate && y.ate.cidade) || (y.continua && y.continua.cidade))).filter(Boolean))];
+            if (!onde.length && dia.every((tu) => !tu.itens.length)) return "";
             return `<section class="item roteiro-dia">
               <h2>Dia ${i + 1}${onde.length ? ` · ${onde.map(esc).join(" → ")}` : ""}</h2>
-              <ol class="roteiro-lista">${periodo(manha, "Manhã")}${periodo(tarde, "Tarde")}</ol>
+              ${dia.map((tu, j) => turno(tu, TURNOS[j][1], onde[onde.length - 1])).join("")}
             </section>`;
           }).join("")}
-          ${r.sobras.length ? `<h2>Se sobrar tempo</h2><ol class="roteiro-lista">${r.sobras.map((x) => lugar(x, "Extra")).join("")}</ol>` : ""}`}`;
+          ${r.sobras.length ? `<h2>Se sobrar tempo</h2><ol class="roteiro-lista">${r.sobras.map(lugar).join("")}</ol>` : ""}`}`;
     },
     favoritos() {
       const fs = favoritos.map((es) => todas.find((f) => f.es === es)).filter(Boolean);

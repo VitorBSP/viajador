@@ -565,6 +565,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Ciudad Vieja & Peatonal Sarandí",
           icone: "🏛️",
+          minutos: 150,
+          alternativa: "Plaza Matriz & Cabildo",
           prioridade: "obrigatorio",
           dica: "Centro histórico para andar a pé. Vá de dia; à noite, prefira ruas movimentadas. Tem muitas feirinhas de artesanato.",
           frases: [
@@ -575,6 +577,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Mercado del Puerto",
           icone: "🥩",
+          minutos: 90,
+          alternativa: "Café Brasilero",
           prioridade: "obrigatorio",
           dica: "Galpão de ferro cheio de parrillas. Sente no balcão para ver o assador. Peça um medio y medio.",
           frases: [
@@ -586,6 +590,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Rambla",
           icone: "🌅",
+          minutos: 90,
+          alternativa: "Parque Rodó",
           prioridade: "obrigatorio",
           dica: "Calçadão de mais de 20 km à beira do Rio da Prata. Programa local: caminhar, tomar mate e ver o pôr do sol.",
           frases: [
@@ -596,6 +602,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Plaza Independencia & Palacio Salvo",
           icone: "🗼",
+          minutos: 60,
+          alternativa: "Puerta de la Ciudadela",
           prioridade: "obrigatorio",
           dica: "Praça com o mausoléu de Artigas e o Palacio Salvo, prédio símbolo da cidade. Pergunte se há visita guiada ao Salvo.",
           frases: [
@@ -606,6 +614,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Teatro Solís",
           icone: "🎭",
+          minutos: 60,
+          alternativa: "Palacio Legislativo",
           prioridade: "obrigatorio",
           dica: "O teatro mais importante do país. Vale a visita guiada mesmo sem assistir a um espetáculo.",
           frases: [
@@ -616,6 +626,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Feria de Tristán Narvaja",
           icone: "🧺",
+          minutos: 120,
+          alternativa: "El Prado",
           dica: "Só aos domingos de manhã. Feira de antiguidades, livros, frutas e de tudo um pouco. Dá pra negociar.",
           frases: [
             { es: "¿Cuánto me hacés por los dos?", pt: "Quanto você faz nos dois?", pr: "KUAN-to me a-SÉS por los DOS?" },
@@ -625,6 +637,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Estadio Centenario & Museo del Fútbol",
           icone: "⚽",
+          minutos: 90,
+          alternativa: "Monumento La Carreta",
           dica: "Palco da primeira Copa do Mundo (1930). O museu fica dentro do estádio. Cuidado ao falar de 1950 com uruguaios... eles adoram lembrar o Maracanaço.",
           frases: [
             { es: "¿El museo abre hoy?", pt: "O museu abre hoje?", pr: "el mu-SE-o A-bre OI?" },
@@ -634,6 +648,9 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Pocitos",
           icone: "🏙️",
+          minutos: 120,
+          turno: "noite",
+          alternativa: "Faro de Punta Brava (Punta Carretas)",
           dica: "Bairro de praia urbana, prédios e cafés. Bom para jantar e caminhar na Rambla à noite.",
           frases: [
             { es: "¿Hay alguna heladería por acá?", pt: "Tem alguma sorveteria por aqui?", pr: "AI al-GU-na e-la-de-RI-a por a-KÁ?" },
@@ -642,6 +659,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Plaza Matriz & Cabildo",
           icone: "⛲",
+          minutos: 45,
+          alternativa: "Museo Torres García",
           dica: "A antiga praça principal, com a catedral e o Museo Histórico Cabildo. Confirme o horário do museu.",
           frases: [
             { es: "¿El Cabildo está abierto?", pt: "O Cabildo está aberto?", pr: "el ka-BIL-do es-TÁ a-BIER-to?" },
@@ -650,6 +669,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Puerta de la Ciudadela",
           icone: "🚪",
+          minutos: 15,
+          alternativa: "Plaza Matriz & Cabildo",
           dica: "Fica ao lado da Plaza Independencia, na entrada da Peatonal Sarandí. É passagem obrigatória e rende boa foto.",
           frases: [
             { es: "¿Me sacás una foto con la puerta atrás?", pt: "Tira uma foto minha com o portão atrás?", pr: "me sa-KÁS U-na FO-to kon la PUER-ta a-TRÁS?" },
@@ -658,6 +679,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo Torres García",
           icone: "🎨",
+          minutos: 45,
+          alternativa: "Museo Gurvich",
           dica: "Na própria Peatonal Sarandí, fácil de encaixar no passeio pela Ciudad Vieja.",
           frases: [
             { es: "¿Cuántos pisos tiene el museo?", pt: "Quantos andares tem o museu?", pr: "KUAN-tos PI-sos TIE-ne el mu-SE-o?" },
@@ -666,6 +689,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo de Arte Precolombino e Indígena (MAPI)",
           icone: "🗿",
+          minutos: 60,
+          alternativa: "Museo Torres García",
           dica: "Fica na Ciudad Vieja. Pergunte na entrada sobre preço e dias de funcionamento.",
           frases: [
             { es: "¿Hoy se paga la entrada?", pt: "Hoje paga entrada?", pr: "OI se PA-ga la en-TRA-da?" },
@@ -674,6 +699,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Café Brasilero",
           icone: "☕",
+          minutos: 45,
+          alternativa: "Mercado del Puerto",
           dica: "Café histórico da Ciudad Vieja. Bom para uma pausa, com o cardápio inspirado nos frequentadores.",
           frases: [
             { es: "Un café Galeano, por favor", pt: "Um café Galeano, por favor", pr: "un ka-FÉ ga-le-A-no, por fa-BOR" },
@@ -682,6 +709,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Palacio Legislativo",
           icone: "🏛️",
+          minutos: 60,
+          alternativa: "Teatro Solís",
           dica: "Sede do parlamento em atividade. Pergunte como funcionam as visitas antes de ir.",
           frases: [
             { es: "¿Se puede visitar por dentro?", pt: "Dá pra visitar por dentro?", pr: "se PUE-de bi-si-TAR por DEN-tro?" },
@@ -690,6 +719,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Monumento La Carreta",
           icone: "🐂",
+          minutos: 20,
+          alternativa: "Estadio Centenario & Museo del Fútbol",
           dica: "No Parque Batlle, perto do Estadio Centenario. Dá para ver os dois no mesmo passeio.",
           frases: [
             { es: "¿Por dónde queda La Carreta?", pt: "Pra que lado fica La Carreta?", pr: "por DON-de KE-da la ka-RRE-ta?" },
@@ -698,6 +729,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Parque Rodó",
           icone: "🎠",
+          minutos: 60,
+          alternativa: "Museo Nacional de Artes Visuales",
           dica: "Parque com lago e brinquedos, perto da Playa Ramírez e da Rambla. Bom para quem está com crianças.",
           frases: [
             { es: "¿Dónde están los juegos?", pt: "Onde ficam os brinquedos?", pr: "DON-de es-TÁN los RRUE-gos?" },
@@ -706,6 +739,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Faro de Punta Brava (Punta Carretas)",
           icone: "🗼",
+          minutos: 45,
+          alternativa: "Rambla",
           dica: "Conhecido no bairro de Punta Carretas. Bom lugar para ver o pôr do sol na beira da água.",
           frases: [
             { es: "¿Se puede subir al faro de Punta Brava?", pt: "Dá pra subir no farol de Punta Brava?", pr: "se PUE-de su-BIR al FA-ro de PUN-ta BRA-ba?" },
@@ -714,6 +749,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Fortaleza General Artigas (Cerro)",
           icone: "🏰",
+          minutos: 120,
+          alternativa: "El Prado",
           dica: "No alto do Cerro de Montevideo, longe do centro. Combine o transporte de ida e de volta antes de subir.",
           frases: [
             { es: "¿Cómo llego a la Fortaleza del Cerro?", pt: "Como chego à Fortaleza do Cerro?", pr: "KO-mo SHE-go a la for-ta-LE-sa del SE-rro?" },
@@ -722,6 +759,9 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Barrio Sur & Palermo",
           icone: "🥁",
+          minutos: 90,
+          turno: "noite",
+          alternativa: "Museo del Carnaval",
           dica: "Em fevereiro, as Llamadas desfilam por aqui. Vá acompanhado à noite e pergunte sobre as ruas.",
           frases: [
             { es: "¿Dónde puedo escuchar candombe?", pt: "Onde posso ouvir candombe?", pr: "DON-de PUE-do es-ku-TCHAR kan-DOM-be?" },
@@ -730,6 +770,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo Nacional de Artes Visuales",
           icone: "🖼️",
+          minutos: 60,
+          alternativa: "Parque Rodó",
           dica: "Fica no Parque Rodó, então combine os dois. Confirme o horário.",
           frases: [
             { es: "¿Dónde está el Monumento Cósmico?", pt: "Onde está o Monumento Cósmico?", pr: "DON-de es-TÁ el mo-nu-MEN-to KOS-mi-ko?" },
@@ -738,6 +780,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo Gurvich",
           icone: "🖌️",
+          minutos: 45,
+          alternativa: "Museo Torres García",
           dica: "Fica na Peatonal Sarandí. Confirme os dias de abertura.",
           frases: [
             { es: "¿Hoy es gratis el museo?", pt: "O museu é grátis hoje?", pr: "OI ES GRA-tis el mu-SE-o?" },
@@ -746,6 +790,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Hotel Carrasco",
           icone: "🏨",
+          minutos: 30,
+          alternativa: "Rambla",
           dica: "Fica na Rambla do bairro de Carrasco, longe do centro. Mesmo sem se hospedar, vale ver de fora.",
           frases: [
             { es: "¿Se puede entrar a conocer el hotel?", pt: "Dá pra entrar para conhecer o hotel?", pr: "se PUE-de en-TRAR a ko-no-SER el o-TEL?" },
@@ -754,6 +800,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo del Carnaval",
           icone: "🥁",
+          minutos: 60,
+          alternativa: "Barrio Sur & Palermo",
           dica: "Fica perto do porto e apresenta a murga e o candombe. Em janeiro e fevereiro, o carnaval toma conta dos \"tablados\", palcos populares pela cidade.",
           frases: [
             { es: "¿Qué es una murga?", pt: "O que é uma murga?", pr: "KE ES U-na MUR-ga?" },
@@ -763,6 +811,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "El Prado",
           icone: "🌹",
+          minutos: 120,
+          alternativa: "Parque Rodó",
           dica: "Bairro tradicional e arborizado, com o Rosedal e o Jardim Botânico. Bom para uma pausa da cidade, de dia.",
           frases: [
             { es: "¿Cómo llego al Rosedal?", pt: "Como chego ao Rosedal?", pr: "KO-mo SHE-go al rro-se-DAL?" },
@@ -772,6 +822,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Terminal Tres Cruces",
           icone: "🚍",
+          minutos: 30,
+          alternativa: "Estadio Centenario & Museo del Fútbol",
           dica: "Rodoviária com shopping junto. Daqui saem os ônibus para Punta del Este. No verão e em feriados, compre a passagem com antecedência.",
           frases: [
             { es: "Un pasaje a Punta del Este, por favor", pt: "Uma passagem para Punta del Este, por favor", pr: "un pa-SA-rre a PUN-ta del ES-te, por fa-BOR" },
@@ -786,6 +838,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "La Mano (Los Dedos) — Playa Brava",
           icone: "✋",
+          minutos: 30,
+          alternativa: "Playa Mansa x Playa Brava",
           prioridade: "obrigatorio",
           dica: "A escultura dos dedos saindo da areia. Foto obrigatória: vá cedo para pegar sem fila.",
           frases: [
@@ -796,6 +850,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Puerto de Punta del Este",
           icone: "🦭",
+          minutos: 60,
+          alternativa: "Isla Gorriti",
           prioridade: "obrigatorio",
           dica: "Os lobos-marinhos aparecem perto das bancas de peixe. Bom lugar para comer frutos do mar.",
           frases: [
@@ -806,6 +862,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Casapueblo (Punta Ballena)",
           icone: "🌇",
+          minutos: 120,
+          alternativa: "Arboretum Lussich",
           prioridade: "obrigatorio",
           dica: "Obra de Carlos Páez Vilaró. No pôr do sol acontece a \"Ceremonia del Sol\": um poema gravado na voz do próprio artista. Chegue antes para pegar lugar.",
           frases: [
@@ -816,7 +874,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Isla Gorriti",
           icone: "⛵",
-          periodos: 2,
+          alternativa: "Isla de Lobos",
+          minutos: 360,
           dica: "Ilha em frente ao porto, com praias calmas. Barcos saem do porto na temporada.",
           frases: [
             { es: "¿De dónde sale el barco a la Isla Gorriti?", pt: "De onde sai o barco pra Isla Gorriti?", pr: "de DON-de SA-le el BAR-ko a la IS-la go-RRI-ti?" },
@@ -826,6 +885,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Playa Mansa x Playa Brava",
           icone: "🌊",
+          minutos: 180,
+          alternativa: "La Mano (Los Dedos) — Playa Brava",
           dica: "Mansa (lado da baía): água calma, ideal para família e pôr do sol. Brava (lado do oceano): ondas fortes, surf.",
           frases: [
             { es: "¿Cuál es mejor para nadar, la Mansa o la Brava?", pt: "Qual é melhor pra nadar, a Mansa ou a Brava?", pr: "KUAL ES me-RROR PA-ra na-DAR, la MAN-sa o la BRA-ba?" },
@@ -834,6 +895,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "La Barra & José Ignacio",
           icone: "🍸",
+          minutos: 180,
+          alternativa: "Pueblo Garzón",
           prioridade: "obrigatorio",
           dica: "La Barra: galerias, bares e a ponte ondulada. José Ignacio: vila charmosa (e salgada!) com o farol.",
           frases: [
@@ -844,6 +907,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Faro de Punta del Este",
           icone: "🗼",
+          minutos: 20,
+          alternativa: "Iglesia de la Candelaria",
           dica: "Fica no centro da península. Só dá para ver por fora.",
           frases: [
             { es: "¿Por dónde se llega al faro?", pt: "Por onde se chega ao farol?", pr: "por DON-de se SHE-ga al FA-ro?" },
@@ -852,6 +917,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Iglesia de la Candelaria",
           icone: "⛪",
+          minutos: 20,
+          alternativa: "Faro de Punta del Este",
           dica: "Fica perto do farol. Por ser igreja em atividade, entre com discrição.",
           frases: [
             { es: "¿A qué hora es la misa?", pt: "Que horas é a missa?", pr: "a KE O-ra ES la MI-sa?" },
@@ -860,6 +927,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Isla de Lobos",
           icone: "🦭",
+          minutos: 150,
+          alternativa: "Isla Gorriti",
           dica: "É área protegida, com desembarque restrito. O passeio é de barco, a partir do porto.",
           frases: [
             { es: "¿Hay paseos en barco a la Isla de Lobos?", pt: "Tem passeio de barco para a Isla de Lobos?", pr: "AI pa-SE-os en BAR-ko a la IS-la de LO-bos?" },
@@ -868,6 +937,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo Ralli",
           icone: "🏛️",
+          minutos: 60,
+          alternativa: "Fundación Atchugarry & MACA",
           dica: "No bairro Beverly Hills, fora da península. A fonte indica entrada gratuita: confirme dias e horário.",
           frases: [
             { es: "¿La entrada es gratis?", pt: "A entrada é grátis?", pr: "la en-TRA-da ES GRA-tis?" },
@@ -876,6 +947,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Punta Ballena",
           icone: "🐋",
+          minutos: 60,
+          alternativa: "Arboretum Lussich",
           dica: "Na Ruta Panorámica, perto de Casapueblo. Baleias aparecem entre julho e outubro.",
           frases: [
             { es: "¿Se ven ballenas en esta época?", pt: "Dá pra ver baleias nesta época?", pr: "se BEN ba-SHE-nas en ES-ta E-po-ka?" },
@@ -884,6 +957,9 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Avenida Gorlero",
           icone: "🛍️",
+          minutos: 90,
+          turno: "noite",
+          alternativa: "Feria de Artesanos — Plaza Artigas",
           dica: "A principal rua de comércio da península, com lojas e restaurantes. Boa para resolver tudo a pé.",
           frases: [
             { es: "¿Hasta qué hora abren los comercios?", pt: "Até que horas o comércio abre?", pr: "AS-ta KE O-ra A-bren los ko-MER-sios?" },
@@ -892,6 +968,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Feria de Artesanos — Plaza Artigas",
           icone: "🧶",
+          minutos: 60,
+          alternativa: "Avenida Gorlero",
           dica: "Feira de artesanato no centro da península. Bom lugar para lembrancinhas feitas por quem está na barraca.",
           frases: [
             { es: "¿Esto es hecho a mano?", pt: "Isto é feito à mão?", pr: "ES-to ES E-tcho a MA-no?" },
@@ -900,6 +978,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Arboretum Lussich",
           icone: "🌳",
+          minutos: 90,
+          alternativa: "Punta Ballena",
           dica: "Grande reserva de árvores em Punta Ballena, perto de Casapueblo. Dá pra combinar os dois no mesmo dia.",
           frases: [
             { es: "¿Cómo se llega al Arboretum Lussich?", pt: "Como se chega ao Arboretum Lussich?", pr: "KO-mo se SHE-ga al ar-bo-RE-tum LU-sitch?" },
@@ -914,6 +994,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Faro de José Ignacio",
           icone: "🗼",
+          minutos: 45,
+          alternativa: "Puente de Laguna Garzón",
           prioridade: "obrigatorio",
           dica: "José Ignacio fica a leste de Punta. Pergunte no local se a torre está aberta.",
           frases: [
@@ -923,6 +1005,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Puente de Laguna Garzón",
           icone: "⭕",
+          minutos: 30,
+          alternativa: "Faro de José Ignacio",
           prioridade: "obrigatorio",
           dica: "Na Ruta 10, depois de José Ignacio. Dirija devagar e pare só em lugar seguro.",
           frases: [
@@ -932,6 +1016,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Fundación Atchugarry & MACA",
           icone: "🗿",
+          minutos: 90,
+          alternativa: "Museo Ralli",
           dica: "Em Manantiales, na Ruta 104. A fonte indica entrada gratuita: confirme os dias.",
           frases: [
             { es: "¿Hay que reservar para visitar el parque?", pt: "Precisa reservar para visitar o parque?", pr: "AI ke rre-ser-BAR PA-ra bi-si-TAR el PAR-ke?" },
@@ -940,6 +1026,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Museo del Mar",
           icone: "🐳",
+          minutos: 90,
+          alternativa: "Fundación Atchugarry & MACA",
           dica: "Entre La Barra e El Tesoro. Confirme se está aberto antes de ir.",
           frases: [
             { es: "¿El Museo del Mar está abierto?", pt: "O Museo del Mar está aberto?", pr: "el mu-SE-o del MAR es-TÁ a-BIER-to?" },
@@ -948,6 +1036,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Laguna del Sauce",
           icone: "🛶",
+          minutos: 120,
+          alternativa: "Catedral de San Fernando",
           dica: "Bom para pesca e esportes sem motor. O aeroporto de Punta fica na margem.",
           frases: [
             { es: "¿Dónde puedo alquilar un kayak?", pt: "Onde posso alugar um caiaque?", pr: "DON-de PUE-do al-ki-LAR un ka-IAK?" },
@@ -956,6 +1046,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Catedral de San Fernando",
           icone: "⛪",
+          minutos: 30,
+          alternativa: "Laguna del Sauce",
           dica: "Fica no centro da cidade de Maldonado, perto de Punta.",
           frases: [
             { es: "¿La catedral está abierta?", pt: "A catedral está aberta?", pr: "la ka-te-DRAL es-TÁ a-BIER-ta?" },
@@ -964,6 +1056,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Pueblo Garzón",
           icone: "🌾",
+          minutos: 180,
+          alternativa: "Faro de José Ignacio",
           dica: "Vilarejo no interior, a boa distância da costa. Vá de carro e reserve antes se quiser comer.",
           frases: [
             { es: "¿Cuánto falta para Garzón?", pt: "Quanto falta para Garzón?", pr: "KUAN-to FAL-ta PA-ra gar-SON?" },
@@ -977,6 +1071,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Castillo de Piria",
           icone: "🏰",
+          minutos: 60,
+          alternativa: "Cerro Pan de Azúcar",
           prioridade: "obrigatorio",
           dica: "Fica na Ruta 37, fora do centro de Piriápolis. O andar de cima só é visitado com guia.",
           frases: [
@@ -986,6 +1082,9 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Argentino Hotel",
           icone: "🏨",
+          minutos: 45,
+          turno: "noite",
+          alternativa: "Rambla de los Argentinos",
           dica: "Hotel e cassino em atividade, na beira-mar.",
           frases: [
             { es: "¿Se puede tomar un café acá sin estar alojado?", pt: "Dá pra tomar um café aqui sem estar hospedado?", pr: "se PUE-de to-MAR un ka-FÉ a-KÁ sin es-TAR a-lo-RRA-do?" },
@@ -994,6 +1093,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Rambla de los Argentinos",
           icone: "🌊",
+          minutos: 60,
+          alternativa: "Argentino Hotel",
           prioridade: "obrigatorio",
           dica: "O eixo do balneário. Bom para caminhar no fim da tarde.",
           frases: [
@@ -1003,6 +1104,8 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Cerro Pan de Azúcar",
           icone: "⛰️",
+          minutos: 180,
+          alternativa: "Castillo de Piria",
           prioridade: "obrigatorio",
           dica: "Pergunte antes se a trilha e o topo estão abertos. Leve água e calçado fechado.",
           frases: [

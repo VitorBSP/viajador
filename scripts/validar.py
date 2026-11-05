@@ -23,7 +23,7 @@ FALSO_AMIGO = {"es": True, "pt": True, "errado": True}
 REGRA = {"regra": True, "ex": True, "dica": False}
 COMIDA = {"nome": True, "desc": True, "pedir": True, "regioes": False}
 CIDADE = {"cidade": True, "itens": True}
-LUGAR = {"nome": True, "icone": True, "dica": True, "frases": True, "prioridade": False, "periodos": False}
+LUGAR = {"nome": True, "icone": True, "dica": True, "frases": True, "prioridade": False, "minutos": False, "turno": False, "alternativa": False, "coords": False}
 PAIS = {
     "codigo": True, "nome": True, "bandeira": True, "voz": True, "cidades": True, "intro": True,
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
@@ -360,12 +360,26 @@ def checar_pais(r, chave, p, esperado):
         for m, lugar in enumerate(itens):
             lugar_onde = f"{onde}.itens[{m}]"
             if checar_campos(r, lugar, LUGAR, lugar_onde, c.linha):
-                # Roteiro: só "obrigatorio" ou "recomendado"; `periodos` é 1 (meio dia) ou 2 (dia inteiro).
+                # Roteiro: prioridade, tempo sugerido no lugar (minutos), turno e o plano B (`alternativa`, conferido abaixo).
                 if lugar.get("prioridade", "recomendado") not in ("obrigatorio", "recomendado"):
                     r.erro(lugar.linha, lugar_onde, f'prioridade deveria ser "obrigatorio" ou "recomendado", veio {lugar["prioridade"]!r}')
-                if lugar.get("periodos", 1) not in (1, 2):
-                    r.erro(lugar.linha, lugar_onde, f'periodos deveria ser 1 ou 2, veio {lugar["periodos"]!r}')
+                minutos = lugar.get("minutos", 60)
+                if not isinstance(minutos, int) or isinstance(minutos, bool) or not 10 <= minutos <= 600:
+                    r.erro(lugar.linha, lugar_onde, f'minutos deveria ser um número inteiro de 10 a 600, veio {minutos!r}')
+                if lugar.get("turno", "dia") not in ("dia", "noite"):
+                    r.erro(lugar.linha, lugar_onde, f'turno deveria ser "dia" ou "noite", veio {lugar["turno"]!r}')
+                if "coords" in lugar and not (isinstance(lugar["coords"], list) and len(lugar["coords"]) == 2):
+                    r.erro(lugar.linha, lugar_onde, "coords deveria ser [latitude, longitude]")
                 frases += checar_frases(r, lugar, lugar_onde, frase_spec)
+
+    nomes_lugares = {l.get("nome") for c in cidades if isinstance(c, Obj) for l in (c.get("itens") or []) if isinstance(l, Obj)}
+    for c in cidades:
+        for l in (c.get("itens") or []) if isinstance(c, Obj) else []:
+            if isinstance(l, Obj) and "alternativa" in l:
+                if l["alternativa"] not in nomes_lugares:
+                    r.erro(l.linha, f'lugares[{c.get("cidade")}]', f'alternativa não é um lugar do país: "{l["alternativa"]}"')
+                elif l["alternativa"] == l.get("nome"):
+                    r.erro(l.linha, f'lugares[{c.get("cidade")}]', f'alternativa aponta para o próprio lugar: "{l["alternativa"]}"')
 
     declaradas = {c for c in lista_de(r, p, "cidades", "cidades") if isinstance(c, str)}
     com_lugares = {c["cidade"] for c in cidades if isinstance(c, Obj) and isinstance(c.get("cidade"), str)}
