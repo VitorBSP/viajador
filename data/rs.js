@@ -547,7 +547,7 @@ window.VIAJADOR.paises.rs = {
         },
         {
           nome: "Parque Internacional",
-          icone: "🇺🇾",
+          icone: "🤝",
           prioridade: "obrigatorio",
           minutos: 90,
           alternativa: "Cerro do Jarau",

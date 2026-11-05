@@ -2320,7 +2320,7 @@ window.VIAJADOR.paises.uy = {
     {
       id: "uruguai",
       titulo: "Uruguai",
-      icone: "🇺🇾",
+      icone: "☀️",
       intro: "De terra disputada por espanhóis e portugueses a país independente em 1828, com heróis, guerras civis e duas Copas do Mundo no meio.",
       fundacao: [
         { titulo: "Por que Banda Oriental?", texto: "Era o nome da terra a leste do rio Uruguai e ao norte do Rio da Prata, a parte mais oriental do Vice-Reino do Rio da Prata. Correspondia mais ou menos ao Uruguai de hoje e ao Rio Grande do Sul. O nome aparece no começo do século 17 e não indicava uma unidade administrativa." },

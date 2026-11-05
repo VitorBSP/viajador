@@ -74,10 +74,14 @@ button { font: inherit; color: inherit; }
   background: var(--sol);
   box-shadow: 0 0 0 4px rgba(242, 169, 0, .35);
 }
+.pais { display: flex; align-items: center; gap: 8px; }
+.pais-bandeira { display: flex; }
+.bandeira { width: 27px; height: 18px; border-radius: 3px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .5); vertical-align: middle; }
+h1 .bandeira { width: 36px; height: 24px; margin-right: 4px; vertical-align: -2px; box-shadow: 0 0 0 1px rgba(10, 20, 40, .15); }
 .pais select {
-  min-height: 36px; border: 0; border-radius: 8px; padding: 0 6px;
-  font: 500 16px Inter, system-ui, sans-serif;
-  background: rgba(255, 255, 255, .15); color: #fff; cursor: pointer;
+  height: 40px; border: 1px solid rgba(255, 255, 255, .35); border-radius: 10px; padding: 0 10px;
+  font: 500 14px Inter, system-ui, sans-serif;
+  background: rgba(255, 255, 255, .12); color: #fff; cursor: pointer;
 }
 .pais option { background: #fff; color: #1b2433; }
 .busca { display: block; order: 3; flex: 1 0 100%; margin: 4px 0 0; }
@@ -87,6 +91,7 @@ button { font: inherit; color: inherit; }
   background: #fff; color: #1b2433;
 }
 .busca input { min-height: 44px; }
+@media (min-width: 700px) { .busca input { min-height: 40px; height: 40px; padding: 8px 14px; font-size: 15px; } }
 .busca input::placeholder { color: #5d6878; opacity: 1; }
 /* Abas: no PC, uma linha no topo; o menu "Mais" abre um painel com as outras seções. */
 .abas {
@@ -441,4 +446,25 @@ a.btn { text-decoration: none; }
 @media (max-width: 359px) {
   .abas > a.so-largo { display: none; }
   .mais a.so-estreito:not([hidden]) { display: flex; }
+}
+
+/* PC: topo, abas e conteúdo com a mesma largura, para tudo ficar alinhado. Em telas largas há espaço para as etiquetas;
+   em telas médias, nomes curtos e destaque só na cor. */
+@media (min-width: 700px) {
+  .abas > a, .aba-mais { padding: 0 10px; }
+}
+@media (min-width: 1024px) {
+  .topo-linha, .abas, .conteudo { max-width: 960px; }
+  .busca { max-width: 520px; }
+}
+@media (min-width: 700px) and (max-width: 1023px) {
+  .aba-selo, .abas .aba-longo { display: none; }
+  .abas .aba-curto { display: inline; }
+  .abas > a.aba-destaque { color: var(--sol); }
+  .abas > a.aba-destaque.ativa { color: #fff; }
+}
+/* Celular: o seletor de país cabe na mesma linha da marca. */
+@media (max-width: 699px) {
+  .pais { gap: 6px; }
+  .pais select { max-width: 150px; height: 36px; padding: 0 6px; }
 }

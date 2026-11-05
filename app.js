@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.31";
+  const VERSAO_APP = "1.32";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -76,6 +76,12 @@
   const NOME_ALBUM = "Por onde andei";
 
   const esc =(s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // Bandeiras desenhadas, iguais em qualquer sistema. Sem desenho, vale o emoji do dado.
+  const BANDEIRAS = {
+    uy: '<svg class="bandeira" viewBox="0 0 27 18" role="img" aria-label="Bandeira do Uruguai"><rect width="27" height="18" fill="#fff"/><g fill="#0038a8"><rect y="2" width="27" height="2"/><rect y="6" width="27" height="2"/><rect y="10" width="27" height="2"/><rect y="14" width="27" height="2"/></g><rect width="13" height="10" fill="#fff"/><circle cx="6.5" cy="5" r="3.3" fill="none" stroke="#fcd116" stroke-width="1.4" stroke-dasharray="1.1 .9"/><circle cx="6.5" cy="5" r="2" fill="#fcd116"/></svg>',
+    rs: '<svg class="bandeira" viewBox="0 0 27 18" role="img" aria-label="Bandeira do Rio Grande do Sul"><rect width="27" height="18" fill="#e4002b"/><path d="M0 0h20L0 13z" fill="#00843d"/><path d="M27 5v13H7z" fill="#ffd100"/></svg>',
+  };
+  const bandeira = (p) => BANDEIRAS[p.codigo] || `<span aria-hidden="true">${esc(p.bandeira)}</span>`;
   const normal = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
   // Índice de todas as frases, para busca e favoritos.
@@ -822,7 +828,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const h = pais.historias[0];
       const quiz = (pais.quiz || []).find((n) => n.id === o.quiz);
       return `<figure class="heroi"><img src="${esc(o.imagem)}" alt="${esc(o.alt)}"><figcaption class="credito">${esc(o.legenda)}</figcaption></figure>
-        <h1>${pais.bandeira} Como nasceu ${esc(comArtigo)}</h1>
+        <h1>${bandeira(pais)} Como nasceu ${esc(comArtigo)}</h1>
         <p class="lead">${esc(o.lead)}</p>
         ${cartoes(h.fundacao)}
         ${secao("Linha do tempo", h.momentos.filter((m) => /^1[6-8]/.test(m.data)), momentos)}
@@ -1556,10 +1562,12 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   }
 
   // Seletor de país: a troca recarrega, porque quase todo o estado acima depende do país.
+  // A bandeira fica fora da lista, desenhada: o Windows não mostra emoji de bandeira (vira "UY").
   $("#pais").innerHTML = Object.values(paises)
     .sort((a, b) => a.nome.localeCompare(b.nome, "pt"))
-    .map((p) => `<option value="${esc(p.codigo)}">${esc(p.bandeira + " " + p.nome)}</option>`)
+    .map((p) => `<option value="${esc(p.codigo)}">${esc(p.nome)}</option>`)
     .join("");
+  $("#pais-bandeira").innerHTML = bandeira(pais);
   $("#pais").value = pais.codigo;
   $("#pais").addEventListener("change", (e) => {
     try { localStorage.setItem(CHAVE_PAIS, e.target.value); } catch (err) {}
