@@ -1,0 +1,14 @@
+# Usado por Cloudflare Pages e Netlify (GitHub Pages ignora este arquivo).
+/sw.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/data/*
+  Cache-Control: public, max-age=3600, must-revalidate
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
