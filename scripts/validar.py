@@ -277,11 +277,11 @@ def checar_pronuncia(r, item, onde):
             r.aviso(item.linha, onde, f'"es" e "pr" têm número diferente de palavras: "{es}" x "{pr}"')
 
 
-def checar_frases(r, dono, onde):
+def checar_frases(r, dono, onde, spec=FRASE):
     frases = lista_de(r, dono, "frases", onde, minimo=1)
     for n, f in enumerate(frases):
         lugar = f"{onde}.frases[{n}]"
-        if checar_campos(r, f, FRASE, lugar, dono.linha):
+        if checar_campos(r, f, spec, lugar, dono.linha):
             checar_pronuncia(r, f, lugar)
     return [f for f in frases if isinstance(f, Obj)]
 
@@ -315,7 +315,13 @@ def checar_pais(r, chave, p, esperado):
     if not lista_de(r, p, "voz", "voz", minimo=1) or any(not isinstance(v, str) for v in p.get("voz", [])):
         r.erro(p.linha, "voz", "deveria listar códigos de idioma (texto), do mais específico ao geral")
 
-    situacoes = lista_de(r, p, "situacoes", "situacoes", minimo=1)
+    # Lugar que já fala português (voz pt-*): não há pronúncia a ensinar, então `pr` e `pronuncia` são opcionais.
+    voz = p.get("voz")
+    em_portugues = isinstance(voz, list) and bool(voz) and isinstance(voz[0], str) and voz[0].lower().startswith("pt")
+    frase_spec = {**FRASE, "pr": False} if em_portugues else FRASE
+    giria_spec = {**GIRIA, "pr": False} if em_portugues else GIRIA
+
+    situacoes =lista_de(r, p, "situacoes", "situacoes", minimo=1)
     checar_unicos(r, situacoes, "id", "situacoes")
     frases = []
     for n, s in enumerate(situacoes):
@@ -324,13 +330,13 @@ def checar_pais(r, chave, p, esperado):
         if checar_campos(r, s, SITUACAO, onde, p.linha):
             if isinstance(s.get("id"), str) and not re.fullmatch(r"[a-z0-9-]+", s["id"]):
                 r.erro(s.linha, onde, 'id só pode ter a-z, 0-9 e "-" (vai na URL)')
-            frases += checar_frases(r, s, onde)
+            frases += checar_frases(r, s, onde, frase_spec)
 
-    secoes = (("girias", GIRIA, "es"), ("ditados", DITADO, "es"), ("falsosAmigos", FALSO_AMIGO, "es"),
+    secoes = (("girias", giria_spec, "es"), ("ditados", DITADO, "es"), ("falsosAmigos", FALSO_AMIGO, "es"),
               ("pronuncia", REGRA, "regra"), ("comidas", COMIDA, "nome"))
     for nome, spec, chave_unica in secoes:
         itens = lista_de(r, p, nome, nome)
-        if nome in p and not itens:
+        if nome in p and not itens and not (em_portugues and nome == "pronuncia"):
             r.aviso(p.linha, nome, "seção vazia: a tela correspondente fica em branco")
         checar_unicos(r, itens, chave_unica, nome)
         for n, item in enumerate(itens):
@@ -354,7 +360,7 @@ def checar_pais(r, chave, p, esperado):
         for m, lugar in enumerate(itens):
             lugar_onde = f"{onde}.itens[{m}]"
             if checar_campos(r, lugar, LUGAR, lugar_onde, c.linha):
-                frases += checar_frases(r, lugar, lugar_onde)
+                frases += checar_frases(r, lugar, lugar_onde, frase_spec)
 
     declaradas = {c for c in lista_de(r, p, "cidades", "cidades") if isinstance(c, str)}
     com_lugares = {c["cidade"] for c in cidades if isinstance(c, Obj) and isinstance(c.get("cidade"), str)}

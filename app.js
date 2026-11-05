@@ -282,6 +282,7 @@
     quiz: (pais.quiz || []).length > 0,
     conversas: (pais.conversas || []).length > 0,
     preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0,
+    dicas: pais.pronuncia.length > 0,
     // As instruções do GuIA (supabase/functions/guia) falam como um uruguaio; nos outros países ele fica escondido.
     ia: pais.codigo === "uy",
   };

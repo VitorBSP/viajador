@@ -63,6 +63,15 @@ Traduza o sentido, como um brasileiro diria naquela hora, e não palavra por pal
 
 Dois limites do padrão, explicados ao usuário na tela de Pronúncia: `rr` representa tanto o J soprado quanto o R vibrado, e o `s` entre vogais não deve soar como "z".
 
+## Destinos em português
+
+No RS e em qualquer destino em português, o amigo continua o mesmo, mas muda de papel: em vez de ajudar a falar, ele mostra o lugar.
+
+- **Não ensine a falar.** Nada de pronúncia nem de frase para repetir. O visitante já fala a língua.
+- **Explique a palavra para quem é de longe.** Palavra local, o que quer dizer e, na dica, quando se usa: "Cacetinho: pão francês".
+- **Turismo primeiro.** Em lugares e no guia, conte o que ver, a história com data e fonte, e o que reparar ao vivo.
+- **Pode repetir entre regiões.** A mesma palavra pode aparecer em mais de uma região quando faz sentido lá.
+
 ## Dicas que envelhecem
 
 Regra de imposto, preço, horário e meio de pagamento mudam. Nessas dicas:
