@@ -409,12 +409,6 @@ a.btn { text-decoration: none; }
 .album-trilho { height: 10px; border-radius: 999px; background: var(--celeste-claro); overflow: hidden; }
 .album-trilho > span { display: block; height: 100%; background: var(--sol); border-radius: inherit; transition: width .6s ease; }
 .album-num { font-variant-numeric: tabular-nums; font-size: 14px; }
-.album-mapa { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 64px; gap: 6px; margin: 14px 0; }
-.album-peca { display: flex; flex-direction: column; justify-content: center; padding: 6px 8px; border-radius: 12px; text-decoration: none; color: var(--texto);
-  background: color-mix(in srgb, var(--sol) calc(var(--p) * 1%), var(--celeste-claro)); border: 1px dashed color-mix(in srgb, var(--texto) 25%, transparent); }
-.album-peca { min-width: 0; }
-.album-peca span { font-size: 11px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
-.album-peca strong { font-size: 15px; }
 
 /* Capa */
 .album-capa {
@@ -429,7 +423,23 @@ a.btn { text-decoration: none; }
   content: ""; position: absolute; inset: 0 auto 0 0; width: 14px;
   background: linear-gradient(90deg, rgba(0, 0, 0, .35), rgba(255, 255, 255, .08) 60%, transparent);
 }
-.capa-bandeira .bandeira { width: 54px; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+.capa-texto { display: grid; justify-items: center; gap: 4px; }
+.capa-pct { margin: 4px 0 0; font-size: 14px; opacity: .9; }
+.capa-pct strong { font: 700 20px Fraunces, Georgia, serif; color: #ffd166; }
+/* Mapa: o contorno se enche com a bandeira; os alfinetes mostram cada cidade ou região. */
+.capa-mapa { width: min(240px, 70vw); height: auto; overflow: visible; }
+.mapa-sombra { fill: rgba(0, 0, 0, .35); transform: translate(4px, 6px); }
+.mapa-borda { fill: none; stroke: #fff; stroke-width: 3; stroke-linejoin: round; }
+.mapa-nivel { transform-box: fill-box; transform-origin: 50% 100%; animation: encher 1.4s cubic-bezier(.3, .8, .3, 1) .2s both; }
+.pino circle { fill: color-mix(in srgb, var(--sol) calc(var(--p) * 1%), #fff); stroke: #0b2a63; stroke-width: 3; transition: transform .2s ease; transform-box: fill-box; transform-origin: center; }
+.pino.completo circle { fill: var(--sol); }
+.pino path { fill: none; stroke: #0b2a63; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.pino:hover circle { transform: scale(1.3); }
+@media (min-width: 640px) {
+  .album-capa.com-mapa { grid-template-columns: auto 1fr; justify-items: start; align-items: center; gap: 8px 28px; padding: 24px 32px; text-align: left; }
+  .album-capa.com-mapa .capa-texto { justify-items: start; }
+  .album-capa.com-mapa .capa-mapa { width: 230px; }
+}
 .capa-kicker { margin: 6px 0 0; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #ffd166; }
 .album-capa h1 {
   margin: 0; font-size: clamp(30px, 7vw, 44px);
@@ -447,7 +457,7 @@ a.btn { text-decoration: none; }
 .capa-selo small { font-size: 11px; font-weight: 600; }
 .capa-abrir { margin-top: 12px; background: #fff; color: #0b2a63; border-color: #fff; font-weight: 600; min-height: 44px; }
 .capa-abrir:hover { background: #ffe7a3; }
-@media (max-width: 420px) { .album-capa { padding-top: 96px; } .capa-selo { width: 64px; height: 64px; } .capa-selo strong { font-size: 22px; } }
+@media (max-width: 420px) { .album-capa:not(.com-mapa) { padding-top: 96px; } .capa-selo { width: 64px; height: 64px; } .capa-selo strong { font-size: 22px; } }
 
 /* Índice de páginas */
 .album-indice { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
@@ -456,6 +466,9 @@ a.btn { text-decoration: none; }
   border-radius: 6px 14px 14px 6px; text-decoration: none; color: var(--texto); background: var(--cartao); box-shadow: var(--sombra);
   transition: transform .2s ease, box-shadow .2s ease;
 }
+.mini-foto { display: block; height: 78px; margin: -12px -12px 4px -18px; border-radius: 6px 14px 0 0; overflow: hidden; background: var(--celeste-claro); }
+.mini-foto img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(calc(1 - var(--p) / 100)); transition: filter .4s ease, transform .4s ease; }
+.miniatura:hover .mini-foto img { transform: scale(1.06); }
 .miniatura::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 6px; border-radius: 6px 0 0 6px; background: var(--topo); }
 .miniatura:hover { transform: translateY(-3px) rotate(-.6deg); box-shadow: 0 10px 24px rgba(20, 30, 50, .15); }
 .miniatura.completa::after { content: "✓"; position: absolute; top: 8px; right: 10px; width: 24px; height: 24px; border-radius: 50%;
@@ -571,6 +584,7 @@ a.btn { text-decoration: none; }
   animation: cair 2.2s cubic-bezier(.25, .6, .4, 1) var(--atraso) forwards;
 }
 
+@keyframes encher { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes colar {
   0% { transform: perspective(700px) translateY(-46px) rotate(-14deg) scale(1.3); opacity: 0; box-shadow: 0 30px 40px rgba(20, 30, 50, .35); }
   55% { opacity: 1; transform: perspective(700px) translateY(4px) rotate(var(--gira)) scale(.95); }
@@ -592,7 +606,7 @@ a.btn { text-decoration: none; }
   100% { transform: translate(var(--deriva), 105vh) rotate(var(--giro)); opacity: .9; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .album-capa h1, .album-pagina, .carimbo.batendo, .figurinha.nova .fig-cartao, .figurinha.nova .fig-brilho, .figurinha.especial .fig-cartao::after { animation: none; }
+  .mapa-nivel, .album-capa h1, .album-pagina, .carimbo.batendo, .figurinha.nova .fig-cartao, .figurinha.nova .fig-brilho, .figurinha.especial .fig-cartao::after { animation: none; }
   .figurinha.nova .fig-brilho { opacity: 0; }
 }
 
@@ -605,7 +619,6 @@ a.btn { text-decoration: none; }
 }
 .kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 3px 10px; border-radius: 999px;
   background: var(--sol-claro); border: 1px solid var(--sol); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-@media (max-width: 420px) { .album-peca { padding: 5px; } .album-peca span { font-size: 10px; } .album-peca strong { font-size: 13px; } }
 
 /* Quiz: na barra a partir de 360 px; em telas menores, oito abas ficariam com menos de 44 px e ele vai para "Mais". */
 .mais a.so-estreito { display: none; }

@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.33";
+  const VERSAO_APP = "1.34";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -80,6 +80,12 @@
   const BANDEIRAS = {
     uy: '<svg class="bandeira" viewBox="0 0 27 18" role="img" aria-label="Bandeira do Uruguai"><rect width="27" height="18" fill="#fff"/><g fill="#0038a8"><rect y="2" width="27" height="2"/><rect y="6" width="27" height="2"/><rect y="10" width="27" height="2"/><rect y="14" width="27" height="2"/></g><rect width="13" height="10" fill="#fff"/><circle cx="6.5" cy="5" r="3.3" fill="none" stroke="#fcd116" stroke-width="1.4" stroke-dasharray="1.1 .9"/><circle cx="6.5" cy="5" r="2" fill="#fcd116"/></svg>',
     rs: '<svg class="bandeira" viewBox="0 0 27 18" role="img" aria-label="Bandeira do Rio Grande do Sul"><rect width="27" height="18" fill="#e4002b"/><path d="M0 0h20L0 13z" fill="#00843d"/><path d="M27 5v13H7z" fill="#ffd100"/></svg>',
+  };
+  // Contornos para o mapa da capa do álbum, a partir do IBGE (RS, malha estadual) e do Natural Earth (Uruguai, 1:50m),
+  // ambos de uso livre. `proj` leva latitude e longitude ao desenho: x = (lon·k − x0)·esc, y = (−lat − y0)·esc.
+  const CONTORNOS = {
+    uy: { w: 300, h: 322.8, proj: [0.845287, -49.397018, 30.101074, 66.805762], d: "M286.2 243.2 283.4 245.7 280.4 250.4 276.9 261.6 265.1 277.1 262.7 285.9 250 295 241.1 305.3 235.3 305 230 309.4 199.7 322.8 188.8 320.3 180.7 320.3 173.2 314.4 156.1 312.3 145.4 314.6 131 321.1 126.7 321 123.6 320.7 115.8 318 111.5 312.3 89.4 305.7 71.6 290.7 50.5 290.4 34.4 292.4 31.9 290.4 30.3 286.5 26.9 281 13.1 267.8 2.1 254.6 0 241.7 1.5 227.7 4.8 211 4.2 205.8 8.2 202.9 12.2 202.3 16.1 198 19.5 191.5 20.1 186.6 17.4 177.4 15.6 164.7 13.4 158.4 17.8 148.4 18 143.5 15.4 139.2 14.7 134.8 15.9 130.3 15.7 126 14.1 121.8 15.3 118.4 19.3 115.6 22.4 111.4 24.3 105.8 25.4 101.5 25.4 98.5 24.2 95.8 21.7 93.1 22.9 87.9 27.7 80.1 30.8 73.1 32.2 67 32.1 62.1 30.5 58.4 31.2 55.9 34.1 54.5 35.4 50.6 35 40.8 31.9 32.7 34.3 26.3 41 18.9 44.5 13 44.7 8.4 46.8 5.8 50 10.7 59.5 12 69.1 12.2 70.7 10.9 74.4 2.9 79.4 0.6 84.8 0 90.7 0.4 96.9 5.7 114.7 23.1 127.7 35.2 131.7 40.9 135.2 45.2 137.7 49.2 136.6 59.5 136.8 64 137.4 65.3 140.4 65.5 144.8 64.7 148.5 62.5 151.4 59.2 154.3 56.5 156.6 55 157.4 52.8 158.7 50.6 160.1 50.1 162.7 51.8 168.8 57.7 173.5 63.1 174.6 66.3 176.5 69.5 178.4 72.4 179.8 75.1 184.4 78.7 189 81 192.1 78.7 200 86.2 217.4 92.5 220.6 96.3 223.6 101.7 229.7 109.8 238.2 117.2 244.9 120.3 251.5 122.1 255.1 123.7 257.6 126.5 261.6 129.5 264.1 130.7 264.9 133.4 267.5 139.3 270.2 146.8 273.1 153.8 279.5 160.5 286.6 165.7 294 168.6 298.2 172.3 300 176.1 295 181.7 289.6 188.8 284.8 194.4 279.8 198.2 278.2 200.9 277.1 205.1 277.1 227.1 276.7 235.3 277.1 237.5 277.8 238.9 280.9 241.1 284.6 242.9 286.2 243.2Z" },
+    rs: { w: 300, h: 291.6, proj: [0.867178, -49.944326, 27.0931, 43.84106], d: "M138.6 213.1 147.1 219.4 148.9 225.6 150.2 232 158 239.2 168 244 174.8 241 175.9 236.6 182.2 234.7 185.1 231.3 181.5 229.8 185.3 221.9 189 221.5 186.5 229.1 189.8 235.3 189.1 243.1 185.2 251.7 181 255.2 174.6 250.1 169.9 249.9 168 259.1 164.8 263.7 162.3 261.8 156.8 270.2 158.5 278.1 155.4 282.2 154.8 289.2 158.6 291.6 160.6 291.6 183.1 271.4 189 263.5 193.8 253.1 196.6 242.7 201.5 230 209 222.2 208.3 212.6 202.9 208.5 204.2 205.9 206.9 201.9 211.3 201.8 212.2 197.5 212.3 193.2 215.7 184.9 219.8 183.8 227.2 183.1 226.8 178 230.2 176.3 233.9 175.1 231.7 170.2 233.6 165.7 236.5 165.7 236.2 155.7 238.6 155.8 240.6 148.5 245.5 146.6 242.7 140.7 238.2 137.4 239.2 129.8 240.4 129.2 241.8 135.5 248.3 138.8 248.6 144.6 253.4 146.5 253.9 141.8 263.8 140 265.1 136.1 268.1 138.5 266.6 148.9 261 143.6 262.6 149.4 262.5 158.4 260.1 163.3 252 166.7 252.4 171.4 243.9 177.2 244.7 183.8 241.7 191.3 237 194.6 234.4 192.9 225.7 204.9 218.8 206.4 216.4 209.4 208.9 207.9 212.1 211.7 209.7 221.4 219.1 211.6 234.5 201.8 243.6 193.4 256.7 179.6 259.5 176.1 276 149.4 279.1 140.8 280.2 137.8 282.2 131.7 284.2 126.4 285.8 122.4 286.3 121.3 288 117.5 291.2 111 291.7 110.2 296.2 103 299.6 97.9 296.6 96.1 292.5 93 290.3 92.3 284.4 94.9 287.4 98.9 287.2 99.2 283.2 95.4 283.5 92.1 288.1 91.6 290.3 86.6 290.4 81.4 290.6 78.9 291.2 71.6 294.8 71 297 66.5 300 67.4 300 67.3 299.1 62.5 295.7 60.3 289.8 59.1 286.1 60.8 272.6 58.8 265.4 57 262.3 51.6 260.2 50.7 255.4 41.6 251.5 37.5 250.6 38.1 248.5 34.8 248.7 34 240.3 28.2 239 27.5 233.3 22.6 229.9 20.4 228.7 21.2 226.6 17.3 224 17 220.7 18.5 218.9 18.8 218.1 16.7 213.3 12.4 210.8 11.1 208.6 11 204.1 10.4 202.7 7.2 201.3 9.9 197.6 8.7 196.7 8.3 196.2 5.5 192.3 7.3 192 6.5 186.4 8.4 182.8 4.9 182.2 4.8 180.3 3.4 175.8 5.5 174.9 2.1 174 0 171.7 0.6 167.5 4.3 162.4 5.1 163.4 1.7 161.1 0.8 156.1 4.4 153.8 3.7 151.9 4.2 147.4 3.9 143.5 3.6 142.8 3.3 138.7 2.6 134.5 7.5 132.4 9.2 129.5 7.5 128.4 12.8 125.8 15.6 121 13.7 118.6 17 114.2 16 112.6 19.8 109.1 20.6 105.6 19.4 102.3 26.6 98.6 30.6 96.7 33.3 90.9 33.5 88.1 36.8 85.7 38.3 84.3 41.3 82 43.5 69.3 50.3 73.2 54.7 72.3 58 66.3 55.3 65 60.8 59.7 62.7 60.5 65.1 53.2 73.7 49.2 75.2 48.3 80.3 44.2 87.1 38.2 88.9 35.3 96.5 31 102 23.7 111.8 17.6 117.4 13.6 117.8 10.1 122.5 10.1 126.2 4.9 132.3 0 135.3 1 138.5 7.8 140.7 14.8 139.9 18.2 132.4 28.3 131.3 35.6 136.3 39.8 143.3 43 144.3 46.2 149.4 49.6 150.8 53.5 154 54.9 158.4 59.7 161.9 60.2 174.9 65.5 174.4 73.3 169.3 76.6 164 82 171.5 85.3 172.9 89.2 182.3 95.8 185.8 97.3 183.7 104.8 190.7 110 190.4 114.3 191.3 118.7 196.3 119.4 199.9 133.3 212.1 138.6 213.1Z" },
   };
   const bandeira = (p) => BANDEIRAS[p.codigo] || `<span aria-hidden="true">${esc(p.bandeira)}</span>`;
   const normal = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -1326,37 +1332,34 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       }
       const nivel = NIVEIS_ALBUM.find((n) => n[0] === nivelAlbum) || NIVEIS_ALBUM[0];
       const k = contaAlbum(todos, nivel[3]);
-      // Mapa esquemático: cada cidade ou região é uma peça, na posição de `mapa` no dado, colorida pela %.
-      const colunas = pais.mapa ? Math.max(...Object.values(pais.mapa).map(([col, , larg = 1]) => col + larg - 1)) : 0;
-      const mapa = pais.mapa ? `<div class="album-mapa" aria-hidden="true" style="grid-template-columns:repeat(${colunas}, minmax(0, 1fr))">${pais.lugares.map((x, i) => {
-        const pos = pais.mapa[x.cidade];
-        if (!pos) return "";
-        const [col, lin, larg = 1, alt = 1] = pos;
-        const p = contaAlbum(x.itens, nivel[3]).pct;
-        return `<a class="album-peca" href="#/album/${i}" data-virar="frente" tabindex="-1" style="grid-column:${col} / span ${larg};grid-row:${lin} / span ${alt};--p:${p}"><span>${esc(x.cidade)}</span><strong>${p}%</strong></a>`;
-      }).join("")}</div>` : "";
-      return `<section class="album-capa">
-          <span class="capa-bandeira">${bandeira(pais)}</span>
-          <p class="capa-kicker">Álbum de figurinhas</p>
-          <h1>${NOME_ALBUM}</h1>
-          <p class="capa-sub">${esc(pais.nome)} · ${pais.lugares.length} páginas</p>
+      const pctTotal = todos.length ? Math.round((coladas / todos.length) * 100) : 0;
+      return `<section class="album-capa ${CONTORNOS[pais.codigo] ? "com-mapa" : ""}">
+          ${mapaDoAlbum(pctTotal, nivel[3])}
+          <div class="capa-texto">
+            <p class="capa-kicker">Álbum de figurinhas</p>
+            <h1>${NOME_ALBUM}</h1>
+            <p class="capa-sub">${esc(pais.nome)} · ${pais.lugares.length} páginas</p>
+            <p class="capa-pct"><strong>${pctTotal}%</strong> ${pctTotal === 100 ? "do álbum completo!" : "do mapa pintado com a bandeira"}</p>
+            <a class="btn capa-abrir" href="#/album/0" data-virar="frente">Abrir o álbum</a>
+          </div>
           <p class="capa-selo"><strong>${coladas}</strong><small>de ${todos.length}</small></p>
-          <a class="btn capa-abrir" href="#/album/0" data-virar="frente">Abrir o álbum</a>
         </section>
         <p class="lead">Marque com “Já fui” os lugares que você conheceu ${esc(doNome)} e cole as figurinhas. Fica só neste aparelho.</p>
         <div class="filtros" role="group" aria-label="Nível do álbum">${NIVEIS_ALBUM.map(([id, rotulo]) => `
           <button class="btn ${id === nivel[0] ? "on" : ""}" data-acao="album-nivel" data-nivel="${id}" aria-pressed="${id === nivel[0]}">${rotulo}</button>`).join("")}
         </div>
         ${barra(k, `${nivel[1]} <small>${nivel[2]}</small>`)}
-        ${mapa}
         <h2>Páginas</h2>
         <div class="album-indice">${pais.lugares.map((x, i) => {
           const p = contaAlbum(x.itens, nivel[3]);
           const completa = p.total && p.feitos === p.total;
-          return `<a class="miniatura ${completa ? "completa" : ""}" href="#/album/${i}" data-virar="frente">
+          // Foto de capa da página: a do primeiro lugar que tem foto, em cinza até a página ir sendo completada.
+          const comFoto = x.itens.map((l) => pontos().find((g) => g.lugar === l.nome)).find((g) => g && fotoLugar(g.id));
+          return `<a class="miniatura ${completa ? "completa" : ""}" href="#/album/${i}" data-virar="frente" style="--p:${p.pct}">
+            ${comFoto ? `<span class="mini-foto"><img src="${fotoLugar(comFoto.id)}" alt="" loading="lazy"></span>` : ""}
             <span class="mini-num">${i + 1}</span>
             <strong>${esc(x.cidade)}</strong>
-            <span class="mini-slots" aria-hidden="true">${x.itens.map((l) => `<i class="${jaFui[l.nome] ? "on" : ""}"></i>`).join("")}</span>
+            <span class="mini-slots" aria-hidden="true">${x.itens.filter(nivel[3]).map((l) => `<i class="${jaFui[l.nome] ? "on" : ""}"></i>`).join("")}</span>
             <small class="ponto-dist">${p.feitos} de ${p.total} · ${nivel[1]}${completa ? " · completa" : ""}</small>
           </a>`;
         }).join("")}</div>`;
@@ -1416,6 +1419,44 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       else a.removeAttribute("aria-current");
     });
     $("#mais-botao").classList.toggle("ativa", !!$("#mais a.ativa"));
+  }
+
+  // Mapa da capa do álbum: o contorno vai se enchendo com a bandeira, de baixo para cima, na proporção das figurinhas
+  // coladas; o resto fica em cinza. Cada cidade ou região vira um alfinete na média das coordenadas dos seus pontos.
+  function mapaDoAlbum(pct, filtroNivel) {
+    const c = CONTORNOS[pais.codigo];
+    if (!c) return "";
+    const [k, x0, y0, e] = c.proj;
+    const ponto = ([lat, lon]) => [(lon * k - x0) * e, (-lat - y0) * e];
+    const miolo = (BANDEIRAS[pais.codigo] || "").replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "");
+    const flag = `<svg width="${c.w}" height="${c.h}" viewBox="0 0 27 18" preserveAspectRatio="xMidYMid slice">${miolo}</svg>`;
+    const altura = (c.h * pct) / 100;
+    const pinos = pais.lugares.map((x, i) => {
+      const cs = pontos().filter((g) => lugarDo(g).cidade === x.cidade).map((g) => g.coords);
+      if (!cs.length) return "";
+      const [px, py] = ponto([cs.reduce((s, q) => s + q[0], 0) / cs.length, cs.reduce((s, q) => s + q[1], 0) / cs.length]);
+      const p = contaAlbum(x.itens, filtroNivel).pct;
+      return `<a href="#/album/${i}" data-virar="frente" tabindex="-1" class="pino ${p === 100 ? "completo" : ""}" style="--p:${p}">
+        <title>${esc(x.cidade)}: ${p}%</title>
+        <circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="9"/>
+        ${p === 100 ? `<path d="M${(px - 4).toFixed(1)} ${py.toFixed(1)}l3 3 5-6" />` : ""}
+      </a>`;
+    }).join("");
+    return `<svg class="capa-mapa" viewBox="-12 -12 ${c.w + 24} ${c.h + 24}" role="img" aria-label="Mapa ${esc(doNome)}: ${pct}% pintado com a bandeira">
+      <defs>
+        <clipPath id="album-contorno"><path d="${c.d}"/></clipPath>
+        <clipPath id="album-nivel"><rect class="mapa-nivel" x="-12" y="${(c.h - altura).toFixed(1)}" width="${c.w + 24}" height="${(altura + 12).toFixed(1)}"/></clipPath>
+        <filter id="album-cinza"><feColorMatrix type="saturate" values="0"/></filter>
+      </defs>
+      <path class="mapa-sombra" d="${c.d}"/>
+      <g clip-path="url(#album-contorno)">
+        <rect x="-12" y="-12" width="${c.w + 24}" height="${c.h + 24}" fill="#fff" opacity=".22"/>
+        <g filter="url(#album-cinza)" opacity=".5">${flag}</g>
+        <g clip-path="url(#album-nivel)">${flag}</g>
+      </g>
+      <path class="mapa-borda" d="${c.d}"/>
+      ${pinos}
+    </svg>`;
   }
 
   // Confete de página completa: pedaços de papel com queda, giro e cor sorteados, que somem sozinhos.
