@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.30";
+  const VERSAO_APP = "1.31";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -1179,7 +1179,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       };
       const qtd = r ? [...r.escolhidos].filter((x) => x.obrig).length : 0;
       const modo = (id, rotulo) => `<button class="btn ${(roteiro.modo || "auto") === id ? "on" : ""}" data-acao="roteiro-modo" data-modo="${id}" aria-pressed="${(roteiro.modo || "auto") === id}">${rotulo}</button>`;
-      return `<h1>Roteiro</h1>
+      return `<p class="kicker"><span aria-hidden="true">✨</span> Assistente de viagem</p>
+        <h1>Roteiro</h1>
         <div class="filtros roteiro-modos" role="group" aria-label="Como montar o roteiro">${modo("auto", "Montar pra mim")}${modo("meu", `Do meu jeito${meus.size ? ` (${meus.size})` : ""}`)}</div>
         <p class="lead">${meu
           ? "Os lugares que você marcou com Quero ir, na melhor ordem, em manhã, tarde e noite, com o tempo de estrada."
@@ -1264,14 +1265,15 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const k = conta(pais.lugares.flatMap((x) => x.itens), nivel[3]);
       // Mapa esquemático: cada cidade ou região é uma peça, na posição de `mapa` no dado, colorida pela %.
       const colunas = pais.mapa ? Math.max(...Object.values(pais.mapa).map(([col, , larg = 1]) => col + larg - 1)) : 0;
-      const mapa = pais.mapa ? `<div class="album-mapa" aria-hidden="true" style="grid-template-columns:repeat(${colunas}, 1fr)">${pais.lugares.map((x, i) => {
+      const mapa = pais.mapa ? `<div class="album-mapa" aria-hidden="true" style="grid-template-columns:repeat(${colunas}, minmax(0, 1fr))">${pais.lugares.map((x, i) => {
         const pos = pais.mapa[x.cidade];
         if (!pos) return "";
         const [col, lin, larg = 1, alt = 1] = pos;
         const p = conta(x.itens, nivel[3]).pct;
         return `<a class="album-peca" href="#/album/${i}" tabindex="-1" style="grid-column:${col} / span ${larg};grid-row:${lin} / span ${alt};--p:${p}"><span>${esc(x.cidade)}</span><strong>${p}%</strong></a>`;
       }).join("")}</div>` : "";
-      return `<h1>${NOME_ALBUM}</h1>
+      return `<p class="kicker"><span aria-hidden="true">📔</span> Álbum de figurinhas</p>
+        <h1>${NOME_ALBUM}</h1>
         <p class="lead">Marque com “Já fui” os lugares que você conheceu ${esc(doNome)} e complete as figurinhas. Fica só neste aparelho.</p>
         <div class="filtros" role="group" aria-label="Nível do álbum">${NIVEIS.map(([id, rotulo]) => `
           <button class="btn ${id === nivel[0] ? "on" : ""}" data-acao="album-nivel" data-nivel="${id}" aria-pressed="${id === nivel[0]}">${rotulo}</button>`).join("")}

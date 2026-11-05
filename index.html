@@ -35,14 +35,15 @@
         <select id="pais"></select>
       </label>
     </div>
-    <!-- Cinco abas principais; o resto fica em "Mais". No celular, a barra vai para baixo da tela. -->
+    <!-- Abas principais; o resto fica em "Mais". No celular, a barra vai para baixo da tela e cabem no máximo sete. -->
     <nav class="abas" id="abas" aria-label="Seções">
       <a href="#/" data-aba=""><span class="aba-icone" aria-hidden="true">💬</span>Frases</a>
       <a href="#/guia" data-aba="guia"><span class="aba-icone" aria-hidden="true">📍</span><span class="aba-longo">Perto de você</span><span class="aba-curto">Perto</span></a>
-      <a href="#/roteiro" data-aba="roteiro"><span class="aba-icone" aria-hidden="true">🗺️</span>Roteiro</a>
+      <!-- Roteiro e álbum ganham destaque: um é o assistente que monta a viagem, o outro é o álbum de figurinhas. -->
+      <a href="#/roteiro" data-aba="roteiro" class="aba-destaque"><span class="aba-icone" aria-hidden="true">🗺️</span>Roteiro<span class="aba-selo">assistente</span></a>
+      <a href="#/album" data-aba="album" class="aba-destaque"><span class="aba-icone" aria-hidden="true">📔</span><span class="aba-longo">Por onde andei</span><span class="aba-curto">Álbum</span><span class="aba-selo">álbum</span></a>
       <a href="#/ia" data-aba="ia"><span class="aba-icone" aria-hidden="true">✨</span><span class="aba-longo">Gu<span class="ia">IA</span> Turístico</span><span class="aba-curto">Gu<span class="ia">IA</span></span></a>
       <a href="#/historia" data-aba="historia"><span class="aba-icone" aria-hidden="true">📜</span>História</a>
-      <a href="#/quiz" data-aba="quiz"><span class="aba-icone" aria-hidden="true">🏆</span>Quiz</a>
       <button type="button" class="aba-mais" id="mais-botao" aria-expanded="false" aria-controls="mais"><span class="aba-icone" aria-hidden="true">☰</span>Mais<span class="aba-seta" aria-hidden="true">▾</span></button>
       <div class="mais" id="mais" hidden>
         <div class="mais-grupo">
@@ -57,10 +58,10 @@
           <a href="#/lugares" data-aba="lugares">🏛️ Lugares e comidas</a>
           <a href="#/origem" data-aba="origem">🧭 Origem do país</a>
           <a href="#/futebol" data-aba="futebol">⚽ Futebol</a>
+          <a href="#/quiz" data-aba="quiz">🏆 Quiz</a>
         </div>
         <div class="mais-grupo">
           <p class="mais-titulo">Sua viagem</p>
-          <a href="#/album" data-aba="album">🗺️ Por onde andei</a>
           <a href="#/preparar" data-aba="preparar">🧳 Preparar</a>
           <a href="#/favoritos" data-aba="favoritos">★ Salvos</a>
         </div>

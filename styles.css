@@ -407,7 +407,8 @@ a.btn { text-decoration: none; }
 .album-mapa { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 64px; gap: 6px; margin: 14px 0; }
 .album-peca { display: flex; flex-direction: column; justify-content: center; padding: 6px 8px; border-radius: 12px; text-decoration: none; color: var(--texto);
   background: color-mix(in srgb, var(--sol) calc(var(--p) * 1%), var(--celeste-claro)); border: 1px dashed color-mix(in srgb, var(--texto) 25%, transparent); }
-.album-peca span { font-size: 11px; line-height: 1.2; }
+.album-peca { min-width: 0; }
+.album-peca span { font-size: 11px; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
 .album-peca strong { font-size: 15px; }
 .album-regiao { align-items: center; }
 .anel { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
@@ -423,3 +424,14 @@ a.btn { text-decoration: none; }
 .figurinha small { font-size: 12px; }
 .figurinha .btn { margin-top: auto; }
 .figurinha-link { font-size: 13px; color: var(--celeste); }
+
+/* Destaque do Roteiro (assistente) e do álbum: etiqueta no computador, ícone dourado no celular, selo no topo da tela. */
+.aba-selo { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--sol); color: #1b2433;
+  font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; vertical-align: middle; }
+@media (max-width: 699px) {
+  .aba-selo { display: none; }
+  .aba-destaque .aba-icone { padding: 3px 8px; border-radius: 999px; background: var(--sol); }
+}
+.kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 3px 10px; border-radius: 999px;
+  background: var(--sol-claro); border: 1px solid var(--sol); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+@media (max-width: 420px) { .album-peca { padding: 5px; } .album-peca span { font-size: 10px; } .album-peca strong { font-size: 13px; } }
