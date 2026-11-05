@@ -59,7 +59,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `checklist[]` | `id`, `texto` | `nota` | `id` |
 | `guia[]` | `id`, `lugar`, `coords`, `revisado`, `resumo`, `historia`, `reparar`, `fontes` | | `id` |
 | `guia[].fontes[]` | `titulo`, `url` | | |
-| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | `fundacao` | `id` |
+| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | `fundacao`, `base` | `id` |
 | `historias[].momentos[]`, `datas[]` | `data`, `titulo`, `texto` | | |
 | `historias[].costumes[]` | `titulo`, `texto` | | |
 | `historias[].pessoas[]` | `nome`, `origem`, `texto` | | |
@@ -103,3 +103,5 @@ Ainda só do Uruguai, no backend:
 - **Ranking online:** `supabase/ranking.sql` só aceita os níveis do Uruguai, então os outros países usam só o ranking do aparelho.
 - **GuIA Turístico:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio", por isso a aba some fora do Uruguai. Para liberar outro país, o texto precisa vir do país.
 - **Fotos:** ficam em `img/guia/<id>.jpg` e `img/pessoas/<id>.jpg`, sem pasta por país, então os ids não podem se repetir entre países.
+
+`historias[].base` é o `id` de outra história. A página mostra primeiro a região e depois, em "Vale para o estado todo", os costumes e as datas da base. No RS, a primeira história é o estado e as 8 regiões apontam para ela.

@@ -149,6 +149,8 @@ Pedido do usuário, planejado com a sessão de storytelling (`docs/PLANO-RS.md`,
 3. **Cardápio e costumes** (churrasco, chimarrão e sua etiqueta, cuca, galeto) (I4, E1) — mesmo molde das comidas do Uruguai.
 4. **Dicas de etiqueta** (como pegar a cuia, não mexer a bomba, "obrigado" encerra a roda) (I4, E1).
 
+**Feito (história do RS):** `historias` em `data/rs.js` tem o estado (compartilhado) mais as 8 regiões, cada uma com linha do tempo, costumes, pessoas, datas e fontes. O campo `base` faz a página de cada região mostrar também o que vale para o estado todo. Os chips no topo trocam de região.
+
 ## Perguntas em aberto
 - A voz `es-UY` existe no Android/iOS dos usuários? Medir antes de investir em áudios gravados.
 - Fonte de taxa de câmbio sem custo (ex.: API pública) vs. só manual.

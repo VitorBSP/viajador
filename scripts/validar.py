@@ -37,7 +37,7 @@ CAPAS = {"inicio", "guia", "historia", "futebol", "quiz", "conversas", "lugares"
 ORIGEM = {"lead": True, "imagem": True, "alt": True, "legenda": True, "quiz": False}
 FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
            "cultura": True, "jogo": True, "frases": True, "fontes": True}
-HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "fundacao": False, "momentos": True, "costumes": True,
+HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "base": False, "fundacao": False, "momentos": True, "costumes": True,
             "pessoas": True, "estrelas": True, "datas": True, "fontes": True}
 MOMENTO = {"data": True, "titulo": True, "texto": True}
 COSTUME = {"titulo": True, "texto": True}
@@ -423,6 +423,8 @@ def checar_pais(r, chave, p, esperado):
         onde = f"historias[{n}]"
         if not checar_campos(r, h, HISTORIA, onde, p.linha):
             continue
+        if "base" in h and h.get("base") not in [x.get("id") for x in historias if isinstance(x, Obj)]:
+            r.erro(h.linha, onde, f'base "{h.get("base")}" não é o id de nenhuma história')
         for campo, spec in (("fundacao", COSTUME), ("momentos", MOMENTO), ("costumes", COSTUME), ("pessoas", PESSOA), ("estrelas", ESTRELA), ("datas", MOMENTO)):
             for m, item in enumerate(lista_de(r, h, campo, onde)):
                 checar_campos(r, item, spec, f"{onde}.{campo}[{m}]", h.linha)

@@ -631,6 +631,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     historia(id) {
       const lista = pais.historias || [];
       const h = lista.find((x) => x.id === id) || lista[0];
+      const base = lista.find((x) => x.id === h.base);
       return `<h1>${h.icone} ${esc(h.titulo)}</h1>
         <p class="lead">${esc(h.intro)}</p>
         <div class="filtros" role="group" aria-label="Escolher país ou cidade">${lista.map((x) => `
@@ -642,6 +643,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ${secao("Pessoas históricas", h.pessoas, pessoas)}
         ${secao("Estrelas", h.estrelas, pessoas)}
         ${secao("Datas importantes", h.datas, momentos)}
+        ${base ? `<h2>Vale para ${esc(base.titulo === pais.nome ? `${pais.artigo || ""} ${pais.nome}`.trim() : base.titulo)} todo</h2>
+          <p class="lead">O que as regiões compartilham.</p>
+          ${cartoes(base.costumes)}
+          ${secao("Datas do estado todo", base.datas, momentos)}
+          <a class="btn btn-gps ver-todos" href="#/historia/${base.id}">Ver a história de ${esc(base.titulo)}</a>` : ""}
         ${temSecao.quiz ? `<a class="btn btn-gps ver-todos" href="#/quiz">Testar o que aprendi no quiz</a>` : ""}
         <h2>Fontes</h2>
         <ul class="fontes">${h.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
