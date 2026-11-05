@@ -45,9 +45,28 @@ Formato sugerido de cada verbete: `palavra`, `significa`, `ex` (frase como o ga�
 | 7. Litoral Norte | Veraneio gaúcho | veranear, "a praia" (= o litoral inteiro), vento nordestão, água fria e escura do mar daqui, guarda-vidas | Torres (Guarita, rios), Capão da Canoa, Tramandaí (pesca com botos), Osório (parque eólico); pastel de praia, sorvete de máquina |
 | 8. Litoral Sul e Zona Sul | Lagoas, porto, doces | "doceria", Laranjal (praia da lagoa), Cassino (praia mais longa do mundo, carro na areia) | Pelotas (doces portugueses, casarões), Rio Grande (porto, Cassino), São Lourenço do Sul; quindim, pastel de Santa Clara, ninho |
 
-## Próximos passos
+## Feito: `data/rs.js`
 
-1. **Ideias:** confirmar o formato do verbete e quais abas existem no RS (sem Conversas e Preparar).
-2. **Dados:** criar `data/rs.js` com campo `regioes` e um seletor de região, como o seletor de país.
-3. **Conteúdo:** escrever primeiro a base comum e as regiões 1, 2 e 7 (mais visitadas), depois as outras.
-4. **Validação:** conferir datas de festas, horários e nomes de lugar antes de publicar, como foi feito no Uruguai.
+Escrito no schema atual, sem mudar o código, e validado (`python scripts/validar.py data/rs.js`: 0 erros). Testado com o seletor de país de `claude/abas-navegacao`: o RS aparece no seletor e as abas sem conteúdo somem.
+
+| Seção | Conteúdo |
+|---|---|
+| `situacoes` | 6 situações e 33 frases: padaria, churrasco, chimarrão, frio, rua, CTG. `es` = como o gaúcho fala; `pt` = o que quer dizer |
+| `girias` | 33, com `regioes` quando a palavra é de uma região só |
+| `ditados` | 8 expressões |
+| `falsosAmigos` | 13 palavras que mudam de sentido no RS (torrada, capaz, gringo, patente…) |
+| `pronuncia` | 5 curiosidades do jeito de falar, não regras |
+| `comidas` | 12 |
+| `lugares` | As 8 regiões, com 26 pontos e uma frase útil em cada |
+| `conversas`, `checklist`, `etiqueta`, `guia`, `historias`, `quiz` | Ficaram de fora de propósito |
+
+Fatos que mudam com o tempo (horário do Som e Luz, da Maria Fumaça, do Mercado Público, cota do free shop) estão sem número e pedem para confirmar na hora.
+
+## Falta (outras sessões)
+
+1. **Frontend:** incluir `data/rs.js` em `index.html` e em `NUCLEO` do `sw.js`.
+2. **Frontend:** na tela inicial do RS aparecem a bandeira do Uruguai e a faixa "Frases rápidas" vazia (os atalhos procuram "baño"). Os rótulos também estão em modo espanhol: "Pronúncia sem sufoco", "Ouvir" e "Mostrar".
+3. **Frontend:** mostrar `regioes` nas gírias e, se fizer sentido, um filtro por região. Hoje o campo é ignorado (o validador avisa).
+4. **Dados:** aceitar `regioes` e `artigo` no validador. Decidir se `pr` deve ser opcional em país de língua portuguesa e se o código `rs` serve, já que é o código ISO da Sérvia.
+5. **Backend:** o GuIA Turístico aparece no RS, mas responde como "amigo uruguaio"; esconder ou adaptar.
+6. **Conteúdo, depois:** quiz e história do RS (Farroupilha, Missões, imigração), e o guia "Perto de você" com coordenadas.
