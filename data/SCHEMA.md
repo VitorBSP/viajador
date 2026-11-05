@@ -35,6 +35,7 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `origem` | objeto | Opcional: aba "Origem do país". `lead`, `imagem` (caminho no repositório), `alt`, `legenda` e, se quiser, `quiz` (id de um nível). Exige `fundacao` na primeira história. |
 | `rapidas` | lista | Opcional: atalhos da tela inicial, `{ rotulo, icone, es }`, com o `es` exato de uma frase de `situacoes` ou `lugares`. Sem ela, o app procura "baño", "la cuenta", "sacás una foto" e "ayuda"; se nada bater, a faixa some. |
 | `capas` | lista de textos | Opcional: ilustrações do topo que o país usa (`inicio`, `lugares`, `girias`...). Sem ela, todas aparecem; várias são do Uruguai. |
+| `ia` | verdadeiro/falso | Opcional: `true` mostra a aba do GuIA. O Uruguai já mostra. O app envia o código do país, e a função `supabase/functions/guia` escolhe a persona (`rs` fala como gaúcho, sem espanhol). |
 | `sugestoesIA` | lista de textos | Opcional: perguntas prontas do GuIA Turístico. Sem ela, o app usa sugestões genéricas. |
 | `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 
@@ -46,10 +47,10 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 |---|---|---|---|
 | `situacoes[]` | `id`, `icone`, `titulo`, `frases` | | `id` |
 | `girias[]` | `es`, `pt`, `pr` | `ex`, `dica`, `regioes` | `es` |
-| `ditados[]` | `es`, `pt`, `uso` | | `es` |
+| `ditados[]` | `es`, `pt`, `uso` | `regioes` | `es` |
 | `falsosAmigos[]` | `es`, `pt`, `errado` | | `es` |
 | `pronuncia[]` | `regra`, `ex` | `dica` | `regra` |
-| `comidas[]` | `nome`, `desc`, `pedir` | | `nome` |
+| `comidas[]` | `nome`, `desc`, `pedir` | `regioes` | `nome` |
 | `lugares[]` | `cidade`, `itens` | | `cidade` |
 | `lugares[].itens[]` | `nome`, `icone`, `dica`, `frases` | | `nome` (na cidade) |
 | frase (em `frases[]`) | `es`, `pt`, `pr` | `dica` | ver abaixo |
@@ -59,7 +60,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `checklist[]` | `id`, `texto` | `nota` | `id` |
 | `guia[]` | `id`, `lugar`, `coords`, `revisado`, `resumo`, `historia`, `reparar`, `fontes` | | `id` |
 | `guia[].fontes[]` | `titulo`, `url` | | |
-| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | `fundacao` | `id` |
+| `historias[]` | `id`, `titulo`, `icone`, `intro`, `momentos`, `costumes`, `pessoas`, `estrelas`, `datas`, `fontes` | `fundacao`, `base` | `id` |
 | `historias[].momentos[]`, `datas[]` | `data`, `titulo`, `texto` | | |
 | `historias[].costumes[]` | `titulo`, `texto` | | |
 | `historias[].pessoas[]` | `nome`, `origem`, `texto` | | |
@@ -103,3 +104,7 @@ Ainda só do Uruguai, no backend:
 - **Ranking online:** `supabase/ranking.sql` só aceita os níveis do Uruguai, então os outros países usam só o ranking do aparelho.
 - **GuIA Turístico:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio", por isso a aba some fora do Uruguai. Para liberar outro país, o texto precisa vir do país.
 - **Fotos:** ficam em `img/guia/<id>.jpg` e `img/pessoas/<id>.jpg`, sem pasta por país, então os ids não podem se repetir entre países.
+
+`historias[].base` é o `id` de outra história. A página mostra primeiro a região e depois, em "Vale para o estado todo", os costumes e as datas da base. No RS, a primeira história é o estado e as 8 regiões apontam para ela.
+
+`regioes` em `girias`, `ditados` e `comidas` deve usar nomes de `cidades`. Em `comidas`, o filtro de cidade da aba Lugares esconde as comidas de outras regiões.

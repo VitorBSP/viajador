@@ -34,7 +34,7 @@
   const RODADA = 10;
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "25";
+  const VERSAO_APP = "26";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -283,8 +283,8 @@
     conversas: (pais.conversas || []).length > 0,
     preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0,
     dicas: pais.pronuncia.length > 0,
-    // As instruções do GuIA (supabase/functions/guia) falam como um uruguaio; nos outros países ele fica escondido.
-    ia: pais.codigo === "uy",
+    // O GuIA (supabase/functions/guia) escolhe a persona pelo código do país; só aparece onde o país tem `ia: true` (ou no Uruguai).
+    ia: pais.codigo === "uy" || pais.ia === true,
   };
   let posicao = null;
   let estadoGps = "";
@@ -492,6 +492,14 @@
     if (f && pontua(["futebol futbol gol copa mundial peñarol penarol nacional celeste estadio clasico jogo partido", ...f.clubes.map((c) => c.titulo)].join(" ")) >= 1) {
       partes.push(`FUTEBOL: ${[...f.titulos, ...f.clubes, ...f.jogo].map((c) => `${c.titulo}: ${c.texto}`).join(" | ")}`);
     }
+    // Gírias, ditados, comidas e falsos amigos: o guia precisa conhecer o vocabulário local, como o do RS.
+    const vocab = [
+      ...pais.girias.map((x) => ({ n: pontua(`${x.es} ${x.pt}`), t: `GÍRIA: ${x.es} = ${x.pt}${x.ex ? ` (ex.: ${x.ex})` : ""}${x.regioes ? ` [${x.regioes.join(", ")}]` : ""}` })),
+      ...pais.ditados.map((x) => ({ n: pontua(`${x.es} ${x.pt} ${x.uso}`), t: `EXPRESSÃO: ${x.es} = ${x.pt}. ${x.uso}` })),
+      ...pais.comidas.map((x) => ({ n: pontua(`${x.nome} ${x.desc}`), t: `COMIDA: ${x.nome}: ${x.desc}${x.regioes ? ` [${x.regioes.join(", ")}]` : ""}` })),
+      ...pais.falsosAmigos.map((x) => ({ n: pontua(`${x.es} ${x.pt}`), t: `PALAVRA: ${x.es} = ${x.pt}. Não é: ${x.errado}` })),
+    ].filter((x) => x.n >= 1).sort((a, b) => b.n - a.n).slice(0, 8);
+    vocab.forEach((x) => partes.push(x.t));
     const frases = todas.map((fr) => ({ fr, n: pontua(`${fr.es} ${fr.pt}`) })).filter((y) => y.n >= 1).sort((a, b) => b.n - a.n).slice(0, 6);
     if (frases.length) partes.push(`FRASES ÚTEIS: ${frases.map(({ fr }) => `${fr.es}${fr.pr ? ` (${fr.pr})` : ""} = ${fr.pt}`).join("; ")}`);
     if (escolhidos.size + hist.length === 0) partes.push(`LUGARES DO GUIA: ${pontos().map((g) => `${g.lugar} (${lugarDo(g).cidade}): ${g.resumo}`).join(" | ")}`);
@@ -518,7 +526,7 @@
         headers: { apikey: SUPABASE.chave, "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta, contexto: `${orientacaoDaConversa(historico.length > 0)}
 
-${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`, historico, aparelho }),
+${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`, historico, aparelho, pais: pais.codigo }),
       });
       const j = await r.json().catch(() => ({}));
       texto = j.resposta || j.erro || (r.status === 404 ? "O GuIA Turístico ainda não está ligado no servidor." : "Não consegui responder agora.");
@@ -632,6 +640,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     historia(id) {
       const lista = pais.historias || [];
       const h = lista.find((x) => x.id === id) || lista[0];
+      const base = lista.find((x) => x.id === h.base);
       return `<h1>${h.icone} ${esc(h.titulo)}</h1>
         <p class="lead">${esc(h.intro)}</p>
         <div class="filtros" role="group" aria-label="Escolher país ou cidade">${lista.map((x) => `
@@ -643,6 +652,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ${secao("Pessoas históricas", h.pessoas, pessoas)}
         ${secao("Estrelas", h.estrelas, pessoas)}
         ${secao("Datas importantes", h.datas, momentos)}
+        ${base ? `<h2>Vale para ${esc(base.titulo === pais.nome ? `${pais.artigo || ""} ${pais.nome}`.trim() : base.titulo)} todo</h2>
+          <p class="lead">O que as regiões compartilham.</p>
+          ${cartoes(base.costumes)}
+          ${secao("Datas do estado todo", base.datas, momentos)}
+          <a class="btn btn-gps ver-todos" href="#/historia/${base.id}">Ver a história de ${esc(base.titulo)}</a>` : ""}
         ${temSecao.quiz ? `<a class="btn btn-gps ver-todos" href="#/quiz">Testar o que aprendi no quiz</a>` : ""}
         <h2>Fontes</h2>
         <ul class="fontes">${h.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
@@ -823,7 +837,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
               ${lista(l.frases)}
             </section>`).join("")}`).join("")}
         <h2>Comidas típicas</h2>
-        <div class="tabela">${pais.comidas.map((c) => `
+        <div class="tabela">${pais.comidas.filter((c) => !filtroCidade || !c.regioes || c.regioes.includes(filtroCidade)).map((c) => `
           <div class="item">
             <h3 lang="${LANG}">${esc(c.nome)}</h3>
             <p class="suave">${esc(c.desc)}</p>
@@ -843,9 +857,15 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ${lista(girias.map(giriaFrase))}`;
     },
     ditados() {
+      // Ditado sem `regioes` vale para o país todo e aparece em qualquer filtro.
+      const regioes = pais.cidades.filter((c) => pais.ditados.some((d) => (d.regioes || []).includes(c)));
+      const ditados = pais.ditados.filter((d) => !filtroRegiao || !d.regioes || d.regioes.includes(filtroRegiao));
       return `<h1>Ditados e expressões</h1>
         <p class="lead">Frases feitas que você vai ouvir por aí.</p>
-        ${lista(pais.ditados.map(ditadoFrase))}
+        ${regioes.length ? `<div class="filtros" role="group" aria-label="Filtrar por região">${[["", "Todas"], ...regioes.map((c) => [c, c])].map(([v, r]) => `
+          <button class="btn ${v === filtroRegiao ? "on" : ""}" data-acao="regiao" data-regiao="${esc(v)}" aria-pressed="${v === filtroRegiao}">${esc(r)}</button>`).join("")}
+        </div>` : ""}
+        ${lista(ditados.map(ditadoFrase))}
         <h2>Cuidado: falsos amigos</h2>
         <p class="lead">${semTraducao ? "Palavras que existem no resto do Brasil, mas aqui querem dizer outra coisa." : "Palavras parecidas com o português, mas com outro sentido."}</p>
         <div class="tabela">${pais.falsosAmigos.map((f) => `

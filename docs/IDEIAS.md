@@ -125,6 +125,32 @@ Hoje as situações cobrem o básico. Estas lacunas são as que mais geram atrit
 
 **Atenção:** valores, regras de IVA, números de emergência e documentos mudam com o tempo. Cada dica dessas deve ter `atualizadoEm` e revisão antes de ir ao ar.
 
+## 6. Trilha regional: Viajador RS (turista brasileiro no Rio Grande do Sul)
+
+Pedido do usuário, planejado com a sessão de storytelling (`docs/PLANO-RS.md`, `data/rs.js` no branch `claude/storytelling-f00212`). Público: brasileiro de outros estados. Foco: gírias, palavras locais e situações que estranham quem é de fora, em 8 regiões (Metropolitana e Vales, Serra, Campanha e Fronteira Oeste, Missões, Planalto Médio e Norte, Central, Litoral Norte, Litoral Sul e Zona Sul). Sem conversas, sem checklist, poucas traduções.
+
+**O que isso muda no produto (pré-requisitos de código, a cargo do frontend/backend):**
+
+| Problema hoje | Mudança proposta |
+|---|---|
+| `rs` é o código ISO da Sérvia; o schema trata `codigo` como país | Usar `br-rs` (ou `id` livre) e um campo `tipo: "pais" \| "regiao"` |
+| Rótulos fixos "espanhol", `pr` obrigatório | Rótulos vêm do dado (`idioma`, `rotulos`); `pr` opcional (RS é pt-BR, não precisa de pronúncia) |
+| Atalhos rápidos procuram a frase "baño" | Atalhos por `tag`/`id` da frase (ex.: `tag: "banheiro"`), não por texto |
+| Guia e ranking só do Uruguai | Guia de pronúncia e ranking passam a ser opcionais por país (`recursos: { guia, ranking, conversas, preparar }`) |
+| Gírias sem região | Campo `regioes: []` na gíria e filtro por região na UI |
+| `situacoes` = frases es→pt | No RS vira "o que você vai ouvir" (`es` = fala gaúcha, `pt` = significado); manter o schema, só trocar o rótulo |
+| `voz` espanhola | `voz: ["pt-BR"]`; "Ouvir" opcional |
+
+**Recomendação de ordem:** não competir com o MVP do Uruguai. Primeiro as mudanças de schema acima (baratas e úteis para Argentina também, pois a ideia de `herda` e rótulos por dado é a mesma), depois publicar RS como segunda "coleção", com seletor de coleção na tela inicial. O Viajador deixa de ser só "guia de espanhol" e passa a ser "guia de bolso para viajar", com coleções por destino.
+
+**Ideias específicas para RS (impacto × esforço):**
+1. **Gírias por região, filtráveis** (I5, E1) — o coração do produto aqui.
+2. **"Ouvi isso, o que significa?"** — busca reversa pela expressão que a pessoa escutou, tolerante a grafia (*bah, tchê, guri, bagual, cuia, piá*) (I5, E2).
+3. **Cardápio e costumes** (churrasco, chimarrão e sua etiqueta, cuca, galeto) (I4, E1) — mesmo molde das comidas do Uruguai.
+4. **Dicas de etiqueta** (como pegar a cuia, não mexer a bomba, "obrigado" encerra a roda) (I4, E1).
+
+**Feito (história do RS):** `historias` em `data/rs.js` tem o estado (compartilhado) mais as 8 regiões, cada uma com linha do tempo, costumes, pessoas, datas e fontes. O campo `base` faz a página de cada região mostrar também o que vale para o estado todo. Os chips no topo trocam de região.
+
 ## Perguntas em aberto
 - A voz `es-UY` existe no Android/iOS dos usuários? Medir antes de investir em áudios gravados.
 - Fonte de taxa de câmbio sem custo (ex.: API pública) vs. só manual.

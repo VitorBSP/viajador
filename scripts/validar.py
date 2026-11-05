@@ -18,10 +18,10 @@ RAIZ = Path(__file__).resolve().parent.parent
 FRASE = {"es": True, "pt": True, "pr": True, "dica": False}
 SITUACAO = {"id": True, "icone": True, "titulo": True, "frases": True}
 GIRIA = {"es": True, "pt": True, "pr": True, "ex": False, "dica": False, "regioes": False}
-DITADO = {"es": True, "pt": True, "uso": True}
+DITADO = {"es": True, "pt": True, "uso": True, "regioes": False}
 FALSO_AMIGO = {"es": True, "pt": True, "errado": True}
 REGRA = {"regra": True, "ex": True, "dica": False}
-COMIDA = {"nome": True, "desc": True, "pedir": True}
+COMIDA = {"nome": True, "desc": True, "pedir": True, "regioes": False}
 CIDADE = {"cidade": True, "itens": True}
 LUGAR = {"nome": True, "icone": True, "dica": True, "frases": True}
 PAIS = {
@@ -30,14 +30,14 @@ PAIS = {
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
     "historias": False, "quiz": False, "futebol": False, "imagens": False,
-    "artigo": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False,
+    "artigo": False, "ia": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False,
 }
 RAPIDA = {"rotulo": True, "icone": True, "es": True}
 CAPAS = {"inicio", "guia", "historia", "futebol", "quiz", "conversas", "lugares", "girias", "ditados", "dicas", "preparar", "favoritos", "ia"}
 ORIGEM = {"lead": True, "imagem": True, "alt": True, "legenda": True, "quiz": False}
 FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
            "cultura": True, "jogo": True, "frases": True, "fontes": True}
-HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "fundacao": False, "momentos": True, "costumes": True,
+HISTORIA = {"id": True, "titulo": True, "icone": True, "intro": True, "base": False, "fundacao": False, "momentos": True, "costumes": True,
             "pessoas": True, "estrelas": True, "datas": True, "fontes": True}
 MOMENTO = {"data": True, "titulo": True, "texto": True}
 COSTUME = {"titulo": True, "texto": True}
@@ -227,7 +227,7 @@ def checar_campos(r, obj, spec, onde, linha_pai=0):
         if campo not in obj:
             if obrigatorio:
                 r.erro(obj.linha, onde, f'falta o campo obrigatório "{campo}"')
-        elif not isinstance(obj[campo], (str, list, dict)):
+        elif not isinstance(obj[campo], (str, list, dict, bool)):
             r.erro(obj.linha, onde, f'"{campo}" tem tipo errado')
         elif isinstance(obj[campo], str) and not obj[campo].strip():
             r.erro(obj.linha, onde, f'"{campo}" está vazio')
@@ -429,6 +429,8 @@ def checar_pais(r, chave, p, esperado):
         onde = f"historias[{n}]"
         if not checar_campos(r, h, HISTORIA, onde, p.linha):
             continue
+        if "base" in h and h.get("base") not in [x.get("id") for x in historias if isinstance(x, Obj)]:
+            r.erro(h.linha, onde, f'base "{h.get("base")}" não é o id de nenhuma história')
         for campo, spec in (("fundacao", COSTUME), ("momentos", MOMENTO), ("costumes", COSTUME), ("pessoas", PESSOA), ("estrelas", ESTRELA), ("datas", MOMENTO)):
             for m, item in enumerate(lista_de(r, h, campo, onde)):
                 checar_campos(r, item, spec, f"{onde}.{campo}[{m}]", h.linha)
@@ -450,11 +452,12 @@ def checar_pais(r, chave, p, esperado):
                 if q.get("certa") in erradas or len(set(erradas)) != len(erradas):
                     r.erro(q.linha, lugar, "opções repetidas na pergunta")
     cidades = p.get("cidades") if isinstance(p.get("cidades"), list) else []
-    for n, g in enumerate(p.get("girias") or []):
-        if isinstance(g, Obj) and "regioes" in g:
-            for reg in lista_de(r, g, "regioes", f"girias[{n}]", minimo=1):
-                if reg not in cidades:
-                    r.erro(g.linha, f"girias[{n}]", f'região não está em "cidades": "{reg}"')
+    for secao in ("girias", "ditados", "comidas"):
+        for n, g in enumerate(p.get(secao) or []):
+            if isinstance(g, Obj) and "regioes" in g:
+                for reg in lista_de(r, g, "regioes", f"{secao}[{n}]", minimo=1):
+                    if reg not in cidades:
+                        r.erro(g.linha, f"{secao}[{n}]", f'região não está em "cidades": "{reg}"')
     frases_es = {f.get("es") for f in todas_as_frases(p)}
     for n, q in enumerate(lista_de(r, p, "rapidas", "rapidas", minimo=1)):
         if checar_campos(r, q, RAPIDA, f"rapidas[{n}]", p.linha) and q.get("es") not in frases_es:
