@@ -40,7 +40,6 @@ A seção 6 de `docs/IDEIAS.md` (branch `claude/ideias-roadmap-93e9a5`) propõe 
 
 ## Falta
 
-1. **Frontend:** num destino em português, abrir na aba de turismo (Perto de você ou Lugares), não em Situações.
-2. **Frontend:** trocar os textos de comunicação quando o destino for em português. "Situações" vira "Palavras"; "O que você precisa agora?" e "6 frases úteis" viram "Palavras do dia a dia" e "6 palavras"; "Frases para este lugar" vira "Palavra do lugar"; "Dicas e frases para cada ponto turístico" vira "Dicas para cada lugar".
-3. **Conteúdo:** pontos de "Perto de você" em Campanha, Planalto e Região Central, que ainda não têm nenhum (faltam coordenadas confiáveis), e um quiz do RS.
-4. **Conteúdo:** revisão das gírias e expressões por alguém gaúcho; elas vêm de conhecimento geral, sem fonte.
+1. ~~**Frontend:** abrir na aba de turismo e trocar os textos de comunicação.~~ Feito no commit `9646301` (`claude/abas-navegacao`): o RS abre em Perto de você, "Situações" virou "Palavras" e os textos foram trocados.
+2. **Conteúdo:** pontos de "Perto de você" em Campanha, Planalto e Região Central. Até lá, o filtro de regiões do guia esconde as três. Falta também um quiz do RS.
+3. **Conteúdo:** revisão das gírias e expressões por alguém gaúcho; elas vêm de conhecimento geral, sem fonte.
