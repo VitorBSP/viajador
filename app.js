@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.28";
+  const VERSAO_APP = "1.29";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -371,74 +371,113 @@
     const estradaGrupos = grupos.slice(1).reduce((s, g, i) => s + ((estradaEntre(grupos[i].centro, g.centro) || {}).min || 0), 0);
     const tempo = { dia: dias * (TURNOS[0][2] + TURNOS[1][2]) * 0.8 - estradaGrupos, noite: dias * TURNOS[2][2] };
     const escolhidos = new Set();
+    const recomendados = []; // na ordem em que entraram, para tirar do fim se faltar espaço
     const caber = (x) => {
       const k = x.noite ? "noite" : "dia";
       if (x.min > tempo[k]) return false;
-      escolhidos.add(x); tempo[k] -= x.min; return true;
+      escolhidos.add(x); tempo[k] -= x.min;
+      if (!x.obrig) recomendados.push(x);
+      return true;
     };
     const revezar = (filas) => {
-      const fora = [];
-      for (let i = 0; filas.some((f) => i < f.length); i++) filas.forEach((f) => { if (f[i] && !caber(f[i])) fora.push(f[i]); });
-      return fora;
+      for (let i = 0; filas.some((f) => i < f.length); i++) filas.forEach((f) => { if (f[i]) caber(f[i]); });
     };
     const obrig = grupos.flatMap((g) => g.itens.filter((x) => x.obrig));
-    const faltam = revezar(grupos.map((g) => g.itens.filter((x) => x.obrig)));
+    revezar(grupos.map((g) => g.itens.filter((x) => x.obrig)));
     revezar(grupos.map((g) => g.itens.filter((x) => !x.obrig)));
 
     // Distribuição: cada dia tem três turnos com tempo útil; a estrada até o próximo lugar entra no turno dele.
-    const agenda = Array.from({ length: dias }, () => TURNOS.map(([id, , cap]) => ({ id, cap, usado: 0, itens: [] })));
-    let d = 0, t = 0, antes = null;
-    const avancar = () => { t++; if (t > 1) { t = 0; d++; } };
-    const noites = [];
-    const fora = [];
-    for (const g of grupos) {
-      const meus = g.itens.filter((x) => escolhidos.has(x));
-      const deDia = porProximidade(meus.filter((x) => !x.noite).sort((a, b) => b.obrig - a.obrig), (x) => x.coords);
-      // Passeio de dia inteiro começa de manhã: o obrigatório vem antes dos curtos quando a cidade começa de manhã;
-      // o recomendado de dia inteiro fica para o fim, depois do que é obrigatório.
-      const longos = deDia.filter((x) => x.min > DIA_INTEIRO && x.obrig);
-      const longosRec = deDia.filter((x) => x.min > DIA_INTEIRO && !x.obrig);
-      const curtos = deDia.filter((x) => x.min <= DIA_INTEIRO);
-      const fila = d < dias && t === 0 && agenda[d][0].usado === 0
-        ? [...longos, ...curtos, ...longosRec]
-        : [...curtos.slice(0, 1), ...longos, ...curtos.slice(1), ...longosRec];
-      for (const x of fila) {
-        const estrada = antes ? estradaEntre(antes, x.coords) : null;
-        const ida = estrada && estrada.min >= 20 ? estrada : null;
-        const precisa = (ida ? ida.min : 0) + Math.min(x.min, DIA_INTEIRO);
-        if (x.min > DIA_INTEIRO) {
-          if (d < dias && (t !== 0 || agenda[d][0].usado > 0)) { t = 0; d++; }
-        } else {
-          while (d < dias && agenda[d][t].usado + precisa > agenda[d][t].cap && agenda[d][t].usado > 0) avancar();
+    function agendar(conjunto, nDias) {
+      const agenda = Array.from({ length: nDias }, () => TURNOS.map(([id, , cap]) => ({ id, cap, usado: 0, itens: [] })));
+      let d = 0, t = 0, antes = null;
+      const avancar = () => { t++; if (t > 1) { t = 0; d++; } };
+      const noites = [];
+      const fora = [];
+      for (const g of grupos) {
+        const meus = g.itens.filter((x) => conjunto.has(x));
+        const deDia = porProximidade(meus.filter((x) => !x.noite).sort((a, b) => b.obrig - a.obrig), (x) => x.coords);
+        // Passeio de dia inteiro começa de manhã: o obrigatório vem antes dos curtos quando a cidade começa de manhã;
+        // o recomendado de dia inteiro fica para o fim, depois do que é obrigatório.
+        const longos = deDia.filter((x) => x.min > DIA_INTEIRO && x.obrig);
+        const longosRec = deDia.filter((x) => x.min > DIA_INTEIRO && !x.obrig);
+        const curtos = deDia.filter((x) => x.min <= DIA_INTEIRO);
+        const fila = d < nDias && t === 0 && agenda[d][0].usado === 0
+          ? [...longos, ...curtos, ...longosRec]
+          : [...curtos.slice(0, 1), ...longos, ...curtos.slice(1), ...longosRec];
+        for (const x of fila) {
+          // A estrada vem antes do lugar. Até 1h30, vai inteira num turno; mais que isso, passa de um turno para o outro.
+          // Passeio de dia inteiro é um bate-volta: o dia começa de manhã, já com a estrada até ele.
+          const estrada = antes ? estradaEntre(antes, x.coords) : null;
+          let resto = estrada && estrada.min >= 20 ? estrada.min : 0;
+          if (x.min > DIA_INTEIRO && d < nDias && (t !== 0 || agenda[d][0].usado > 0)) { t = 0; d++; }
+          if (x.min > DIA_INTEIRO && resto && d < nDias) { agenda[d][0].itens.push({ estrada, ate: x }); resto = 0; }
+          // Estrada curta e lugar vão juntos: se os dois não cabem no turno, passam para o próximo.
+          if (resto && resto <= 90 && x.min <= DIA_INTEIRO) {
+            while (d < nDias && agenda[d][t].usado > 0 && agenda[d][t].usado + resto + x.min > agenda[d][t].cap) avancar();
+          }
+          let primeira = true;
+          while (resto > 0 && d < nDias) {
+            const tu = agenda[d][t];
+            const livre = tu.cap - tu.usado;
+            if (primeira && resto <= 90 && livre < resto && tu.usado > 0) { avancar(); continue; }
+            const usa = Math.min(livre, resto);
+            if (usa > 0) {
+              tu.itens.push(primeira ? { estrada, ate: x } : { estradaSegue: x });
+              tu.usado += usa;
+              resto -= usa;
+              primeira = false;
+            }
+            if (tu.usado >= tu.cap) avancar();
+          }
+          const dur = Math.min(x.min, DIA_INTEIRO);
+          if (x.min > DIA_INTEIRO) {
+            if (d < nDias && (t !== 0 || agenda[d][0].usado > 0) && !agenda[d][0].itens.some((y) => y.ate === x)) { t = 0; d++; }
+          } else {
+            while (d < nDias && agenda[d][t].usado + dur > agenda[d][t].cap && agenda[d][t].usado > 0) avancar();
+          }
+          if (d >= nDias) { fora.push(x); continue; }
+          const turno = agenda[d][t];
+          turno.itens.push(x);
+          turno.usado += dur;
+          if (x.min > DIA_INTEIRO) { agenda[d][1].itens.push({ continua: x }); agenda[d][1].usado = agenda[d][1].cap; t = 0; d++; }
+          else if (turno.usado >= turno.cap) avancar();
+          antes = x.coords || antes;
         }
-        if (d >= dias) { fora.push(x); continue; }
-        const turno = agenda[d][t];
-        if (ida) turno.itens.push({ estrada: ida, ate: x });
-        turno.itens.push(x);
-        turno.usado += precisa;
-        x.dia = d;
-        if (x.min > DIA_INTEIRO) { agenda[d][1].itens.push({ continua: x }); agenda[d][1].usado = agenda[d][1].cap; t = 0; d++; }
-        else if (turno.usado >= turno.cap) avancar();
-        antes = x.coords || antes;
+        meus.filter((x) => x.noite).forEach((x) => noites.push(x));
       }
-      meus.filter((x) => x.noite).forEach((x) => noites.push(x));
+      // Noite: só nas noites em que o dia termina na cidade do lugar (é lá que o viajante dorme).
+      const cidadeDaNoite = (dia) => {
+        const deDia = [...dia[0].itens, ...dia[1].itens].map((y) => y.cidade || (y.continua && y.continua.cidade)).filter(Boolean);
+        return deDia[deDia.length - 1];
+      };
+      agenda.forEach((dia, i) => { dia.cidade = cidadeDaNoite(dia) || (i ? agenda[i - 1].cidade : grupos[0] && grupos[0].cidade); });
+      for (const x of noites) {
+        const dia = agenda.find((dia) => dia.cidade === x.cidade && dia[2].usado + x.min <= dia[2].cap);
+        if (!dia) { fora.push(x); continue; }
+        dia[2].itens.push(x); dia[2].usado += x.min;
+      }
+      // A estrada até um lugar que ficou de fora também sai.
+      agenda.forEach((dia) => dia.forEach((tu) => { tu.itens = tu.itens.filter((y) => !fora.includes(y.ate || y.estradaSegue)); }));
+      return { agenda, fora };
     }
-    // Noite: só nas noites em que o dia termina na cidade do lugar (é lá que o viajante dorme).
-    const cidadeDaNoite = (dia) => {
-      const deDia = [...dia[0].itens, ...dia[1].itens].map((y) => y.cidade || (y.continua && y.continua.cidade)).filter(Boolean);
-      return deDia[deDia.length - 1];
-    };
-    agenda.forEach((dia, i) => { dia.cidade = cidadeDaNoite(dia) || (i ? agenda[i - 1].cidade : grupos[0] && grupos[0].cidade); });
-    for (const x of noites) {
-      const dia = agenda.find((dia) => dia.cidade === x.cidade && dia[2].usado + x.min <= dia[2].cap);
-      if (!dia) { fora.push(x); continue; }
-      dia[2].itens.push(x); dia[2].usado += x.min;
+
+    // Se algum obrigatório não coube nos dias, sai o último recomendado que entrou, até ele caber.
+    let r = agendar(escolhidos, dias);
+    while (r.fora.some((x) => x.obrig) && recomendados.length) {
+      escolhidos.delete(recomendados.pop());
+      r = agendar(escolhidos, dias);
     }
-    fora.forEach((x) => { escolhidos.delete(x); if (x.obrig) faltam.push(x); });
+    r.fora.forEach((x) => escolhidos.delete(x));
+    const faltam = obrig.filter((x) => !escolhidos.has(x));
+    // Mínimo de dias: o menor número de dias em que todo o obrigatório cabe.
+    let minimo = dias;
+    if (faltam.length) {
+      const soObrig = new Set(obrig);
+      minimo = 1;
+      while (minimo < 60 && agendar(soObrig, minimo).fora.length) minimo++;
+    }
     const sobras = grupos.flatMap((g) => g.itens.filter((x) => !x.obrig && !escolhidos.has(x)));
-    const minutosObrig = obrig.reduce((s, x) => s + (x.noite ? 0 : x.min), 0) + estradaGrupos;
-    const minimo = Math.max(1, Math.ceil(minutosObrig / ((TURNOS[0][2] + TURNOS[1][2]) * 0.8)));
-    return { agenda, faltam, sobras, minimo, escolhidos };
+    return { agenda: r.agenda, faltam, sobras, minimo, escolhidos };
   }
   function pedirPosicao() {
     if (!("geolocation" in navigator)) {
@@ -1054,6 +1093,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         </li>`;
       const item = (y) => {
         if (y.continua) return `<li class="roteiro-item"><strong>Continua: ${esc(y.continua.l.nome)}</strong></li>`;
+        if (y.estradaSegue) return `<li class="roteiro-item roteiro-estrada"><span aria-hidden="true">🚗</span> Estrada até ${esc(y.estradaSegue.l.nome)} (continua)</li>`;
         if (y.estrada) return `<li class="roteiro-item roteiro-estrada"><span aria-hidden="true">🚗</span> ${formatarTempo(y.estrada.min)} de estrada até ${esc(y.ate.l.nome)} <span class="suave">(cerca de ${y.estrada.km} km)</span></li>`;
         return lugar(y);
       };
@@ -1082,7 +1122,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <p class="lead">${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}. Tempos e estradas são estimativas.</p>
           ${r.faltam.length ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</p>` : ""}
           ${r.agenda.map((dia, i) => {
-            const onde = [...new Set(dia.flatMap((tu) => tu.itens.map((y) => y.cidade || (y.ate && y.ate.cidade) || (y.continua && y.continua.cidade))).filter(Boolean))];
+            const onde = [...new Set(dia.flatMap((tu) => tu.itens.map((y) => y.cidade || (y.ate && y.ate.cidade) || (y.estradaSegue && y.estradaSegue.cidade) || (y.continua && y.continua.cidade))).filter(Boolean))];
             if (!onde.length && dia.every((tu) => !tu.itens.length)) return "";
             return `<section class="item roteiro-dia">
               <h2>Dia ${i + 1}${onde.length ? ` · ${onde.map(esc).join(" → ")}` : ""}</h2>

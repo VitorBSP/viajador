@@ -43,3 +43,20 @@ A seção 6 de `docs/IDEIAS.md` (branch `claude/ideias-roadmap-93e9a5`) propõe 
 1. ~~**Frontend:** abrir na aba de turismo e trocar os textos de comunicação.~~ Feito no commit `9646301` (`claude/abas-navegacao`): o RS abre em Perto de você, "Situações" virou "Palavras" e os textos foram trocados.
 2. **Conteúdo:** pontos de "Perto de você" em Campanha, Planalto e Região Central. Até lá, o filtro de regiões do guia esconde as três. Falta também um quiz do RS.
 3. **Conteúdo:** revisão das gírias e expressões por alguém gaúcho; elas vêm de conhecimento geral, sem fonte.
+
+## Lugares, não cidades (versão 1.29)
+
+Cada região lista **locais e monumentos**, não a cidade inteira: 76 lugares, 62 deles no Perto de você, com história e fontes. Todos têm tempo sugerido e plano B, e 24 são obrigatórios no roteiro.
+
+| Região | Nível pedido | Lugares | Destaques |
+|---|---|---|---|
+| Metropolitana e Vales | Melhorar | 16 | Praça da Matriz, MARGS, Igreja das Dores, Itapuã, Hamburgo Velho, Chalé da Praça XV à noite |
+| Serra Gaúcha | Melhorar | 12 | Rua Coberta, Caminhos de Pedra, Monumento ao Imigrante, Cânion Fortaleza, Natal Luz à noite |
+| Missões | Melhorar | 8 | Quatro sítios dos Sete Povos, Museu das Missões, Som e Luz à noite, museus de Getúlio e Jango |
+| Campanha e Fronteira Oeste | Melhorar muito | 7 | Parque Internacional, Museu Dom Diogo de Souza, Forte Dom Pedro II, Guaritas, Cerro do Jarau |
+| Planalto Médio e Norte | Melhorar muito | 6 | Salto do Yucumã, Papagaio-Charão, termas de Iraí e Marcelino Ramos, Casa de Erico Verissimo |
+| Litoral Sul e Zona Sul | Melhorar muito | 11 | Praça Pedro Osório, Museu da Baronesa, Catedral de São Pedro, Albardão, Santa Teresa, Lagoa Mirim |
+| Região Central | Do zero | 7 | Trilhas e cachoeiras de Itaara, Medianeira, Vila Belga, Vale Vêneto, paleontologia, Botucaraí |
+| Litoral Norte | Do zero | 9 | São Domingos, molhes do Mampituba, barra de Tramandaí, parque eólico, Morro de Osório, lagoas |
+
+Ainda faltam lugares com fonte confiável em Passo Fundo, Alegrete e Uruguaiana, e coordenadas para os lugares sem página com mapa (Vale Vêneto, Guaritas, Botucaraí, barra de Tramandaí, Albardão, Laranjal), que hoje entram no roteiro sem cálculo de estrada.

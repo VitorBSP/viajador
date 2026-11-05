@@ -52,7 +52,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `pronuncia[]` | `regra`, `ex` | `dica` | `regra` |
 | `comidas[]` | `nome`, `desc`, `pedir` | `regioes` | `nome` |
 | `lugares[]` | `cidade`, `itens` | | `cidade` |
-| `lugares[].itens[]` | `nome`, `icone`, `dica`, `frases` | `prioridade`, `periodos` | `nome` (na cidade) |
+| `lugares[].itens[]` | `nome`, `icone`, `dica`, `frases` | `prioridade`, `minutos`, `turno`, `alternativa`, `coords` | `nome` (na cidade) |
 | frase (em `frases[]`) | `es`, `pt`, `pr` | `dica`, `regioes` | ver abaixo |
 | `conversas[]` | `id`, `icone`, `titulo`, `passos` | | `id` |
 | `conversas[].passos[]` | `titulo`, `es` | | |
@@ -72,7 +72,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 - **`frases`:** pelo menos 1 em cada situação e em cada lugar.
 - **`girias[]`:** use `ex` ou `dica`. Se houver os dois, o app mostra só `ex`.
 - **`conversas[].passos[].es`:** lista de frases de `situacoes` ou `lugares`, citadas pelo texto exato de `es`. Citação inexistente é erro.
-- **Roteiro (`lugares[].itens[]`):** `prioridade` é `"obrigatorio"` ou `"recomendado"` (sem o campo, recomendado). `periodos` é `1` (meio dia, o padrão) ou `2` (dia inteiro). A aba Roteiro só aparece se algum lugar tiver `prioridade`. As distâncias entre cidades saem das `coords` do `guia`.
+- **Roteiro (`lugares[].itens[]`):** `prioridade` é `"obrigatorio"` ou `"recomendado"` (sem o campo, recomendado). `minutos` é o tempo sugerido no lugar, de 10 a 600 (sem ele, 90); acima de 270, o lugar ocupa o dia inteiro, como bate-volta. `turno: "noite"` manda o lugar para a noite (só nas noites da cidade onde o dia termina). `alternativa` é o `nome` exato de outro lugar do país, mostrado como plano B. `coords` serve para o lugar que não está no `guia`; quem está no `guia` usa as coordenadas de lá, e é com elas que o roteiro calcula a estrada (linha reta × 1,3, a 70 km/h). A aba Roteiro só aparece se algum lugar tiver `prioridade`.
 - **`regioes`** (em palavras de `situacoes`, `girias`, `ditados` e `comidas`): nomes iguais aos de `cidades`. Ao filtrar por uma região, aparece só o que tem ela em `regioes`; o que não tem `regioes` vale para o país todo e aparece só em "Todas".
 - **`guia[]`:** `lugar` é o `nome` exato de um item de `lugares`, de onde vêm as frases. `coords` é `[latitude, longitude]`. `revisado` é o mês da última conferência (`AAAA-MM`). `historia` é uma lista de parágrafos, e cada fato precisa estar nas `fontes`.
 - **`falsosAmigos[].pt`:** começar com `⚠️` destaca o item como alerta (palavrão, por exemplo).
