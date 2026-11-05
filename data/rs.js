@@ -268,6 +268,12 @@ window.VIAJADOR.paises.rs = {
           frases: [{ es: "Café colonial", pt: "Refeição farta da tarde, herança dos imigrantes" }],
         },
         {
+          nome: "Canela",
+          icone: "🌲",
+          dica: "Vizinha de Gramado e mais tranquila. Dá para ver a Catedral de Pedra e a Cascata do Caracol no mesmo dia.",
+          frases: [{ es: "Araucária", pt: "O pinheiro-do-paraná, árvore símbolo da Serra e do Planalto", dica: "No outono, é dela que cai o pinhão." }],
+        },
+        {
           nome: "Catedral de Pedra",
           icone: "⛪",
           dica: "No centro de Canela. Agora tem espetáculo diário de luzes na fachada.",
@@ -313,6 +319,12 @@ window.VIAJADOR.paises.rs = {
           icone: "🐎",
           dica: "Coração do Pampa, de estâncias e cavalos crioulos. Bom lugar para ver a cultura campeira de perto.",
           frases: [{ es: "Estância", pt: "Fazenda de gado" }],
+        },
+        {
+          nome: "Caçapava do Sul",
+          icone: "🪨",
+          dica: "Geoparque Mundial da Unesco, com as Guaritas e a Pedra do Segredo. Leve água e calçado firme para as trilhas.",
+          frases: [{ es: "Guaritas", pt: "Torres de arenito esculpidas pelo vento e pela chuva" }],
         },
         {
           nome: "Alegrete & Uruguaiana",
@@ -389,6 +401,12 @@ window.VIAJADOR.paises.rs = {
           dica: "Terra do arroz irrigado, à beira do rio Jacuí.",
           frases: [{ es: "Lavoura de arroz", pt: "Plantação de arroz irrigado" }],
         },
+        {
+          nome: "Santiago",
+          icone: "📜",
+          dica: "No Vale do Jaguari, a oeste de Santa Maria. Chama a si mesma de Terra dos Poetas.",
+          frases: [{ es: "Sarau", pt: "Encontro para ler e declamar poesia" }],
+        },
       ],
     },
     {
@@ -417,6 +435,12 @@ window.VIAJADOR.paises.rs = {
     {
       cidade: "Litoral Sul e Zona Sul",
       itens: [
+        {
+          nome: "Pelotas",
+          icone: "🍮",
+          dica: "Casarões do século XIX em volta da praça Coronel Pedro Osório e o Mercado Central. Para os doces, procure as confeitarias do centro.",
+          frases: [{ es: "Doce fino", pt: "Doce de confeitaria de tradição portuguesa, como quindim, camafeu e bem-casado" }],
+        },
         {
           nome: "Teatro Sete de Abril",
           icone: "🎭",
@@ -607,6 +631,22 @@ window.VIAJADOR.paises.rs = {
       fontes: [{ titulo: "Wikipédia: Teatro Sete de Abril", url: "https://pt.wikipedia.org/wiki/Teatro_Sete_de_Abril" }],
     },
     {
+      id: "pelotas",
+      lugar: "Pelotas",
+      coords: [-31.7654, -52.3376],
+      revisado: "2026-11",
+      resumo: "A cidade dos casarões, das charqueadas e dos doces portugueses.",
+      historia: [
+        "Pelotas foi criada em 1812 e enriqueceu no século 19 com as charqueadas, com trabalho de pessoas escravizadas. Esse dinheiro financiou os casarões, o Theatro Sete de Abril, de 1833, e o Mercado Central, de 1914.",
+        "A tradição doceira de Pelotas foi registrada como patrimônio imaterial em 2018. A cidade recebe a Fenadoce, feira nacional do doce, todos os anos.",
+      ],
+      reparar: "Olhe os casarões ao redor da praça Coronel Pedro Osório e prove um quindim.",
+      fontes: [
+        { titulo: "Wikipédia: Pelotas", url: "https://pt.wikipedia.org/wiki/Pelotas" },
+        { titulo: "Wikipédia: Theatro Sete de Abril", url: "https://pt.wikipedia.org/wiki/Theatro_Sete_de_Abril" },
+      ],
+    },
+    {
       id: "cassino",
       lugar: "Praia do Cassino & Molhes da Barra",
       coords: [-32.1917, -52.1583],
@@ -666,6 +706,22 @@ window.VIAJADOR.paises.rs = {
       ],
     },
     {
+      id: "canela",
+      lugar: "Canela",
+      coords: [-29.3647, -50.8117],
+      revisado: "2026-11",
+      resumo: "A cidade da Catedral de Pedra e do Parque do Caracol, vizinha de Gramado.",
+      historia: [
+        "Canela fica a poucos minutos de Gramado. A Catedral de Pedra, de estilo neogótico e construída em pedra, é o marco da cidade e foi inaugurada nos anos 1950.",
+        "No Parque do Caracol, uma cascata despenca de mais de cem metros no meio da mata de araucárias. Em dias de neblina, a paisagem fica ainda mais bonita.",
+      ],
+      reparar: "Olhe para o alto da Catedral e, no Caracol, observe a queda de água entre as araucárias.",
+      fontes: [
+        { titulo: "Wikipédia: Canela", url: "https://pt.wikipedia.org/wiki/Canela_(Rio_Grande_do_Sul)" },
+        { titulo: "Wikipédia: Serra Gaúcha", url: "https://pt.wikipedia.org/wiki/Serra_Ga%C3%BAcha" },
+      ],
+    },
+    {
       id: "caxias-do-sul",
       lugar: "Caxias do Sul",
       coords: [-29.1685, -51.1794],
@@ -711,6 +767,22 @@ window.VIAJADOR.paises.rs = {
       fontes: [
         { titulo: "Wikipédia: Bagé", url: "https://pt.wikipedia.org/wiki/Bag%C3%A9" },
         { titulo: "Wikipédia: Campanha Gaúcha", url: "https://pt.wikipedia.org/wiki/Campanha_Ga%C3%BAcha" },
+      ],
+    },
+    {
+      id: "cacapava-do-sul",
+      lugar: "Caçapava do Sul",
+      coords: [-30.5122, -53.4914],
+      revisado: "2026-11",
+      resumo: "Pedras esculpidas pelo tempo e uma capital farroupilha, no alto da Serra do Sudeste.",
+      historia: [
+        "Durante a Revolução Farroupilha, Caçapava foi capital da República Rio-Grandense, depois de Piratini. Na cidade fica o Forte Dom Pedro II, construído pelo Império no século 19.",
+        "Em 2023, a Unesco reconheceu o Geoparque Caçapava. As Guaritas, torres de arenito esculpidas pela erosão, e a Pedra do Segredo são os cartões-postais. No interior do município ficam as Minas do Camaquã, de exploração de cobre.",
+      ],
+      reparar: "Nas Guaritas, olhe as camadas de cor na rocha, que contam milhões de anos de sedimento.",
+      fontes: [
+        { titulo: "Wikipédia: Caçapava do Sul", url: "https://pt.wikipedia.org/wiki/Ca%C3%A7apava_do_Sul" },
+        { titulo: "Wikipédia: Geoparque Caçapava", url: "https://pt.wikipedia.org/wiki/Geoparque_Ca%C3%A7apava" },
       ],
     },
     {
@@ -839,6 +911,22 @@ window.VIAJADOR.paises.rs = {
       fontes: [
         { titulo: "Wikipédia: Cachoeira do Sul", url: "https://pt.wikipedia.org/wiki/Cachoeira_do_Sul" },
         { titulo: "Wikipédia: Rio Jacuí", url: "https://pt.wikipedia.org/wiki/Rio_Jacu%C3%AD" },
+      ],
+    },
+    {
+      id: "santiago",
+      lugar: "Santiago",
+      coords: [-29.1919, -54.8669],
+      revisado: "2026-11",
+      resumo: "A Terra dos Poetas, no Vale do Jaguari.",
+      historia: [
+        "Santiago fica no oeste da Região Central, a caminho das Missões. A cidade se apresenta como Terra dos Poetas pelos escritores que nasceram ou viveram ali.",
+        "O mais conhecido é Caio Fernando Abreu, nascido em Santiago em 1948, um dos grandes contistas do Brasil.",
+      ],
+      reparar: "Procure as homenagens aos poetas espalhadas pelo centro.",
+      fontes: [
+        { titulo: "Wikipédia: Santiago (Rio Grande do Sul)", url: "https://pt.wikipedia.org/wiki/Santiago_(Rio_Grande_do_Sul)" },
+        { titulo: "Wikipédia: Caio Fernando Abreu", url: "https://pt.wikipedia.org/wiki/Caio_Fernando_Abreu" },
       ],
     },
     {
