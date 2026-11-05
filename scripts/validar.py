@@ -30,7 +30,7 @@ PAIS = {
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
     "historias": False, "quiz": False, "futebol": False, "imagens": False,
-    "artigo": False, "ia": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False,
+    "artigo": False, "ia": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False, "mapa": False, "parabens": False,
 }
 RAPIDA = {"rotulo": True, "icone": True, "es": True}
 CAPAS = {"inicio", "guia", "historia", "futebol", "quiz", "conversas", "lugares", "girias", "ditados", "dicas", "preparar", "favoritos", "ia"}
@@ -380,6 +380,16 @@ def checar_pais(r, chave, p, esperado):
                     r.erro(l.linha, f'lugares[{c.get("cidade")}]', f'alternativa não é um lugar do país: "{l["alternativa"]}"')
                 elif l["alternativa"] == l.get("nome"):
                     r.erro(l.linha, f'lugares[{c.get("cidade")}]', f'alternativa aponta para o próprio lugar: "{l["alternativa"]}"')
+
+    # Mapa do álbum: cada chave é uma cidade, com [coluna, linha] e, opcional, [largura, altura].
+    if isinstance(p.get("mapa"), Obj):
+        for chave, pos in p["mapa"].items():
+            if chave == "linha":
+                continue
+            if chave not in (p.get("cidades") or []):
+                r.erro(p.linha, "mapa", f'cidade que não está em "cidades": "{chave}"')
+            elif not (isinstance(pos, list) and len(pos) in (2, 4) and all(isinstance(n, int) and n >= 1 for n in pos)):
+                r.erro(p.linha, "mapa", f'posição de "{chave}" deveria ser [coluna, linha] ou [coluna, linha, largura, altura]')
 
     declaradas = {c for c in lista_de(r, p, "cidades", "cidades") if isinstance(c, str)}
     com_lugares = {c["cidade"] for c in cidades if isinstance(c, Obj) and isinstance(c.get("cidade"), str)}

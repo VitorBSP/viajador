@@ -36,6 +36,8 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `rapidas` | lista | Opcional: atalhos da tela inicial, `{ rotulo, icone, es }`, com o `es` exato de uma frase de `situacoes` ou `lugares`. Sem ela, o app procura "baño", "la cuenta", "sacás una foto" e "ayuda"; se nada bater, a faixa some. |
 | `capas` | lista de textos | Opcional: ilustrações do topo que o país usa (`inicio`, `lugares`, `girias`...). Sem ela, todas aparecem; várias são do Uruguai. |
 | `ia` | verdadeiro/falso | Opcional: `true` mostra a aba do GuIA. O Uruguai já mostra. O app envia o código do país, e a função `supabase/functions/guia` escolhe a persona (`rs` fala como gaúcho, sem espanhol). |
+| `mapa` | objeto | Opcional: mapa esquemático do álbum "Por onde andei". Cada chave é uma cidade de `cidades`, com `[coluna, linha]` ou `[coluna, linha, largura, altura]`. |
+| `parabens` | lista de textos | Opcional: comemorações locais mostradas ao completar um nível do álbum. |
 | `sugestoesIA` | lista de textos | Opcional: perguntas prontas do GuIA Turístico. Sem ela, o app usa sugestões genéricas. |
 | `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 

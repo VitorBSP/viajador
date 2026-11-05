@@ -9,7 +9,18 @@ window.VIAJADOR.paises.uy = {
   artigo: "o",
   bandeira: "🇺🇾",
   voz: ["es-UY", "es-AR", "es-419", "es-ES", "es"],
-  cidades: ["Montevidéu", "Punta del Este", "Arredores de Punta", "Piriápolis"],
+  cidades: ["Montevidéu", "Punta del Este", "Arredores de Punta", "Piriápolis", "Colonia del Sacramento", "Costa de Rocha"],
+  // Comemoração ao completar um nível do álbum.
+  parabens: ["¡Bárbaro!", "¡Pa!", "¡Bien ahí!", "¡De más!"],
+  // Mapa esquemático do álbum: [coluna, linha, largura, altura] de cada cidade ou região.
+  mapa: {
+    "Colonia del Sacramento": [1, 2],
+    "Montevidéu": [2, 2],
+    "Piriápolis": [3, 2],
+    "Punta del Este": [4, 2],
+    "Arredores de Punta": [4, 1],
+    "Costa de Rocha": [5, 1, 1, 2],
+  },
   intro:
     "No Uruguai se fala o espanhol rioplatense: usa-se \"vos\" em vez de \"tú\", o \"ll\" e o \"y\" soam como o \"ch\" de \"chave\" e quase toda conversa tem um \"ta\" no meio.",
 
@@ -830,6 +841,14 @@ window.VIAJADOR.paises.uy = {
             { es: "¿De qué andén sale?", pt: "De qual plataforma sai?", pr: "de KE an-DEN SA-le?" },
           ],
         },
+        {
+          nome: "Iglesia de Cristo Obrero",
+          icone: "⛪",
+          minutos: 60,
+          alternativa: "Palacio Legislativo",
+          dica: "Em Estación Atlántida, a cerca de 45 km de Montevidéu, a caminho de Piriápolis.",
+          frases: [{ es: "¿Está abierta la iglesia?", pt: "A igreja está aberta?", pr: "es-TÁ a-BIER-ta la i-GLE-sia?" }],
+        },
       ],
     },
     {
@@ -1111,6 +1130,50 @@ window.VIAJADOR.paises.uy = {
           frases: [
             { es: "¿Está abierto el camino hasta la cima?", pt: "O caminho até o topo está aberto?", pr: "es-TÁ a-BIER-to el ka-MI-no AS-ta la SI-ma?" },
           ],
+        },
+      ],
+    },
+    {
+      cidade: "Colonia del Sacramento",
+      itens: [
+        {
+          nome: "Barrio Histórico de Colonia",
+          icone: "🏰",
+          prioridade: "obrigatorio",
+          minutos: 240,
+          alternativa: "Ciudad Vieja & Peatonal Sarandí",
+          dica: "A cerca de 180 km de Montevidéu. Vá sem pressa: o bairro é para andar a pé, de ruas de pedra.",
+          frases: [{ es: "¿Dónde está el Barrio Histórico?", pt: "Onde fica o Bairro Histórico?", pr: "DON-de es-TÁ el BA-rrio is-TO-ri-ko?" }],
+        },
+      ],
+    },
+    {
+      cidade: "Costa de Rocha",
+      itens: [
+        {
+          nome: "Cabo Polonio",
+          icone: "🦭",
+          prioridade: "obrigatorio",
+          minutos: 360,
+          alternativa: "Punta del Diablo",
+          dica: "A cerca de 260 km de Montevidéu. Só se chega de caminhão 4x4 ou a pé pelas dunas, a partir da entrada do parque.",
+          frases: [{ es: "¿A qué hora sale el camión al cabo?", pt: "Que horas sai o caminhão para o cabo?", pr: "a KE O-ra SA-le el ka-MION al KA-bo?" }],
+        },
+        {
+          nome: "Punta del Diablo",
+          icone: "🎣",
+          minutos: 180,
+          alternativa: "Parque Nacional de Santa Teresa",
+          dica: "Vila de pescadores e artesãos ao lado do Parque Nacional de Santa Teresa, a 298 km de Montevidéu.",
+          frases: [{ es: "¿Dónde se come pescado fresco?", pt: "Onde se come peixe fresco?", pr: "DON-de se KO-me pes-KA-do FRES-ko?" }],
+        },
+        {
+          nome: "Parque Nacional de Santa Teresa",
+          icone: "🌳",
+          minutos: 240,
+          alternativa: "Punta del Diablo",
+          dica: "Perto do Chuy. Mais de 60 km de trilhas, praias e a Fortaleza de Santa Teresa.",
+          frases: [{ es: "¿Por dónde empieza el sendero?", pt: "Por onde começa a trilha?", pr: "por DON-de em-PIE-sa el sen-DE-ro?" }],
         },
       ],
     },
@@ -2079,6 +2142,69 @@ window.VIAJADOR.paises.uy = {
       fontes: [
         { titulo: "Wikipédia: Cerro Pan de Azúcar", url: "https://es.wikipedia.org/wiki/Cerro_Pan_de_Az%C3%BAcar_(Uruguay)" },
       ],
+    },
+    {
+      id: "colonia",
+      lugar: "Barrio Histórico de Colonia",
+      coords: [-34.4699, -57.8434],
+      revisado: "2026-11",
+      resumo: "A cidade portuguesa de 1680, diante de Buenos Aires, Patrimônio da Humanidade.",
+      historia: [
+        "Colonia nasceu em 22 de janeiro de 1680 como Colônia do Santíssimo Sacramento, fundada pelo português Manuel Lobo, na margem do Rio da Prata em frente a Buenos Aires.",
+        "Disputada entre Portugal e Espanha, foi devolvida aos portugueses em 1681. O centro histórico da fundação portuguesa é Patrimônio da Humanidade pela Unesco.",
+      ],
+      reparar: "Repare no calçamento: as ruas de pedra ainda têm a vala no meio, à moda portuguesa.",
+      fontes: [{ titulo: "Wikipédia: Colônia do Sacramento", url: "https://pt.wikipedia.org/wiki/Col%C3%B4nia_do_Sacramento" }],
+    },
+    {
+      id: "cabo-polonio",
+      lugar: "Cabo Polonio",
+      coords: [-34.3975, -53.7892],
+      revisado: "2026-11",
+      resumo: "Um povoado entre dunas, com um farol de 1881 e lobos-marinhos.",
+      historia: [
+        "O nome vem do Polonio, navio espanhol que naufragou ali em 1735. O farol, de 1881, foi declarado Monumento Histórico do Uruguai em 1976.",
+        "O farol tem 27 metros e 132 degraus e abre para visita em horários marcados. Em 2023, o povoado tinha 128 moradores.",
+      ],
+      reparar: "Do alto do farol, olhe as pedras lá embaixo: é onde os lobos-marinhos descansam.",
+      fontes: [{ titulo: "Wikipédia: Cabo Polonio", url: "https://pt.wikipedia.org/wiki/Cabo_Polonio" }],
+    },
+    {
+      id: "punta-del-diablo",
+      lugar: "Punta del Diablo",
+      coords: [-34.0458, -53.5389],
+      revisado: "2026-11",
+      resumo: "Uma vila de pescadores e artesãos na costa de Rocha.",
+      historia: [
+        "Fica ao lado do Parque Nacional de Santa Teresa, a 298 km de Montevidéu. Tem cerca de 2.500 moradores fixos, a maioria pescadores e artesãos.",
+      ],
+      reparar: "No fim da tarde, procure os barcos de pesca voltando à praia.",
+      fontes: [{ titulo: "Wikipédia: Punta del Diablo", url: "https://pt.wikipedia.org/wiki/Punta_del_Diablo" }],
+    },
+    {
+      id: "santa-teresa-uy",
+      lugar: "Parque Nacional de Santa Teresa",
+      coords: [-33.9975, -53.567],
+      revisado: "2026-11",
+      resumo: "Um parque de 3 mil hectares e dois milhões de árvores, com uma fortaleza.",
+      historia: [
+        "O parque tem 3 mil hectares e mais de dois milhões de árvores, plantadas com espécies nativas e de fora.",
+        "Tem mais de 60 km de trilhas, quatro grandes praias, a Fortaleza de Santa Teresa e um museu sobre o historiador Horacio Arredondo, que recuperou as fortificações da região.",
+      ],
+      reparar: "Repare no contraste entre o bosque plantado e as dunas da costa de Rocha.",
+      fontes: [{ titulo: "Wikipédia: Parque Nacional de Santa Teresa", url: "https://pt.wikipedia.org/wiki/Parque_Nacional_de_Santa_Teresa" }],
+    },
+    {
+      id: "cristo-obrero",
+      lugar: "Iglesia de Cristo Obrero",
+      coords: [-34.744, -55.766],
+      revisado: "2026-11",
+      resumo: "A igreja de tijolo de Eladio Dieste, Patrimônio Mundial.",
+      historia: [
+        "Foi projetada pelo engenheiro e arquiteto Eladio Dieste em 1958, em Estación Atlántida. É Patrimônio Mundial.",
+      ],
+      reparar: "Repare nas paredes onduladas de tijolo: elas seguram a igreja sem colunas.",
+      fontes: [{ titulo: "Wikipédia: Iglesia de Cristo Obrero y Nuestra Señora de Lourdes", url: "https://pt.wikipedia.org/wiki/Iglesia_de_Cristo_Obrero_y_Nuestra_Se%C3%B1ora_de_Lourdes" }],
     },
   ],
 

@@ -1,6 +1,8 @@
 # Proposta: roteiro montado pela pessoa e álbum de lugares
 
-Só opções, para decidir antes de implementar. Vale para o Uruguai (por cidade) e para o RS (por região). Junta as sugestões das sessões de storytelling, Ideias e UX (frontend).
+**Implementado na versão 1.30**, com as escolhas do usuário: botões "Quero ir" e "Já fui", roteiro "Do meu jeito" e álbum "Por onde andei" com os níveis Turista (obrigatórios), Viajante (recomendados) e Explorador (todos), figurinhas por região, mapa esquemático na capa, carimbo e frase local ao completar. Ficaram para depois: compartilhar o álbum como imagem, trocar o plano B com um toque e reordenar com ↑↓.
+
+O texto abaixo é a proposta que levou a essas escolhas. Vale para o Uruguai (por cidade) e para o RS (por região). Junta as sugestões das sessões de storytelling, Ideias e UX (frontend).
 
 ## O que a UX mediu no site (1.29)
 
