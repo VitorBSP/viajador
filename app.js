@@ -9,6 +9,10 @@
   // "o Uruguai", "do Uruguai"; sem `artigo`, "de Cuba".
   const comArtigo = pais.artigo ? `${pais.artigo} ${pais.nome}` : pais.nome;
   const doNome = pais.artigo ? `d${pais.artigo} ${pais.nome}` : `de ${pais.nome}`;
+  // Idioma das frases. Em lugar que já fala português (o RS), não há o que traduzir: `es` é como se fala
+  // por lá e `pt` é o que quer dizer, então somem "Ouvir", "Mostrar" e os textos sobre espanhol.
+  const LANG = pais.voz[0];
+  const semTraducao = /^pt/i.test(LANG);
 
   // Favoritos, checklist, quiz e ranking são de cada país. Antes do seletor só existia o Uruguai,
   // então as chaves antigas passam para ":uy"; a antiga só sai depois de copiada.
@@ -30,15 +34,16 @@
   const RODADA = 10;
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "23";
+  const VERSAO_APP = "24";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
   const rankingOnline = () => supabaseOnline() && pais.codigo === "uy";
   const TAM_RANKING = 10;
   const ESCALAS = [0.75, 1, 1.25, 1.5, 1.85];
-  // Atalhos da tela inicial: `chave` é um trecho da frase em espanhol, procurado no conteúdo do país.
-  const RAPIDAS = [
+  // Atalhos da tela inicial. O país pode trazer os seus em `rapidas` (com o `es` exato da frase);
+  // sem eles, valem estes, em que `chave` é um trecho da frase em espanhol.
+  const RAPIDAS = pais.rapidas || [
     { rotulo: "Banheiro", icone: "🚻", chave: "baño" },
     { rotulo: "Conta", icone: "🧾", chave: "la cuenta" },
     { rotulo: "Foto", icone: "📷", chave: "sacás una foto" },
@@ -61,7 +66,7 @@
   pais.situacoes.forEach((s) => s.frases.forEach((f) => todas.push({ ...f, origem: s.titulo })));
   pais.lugares.forEach((c) => c.itens.forEach((l) => l.frases.forEach((f) => todas.push({ ...f, origem: l.nome }))));
   pais.comidas.forEach((c) => todas.push({ es: c.pedir, pt: c.nome + " — " + c.desc, pr: "", origem: "Comidas" }));
-  const giriaFrase = (g) => ({ es: g.es, pr: g.pr, pt: g.pt, ex: g.ex, dica: g.ex ? "" : g.dica });
+  const giriaFrase = (g) => ({ es: g.es, pr: g.pr, pt: g.pt, ex: g.ex, dica: g.ex ? "" : g.dica, regioes: g.regioes });
   const ditadoFrase = (d) => ({ es: d.es, pt: d.pt, pr: "", dica: d.uso });
   pais.girias.forEach((g) => todas.push({ ...giriaFrase(g), origem: "Gírias" }));
   pais.ditados.forEach((d) => todas.push({ ...ditadoFrase(d), origem: "Ditados" }));
@@ -225,14 +230,15 @@
     const i = vistas.push(f) - 1;
     const fav = favoritos.includes(f.es);
     return `<article class="frase">
-      <p class="frase-es" lang="es">${destacar(f.es)}</p>
+      <p class="frase-es" lang="${LANG}">${destacar(f.es)}</p>
       ${f.pr ? `<span class="frase-pr"><span aria-hidden="true">🗣️</span> ${esc(f.pr)}</span>` : ""}
       <p class="frase-pt">${destacar(f.pt)}</p>
       ${f.dica ? `<p class="frase-dica"><span aria-hidden="true">💡</span> ${destacar(f.dica)}</p>` : ""}
-      ${f.ex ? `<p class="frase-dica">Ex.: <span lang="es">${destacar(f.ex)}</span></p>` : ""}
+      ${f.ex ? `<p class="frase-dica">Ex.: <span lang="${LANG}">${destacar(f.ex)}</span></p>` : ""}
+      ${f.regioes ? `<p class="frase-regioes"><span aria-hidden="true">📍</span> ${f.regioes.map(esc).join(" · ")}</p>` : ""}
       <div class="frase-acoes">
-        <button class="btn" data-acao="falar" data-i="${i}"><span aria-hidden="true">🔊</span> Ouvir</button>
-        <button class="btn" data-acao="mostrar" data-i="${i}"><span aria-hidden="true">⛶</span> Mostrar</button>
+        ${semTraducao ? "" : `<button class="btn" data-acao="falar" data-i="${i}"><span aria-hidden="true">🔊</span> Ouvir</button>
+        <button class="btn" data-acao="mostrar" data-i="${i}"><span aria-hidden="true">⛶</span> Mostrar</button>`}
         <button class="btn ${fav ? "on" : ""}" data-acao="fav" data-i="${i}" aria-pressed="${fav}">${marcaFav(fav)} Salvar</button>
       </div>
     </article>`;
@@ -241,13 +247,14 @@
 
   function rapidas() {
     const botoes = RAPIDAS.map((r) => {
-      const f = todas.find((x) => normal(x.es).includes(normal(r.chave)));
+      const f = r.es ? todas.find((x) => x.es === r.es) : todas.find((x) => normal(x.es).includes(normal(r.chave)));
       if (!f) return "";
       return `<button class="rapida" data-acao="mostrar" data-i="${vistas.push(f) - 1}">
         <span class="emoji" aria-hidden="true">${r.icone}</span>
-        ${esc(r.rotulo)}<span class="sr">: <span lang="es">${esc(f.es)}</span></span>
+        ${esc(r.rotulo)}<span class="sr">: <span lang="${LANG}">${esc(f.es)}</span></span>
       </button>`;
     }).join("");
+    if (!botoes) return "";
     return `<section class="rapidas" aria-labelledby="rapidas-titulo">
       <p class="rapidas-titulo" id="rapidas-titulo">Frases rápidas: toque e mostre</p>
       <div class="rapidas-grade">${botoes}</div>
@@ -275,10 +282,13 @@
     quiz: (pais.quiz || []).length > 0,
     conversas: (pais.conversas || []).length > 0,
     preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0,
+    // As instruções do GuIA (supabase/functions/guia) falam como um uruguaio; nos outros países ele fica escondido.
+    ia: pais.codigo === "uy",
   };
   let posicao = null;
   let estadoGps = "";
   let filtroCidade = "";
+  let filtroRegiao = "";
   let verTodos = false;
   const LIMITE_PERTO = 10;
   function distanciaKm(a, b) {
@@ -700,7 +710,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         const l = lugarDo(g);
         return `<a class="voltar" href="#/guia">← Perto de você</a>
           ${heroi(fotoLugar(g.id), g.lugar, imgs.lugares[g.id])}
-          <h1 lang="es">${l.icone} ${esc(g.lugar)}</h1>
+          <h1 lang="${LANG}">${l.icone} ${esc(g.lugar)}</h1>
           <p class="lead">${esc(l.cidade)}${posicao ? ` · a ${formatarDist(distanciaKm(posicao, g.coords))} de você` : ""}</p>
           <div class="frase-acoes"><button class="btn" data-acao="narrar" data-guia="${esc(g.id)}"><span aria-hidden="true">🔊</span> Ouvir a história</button></div>
           <div class="historia">${g.historia.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
@@ -730,7 +740,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <a class="item ponto" href="#/guia/${p.id}">
             ${miniatura(fotoLugar(p.id), l.icone)}
             <span class="ponto-texto">
-              <strong lang="es">${esc(p.lugar)}</strong>
+              <strong lang="${LANG}">${esc(p.lugar)}</strong>
               <small class="suave">${esc(p.resumo)}</small>
               <small class="ponto-dist">${esc(l.cidade)}${km === null ? "" : ` · ${formatarDist(km)}`}</small>
             </span>
@@ -742,7 +752,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       return `${rapidas()}
         <div class="intro">${esc(pais.intro)}</div>
         <h1>O que você precisa agora?</h1>
-        <p class="lead">Toque na situação, ouça a frase ou mostre a tela.</p>
+        <p class="lead">${semTraducao ? "Toque na situação e veja o que você vai ouvir por lá." : "Toque na situação, ouça a frase ou mostre a tela."}</p>
         <div class="grade">${pais.situacoes.map((s, i) => `
           <a class="categoria" style="--cor:${corDoIndice(i)}" href="#/s/${s.id}">
             <span class="emoji" aria-hidden="true">${s.icone}</span>
@@ -805,7 +815,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           ${c.itens.map((l) => `
             <section class="item lugar">
               ${pontos().filter((g) => g.lugar === l.nome).map((g) => (fotoLugar(g.id) ? `<img class="lugar-foto" src="${fotoLugar(g.id)}" alt="${esc(l.nome)}" loading="lazy">` : "")).join("")}
-              <div class="lugar-topo"><span aria-hidden="true">${l.icone}</span><h3 lang="es">${esc(l.nome)}</h3></div>
+              <div class="lugar-topo"><span aria-hidden="true">${l.icone}</span><h3 lang="${LANG}">${esc(l.nome)}</h3></div>
               <p class="suave">${esc(l.dica)}</p>
               ${pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("")}
               ${lista(l.frases)}
@@ -813,38 +823,44 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <h2>Comidas típicas</h2>
         <div class="tabela">${pais.comidas.map((c) => `
           <div class="item">
-            <h3 lang="es">${esc(c.nome)}</h3>
+            <h3 lang="${LANG}">${esc(c.nome)}</h3>
             <p class="suave">${esc(c.desc)}</p>
             ${lista([{ es: c.pedir, pt: "Como pedir", pr: "" }])}
           </div>`).join("")}
         </div>`;
     },
     girias() {
+      // Gíria sem `regioes` vale para o país todo e aparece em qualquer filtro.
+      const regioes = pais.cidades.filter((c) => pais.girias.some((g) => (g.regioes || []).includes(c)));
+      const girias = pais.girias.filter((g) => !filtroRegiao || !g.regioes || g.regioes.includes(filtroRegiao));
       return `<h1>Gírias ${esc(doNome)}</h1>
         <p class="lead">Para entender a conversa (e soltar uma de vez em quando).</p>
-        ${lista(pais.girias.map(giriaFrase))}`;
+        ${regioes.length ? `<div class="filtros" role="group" aria-label="Filtrar por região">${[["", "Todas"], ...regioes.map((c) => [c, c])].map(([v, r]) => `
+          <button class="btn ${v === filtroRegiao ? "on" : ""}" data-acao="regiao" data-regiao="${esc(v)}" aria-pressed="${v === filtroRegiao}">${esc(r)}</button>`).join("")}
+        </div>` : ""}
+        ${lista(girias.map(giriaFrase))}`;
     },
     ditados() {
       return `<h1>Ditados e expressões</h1>
         <p class="lead">Frases feitas que você vai ouvir por aí.</p>
         ${lista(pais.ditados.map(ditadoFrase))}
         <h2>Cuidado: falsos amigos</h2>
-        <p class="lead">Palavras parecidas com o português, mas com outro sentido.</p>
+        <p class="lead">${semTraducao ? "Palavras que existem no resto do Brasil, mas aqui querem dizer outra coisa." : "Palavras parecidas com o português, mas com outro sentido."}</p>
         <div class="tabela">${pais.falsosAmigos.map((f) => `
           <div class="item">
-            <h3 lang="es">${esc(f.es)}</h3>
+            <h3 lang="${LANG}">${esc(f.es)}</h3>
             <p class="${f.pt.startsWith("⚠️") ? "alerta" : ""}">= ${esc(f.pt)}</p>
             <p class="suave">Não é: ${esc(f.errado)}</p>
           </div>`).join("")}
         </div>`;
     },
     dicas() {
-      return `<h1>Pronúncia sem sufoco</h1>
-        <p class="lead">As regras que mais fazem diferença para quem fala português. A sílaba em MAIÚSCULA é a forte.</p>
+      return `<h1>${semTraducao ? "Jeito de falar" : "Pronúncia sem sufoco"}</h1>
+        <p class="lead">${semTraducao ? "Curiosidades do sotaque e do jeito de falar daqui." : "As regras que mais fazem diferença para quem fala português."} A sílaba em MAIÚSCULA é a forte.</p>
         <div class="tabela">${pais.pronuncia.map((p) => `
           <div class="item">
             <h3>${esc(p.regra)}</h3>
-            <p lang="es">${esc(p.ex)}</p>
+            <p lang="${LANG}">${esc(p.ex)}</p>
             ${p.dica ? `<p class="suave"><span aria-hidden="true">💡</span> ${esc(p.dica)}</p>` : ""}
           </div>`).join("")}
         </div>`;
@@ -868,14 +884,14 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ${lugaresAchados.length ? `<div class="tabela">${lugaresAchados.map((g) => `
           <a class="item ponto" href="#/guia/${g.id}">
             <span class="emoji" aria-hidden="true">${lugarDo(g).icone}</span>
-            <span class="ponto-texto"><strong lang="es">${destacar(g.lugar)}</strong><small class="suave">${destacar(g.resumo)}</small></span>
+            <span class="ponto-texto"><strong lang="${LANG}">${destacar(g.lugar)}</strong><small class="suave">${destacar(g.resumo)}</small></span>
           </a>`).join("")}</div>` : ""}
         ${achou.length ? lista(achou) : ""}
         ${naHistoria.length ? `<h2>Na História</h2><div class="tabela">${naHistoria.map(({ h, x }) => `
           <a class="item ponto" href="#/historia/${h.id}">
             <span class="ponto-texto"><strong>${destacar(x.titulo || x.nome)}</strong><small class="suave">${destacar(x.texto)}</small><small class="ponto-dist">${esc(h.titulo)}</small></span>
           </a>`).join("")}</div>` : ""}
-        ${achou.length || lugaresAchados.length || naHistoria.length ? "" : `<p class="vazio">Nada encontrado. Tente outra palavra, em português ou espanhol.</p>`}`;
+        ${achou.length || lugaresAchados.length || naHistoria.length ? "" : `<p class="vazio">Nada encontrado. Tente outra palavra${semTraducao ? "" : ", em português ou espanhol"}.</p>`}`;
     },
   };
 
@@ -889,7 +905,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     else if (rota === "s") html = telas.situacao(param);
     else if (telas[rota] && temSecao[rota] !== false) html = telas[rota](param);
     else html = telas.inicio();
-    const arte = !termo && !param && CAPAS[rota];
+    // Algumas ilustrações são do Uruguai (bandeira, "¡TA!"); `capas` no país escolhe as que servem.
+    const nomeArte = !termo && !param && CAPAS[rota];
+    const arte = nomeArte && (!pais.capas || pais.capas.includes(nomeArte)) ? nomeArte : "";
     main.innerHTML = `${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
     document.querySelectorAll("#abas a").forEach((a) => {
       const ativa = !termo && (a.dataset.aba === rota || (a.dataset.aba === "" && rota === "s"));
@@ -973,6 +991,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (b.dataset.acao === "filtro") {
       filtroCidade = b.dataset.cidade;
       verTodos = false;
+      return render();
+    }
+    if (b.dataset.acao === "regiao") {
+      filtroRegiao = b.dataset.regiao;
       return render();
     }
     if (b.dataset.acao === "ver-todos") {
@@ -1085,5 +1107,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   });
   document.querySelectorAll("#abas [data-aba]").forEach((a) => { a.hidden = temSecao[a.dataset.aba] === false; });
   document.title = `Viajador · ${pais.nome}`;
+  $("#mostrar-es").lang = LANG;
+  if (semTraducao) {
+    $("#busca").placeholder = `Buscar: ${pais.girias.slice(0, 3).map((g) => g.es.toLowerCase()).join(", ")}…`;
+    $("#mais a[data-aba=dicas]").textContent = "🗣️ Jeito de falar";
+  }
   render();
 })();

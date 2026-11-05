@@ -17,7 +17,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 # Campos de cada tipo de item: True = obrigatório, False = opcional.
 FRASE = {"es": True, "pt": True, "pr": True, "dica": False}
 SITUACAO = {"id": True, "icone": True, "titulo": True, "frases": True}
-GIRIA = {"es": True, "pt": True, "pr": True, "ex": False, "dica": False}
+GIRIA = {"es": True, "pt": True, "pr": True, "ex": False, "dica": False, "regioes": False}
 DITADO = {"es": True, "pt": True, "uso": True}
 FALSO_AMIGO = {"es": True, "pt": True, "errado": True}
 REGRA = {"regra": True, "ex": True, "dica": False}
@@ -30,8 +30,10 @@ PAIS = {
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
     "historias": False, "quiz": False, "futebol": False, "imagens": False,
-    "artigo": False, "origem": False, "sugestoesIA": False,
+    "artigo": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False,
 }
+RAPIDA = {"rotulo": True, "icone": True, "es": True}
+CAPAS = {"inicio", "guia", "historia", "futebol", "quiz", "conversas", "lugares", "girias", "ditados", "dicas", "preparar", "favoritos", "ia"}
 ORIGEM = {"lead": True, "imagem": True, "alt": True, "legenda": True, "quiz": False}
 FUTEBOL = {"intro": True, "titulos": True, "momentos": True, "clubes": True, "estadios": True, "idolos": True,
            "cultura": True, "jogo": True, "frases": True, "fontes": True}
@@ -284,6 +286,19 @@ def checar_frases(r, dono, onde):
     return [f for f in frases if isinstance(f, Obj)]
 
 
+def todas_as_frases(p):
+    """Frases de situações e lugares, as que `rapidas` pode citar."""
+    for s in p.get("situacoes") or []:
+        for f in (s.get("frases") or []) if isinstance(s, Obj) else []:
+            if isinstance(f, Obj):
+                yield f
+    for c in p.get("lugares") or []:
+        for l in (c.get("itens") or []) if isinstance(c, Obj) else []:
+            for f in (l.get("frases") or []) if isinstance(l, Obj) else []:
+                if isinstance(f, Obj):
+                    yield f
+
+
 def checar_pais(r, chave, p, esperado):
     if not isinstance(p, Obj):
         r.erro(0, "país", "deveria ser um objeto")
@@ -428,6 +443,19 @@ def checar_pais(r, chave, p, esperado):
                     r.erro(q.linha, lugar, f'imagem não existe: {q["imagem"]}')
                 if q.get("certa") in erradas or len(set(erradas)) != len(erradas):
                     r.erro(q.linha, lugar, "opções repetidas na pergunta")
+    cidades = p.get("cidades") if isinstance(p.get("cidades"), list) else []
+    for n, g in enumerate(p.get("girias") or []):
+        if isinstance(g, Obj) and "regioes" in g:
+            for reg in lista_de(r, g, "regioes", f"girias[{n}]", minimo=1):
+                if reg not in cidades:
+                    r.erro(g.linha, f"girias[{n}]", f'região não está em "cidades": "{reg}"')
+    frases_es = {f.get("es") for f in todas_as_frases(p)}
+    for n, q in enumerate(lista_de(r, p, "rapidas", "rapidas", minimo=1)):
+        if checar_campos(r, q, RAPIDA, f"rapidas[{n}]", p.linha) and q.get("es") not in frases_es:
+            r.erro(q.linha, f"rapidas[{n}]", f'frase não existe no país: "{q.get("es")}"')
+    for n, c in enumerate(lista_de(r, p, "capas", "capas")):
+        if c not in CAPAS:
+            r.erro(p.linha, f"capas[{n}]", f'ilustração desconhecida: {c!r} (use {", ".join(sorted(CAPAS))})')
     if "artigo" in p and p["artigo"] not in ("o", "a", "os", "as"):
         r.erro(p.linha, "artigo", f'deveria ser "o", "a", "os" ou "as", veio {p["artigo"]!r}')
     for n, s in enumerate(lista_de(r, p, "sugestoesIA", "sugestoesIA", minimo=1)):

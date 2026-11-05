@@ -8,6 +8,8 @@ window.VIAJADOR.paises.rs = {
   artigo: "o",
   bandeira: "🧉",
   voz: ["pt-BR", "pt"],
+  // Só as ilustrações que não são do Uruguai (as outras têm bandeira e frases em espanhol).
+  capas: ["lugares", "dicas", "favoritos"],
   cidades: [
     "Metropolitana e Vales",
     "Serra Gaúcha",

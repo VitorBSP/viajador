@@ -33,6 +33,8 @@ Todos são obrigatórios, porque `app.js` usa cada um sem conferir se existe.
 | `imagens` | objeto | Opcional: créditos em `lugares` (por id do guia), `pessoas` (por nome) e `origem`. |
 | `artigo` | texto | Opcional: `o`, `a`, `os` ou `as`, para o app escrever "Quiz do Uruguai" e "Como nasceu a Argentina". Sem ele, "Quiz de Cuba". |
 | `origem` | objeto | Opcional: aba "Origem do país". `lead`, `imagem` (caminho no repositório), `alt`, `legenda` e, se quiser, `quiz` (id de um nível). Exige `fundacao` na primeira história. |
+| `rapidas` | lista | Opcional: atalhos da tela inicial, `{ rotulo, icone, es }`, com o `es` exato de uma frase de `situacoes` ou `lugares`. Sem ela, o app procura "baño", "la cuenta", "sacás una foto" e "ayuda"; se nada bater, a faixa some. |
+| `capas` | lista de textos | Opcional: ilustrações do topo que o país usa (`inicio`, `lugares`, `girias`...). Sem ela, todas aparecem; várias são do Uruguai. |
 | `sugestoesIA` | lista de textos | Opcional: perguntas prontas do GuIA Turístico. Sem ela, o app usa sugestões genéricas. |
 | `futebol` | objeto | Opcional: `intro`, `titulos`, `momentos`, `clubes`, `estadios`, `idolos`, `cultura`, `jogo`, `frases`, `fontes`. |
 
@@ -43,7 +45,7 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | Lista | Obrigatórios | Opcionais | Único no país |
 |---|---|---|---|
 | `situacoes[]` | `id`, `icone`, `titulo`, `frases` | | `id` |
-| `girias[]` | `es`, `pt`, `pr` | `ex`, `dica` | `es` |
+| `girias[]` | `es`, `pt`, `pr` | `ex`, `dica`, `regioes` | `es` |
 | `ditados[]` | `es`, `pt`, `uso` | | `es` |
 | `falsosAmigos[]` | `es`, `pt`, `errado` | | `es` |
 | `pronuncia[]` | `regra`, `ex` | `dica` | `regra` |
@@ -93,10 +95,11 @@ Frases iguais em `situacoes`, `lugares` ou `comidas[].pedir` geram aviso porque 
 1. Inclua `<script src="data/<código>.js"></script>` em `index.html`, depois do Uruguai. O primeiro script é o país padrão.
 2. Inclua o arquivo em `NUCLEO`, no `sw.js`, e suba `VERSAO`, para funcionar sem internet.
 3. O seletor no topo lista os países carregados. A escolha, os favoritos, o checklist, o quiz e o ranking do aparelho ficam guardados por país.
-4. As abas de seções opcionais (`guia`, `historias`, `origem`, `futebol`, `quiz`, `conversas`, `checklist`/`etiqueta`) somem quando o país não as tem.
+4. Se o primeiro idioma de `voz` for português (`pt-BR`), o app entende que não há tradução: `es` é como se fala no lugar e `pt` é o que quer dizer. Somem "Ouvir" e "Mostrar", "Pronúncia" vira "Jeito de falar" e a busca sugere gírias do lugar.
+5. As abas de seções opcionais (`guia`, `historias`, `origem`, `futebol`, `quiz`, `conversas`, `checklist`/`etiqueta`) somem quando o país não as tem. O GuIA Turístico aparece só no Uruguai.
 
 Ainda só do Uruguai, no backend:
 
 - **Ranking online:** `supabase/ranking.sql` só aceita os níveis do Uruguai, então os outros países usam só o ranking do aparelho.
-- **GuIA Turístico:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio". Para outro país, o texto precisa vir do país.
+- **GuIA Turístico:** as instruções em `supabase/functions/guia/index.ts` falam como "um amigo uruguaio", por isso a aba some fora do Uruguai. Para liberar outro país, o texto precisa vir do país.
 - **Fotos:** ficam em `img/guia/<id>.jpg` e `img/pessoas/<id>.jpg`, sem pasta por país, então os ids não podem se repetir entre países.

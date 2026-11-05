@@ -207,6 +207,7 @@ h2 { font-size: 20px; margin: 28px 0 12px; }
 }
 .frase-pt { color: var(--suave); margin: 0; }
 .frase-dica { margin: 8px 0 0; font-size: 14px; padding-left: 10px; border-left: 3px solid var(--sol); }
+.frase-regioes { margin: 8px 0 0; font-size: 13px; color: var(--suave); }
 .frase-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; }
 .btn {
