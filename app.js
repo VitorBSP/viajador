@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.33";
+  const VERSAO_APP = "1.34";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -399,7 +399,10 @@
   }
 
   // `so`: só estes lugares (roteiro Do meu jeito). `sem`: lugares que ficam de fora (os que a pessoa já visitou).
-  function montarRoteiro(cidades, dias, { so = null, sem = null } = {}) {
+  // `limiteEstrada`: fração máxima do tempo gasta em estrada (0.25 = 25%); null, sem limite.
+  // `podeTirarObrig`: no "Do meu jeito", o limite tira pelo maior desvio, sem olhar a prioridade.
+  // No automático, sai primeiro o recomendado; o obrigatório só sai se ainda passar do limite.
+  function montarRoteiro(cidades, dias, { so = null, sem = null, limiteEstrada = null, podeTirarObrig = false } = {}) {
     let grupos = pais.lugares.filter((c) => cidades.includes(c.cidade)).map((c) => ({
       cidade: c.cidade,
       itens: c.itens.filter((l) => (!so || so.has(l.nome)) && !(sem && sem.has(l.nome))).map((l) => ({
@@ -519,6 +522,49 @@
       escolhidos.delete(recomendados.pop());
       r = agendar(escolhidos, dias);
     }
+    // Limite de estrada: enquanto a estrada passar do limite, sai o lugar a que se chega com mais estrada
+    // (primeiro os recomendados; no "Do meu jeito", depois os obrigatórios escolhidos).
+    const estradaDe = (agenda) => {
+      let estrada = 0, visita = 0;
+      agenda.forEach((dia) => dia.forEach((tu) => tu.itens.forEach((y) => {
+        if (y.estrada) estrada += y.estrada.min;
+        else if (y.l) visita += y.min;
+      })));
+      return { estrada, visita, fracao: estrada + visita ? estrada / (estrada + visita) : 0 };
+    };
+    const longe = [];
+    let conta = estradaDe(r.agenda);
+    while (limiteEstrada !== null && conta.fracao > limiteEstrada) {
+      // Desvio de cada lugar no caminho: ir até ele e seguir, menos ir direto do anterior ao seguinte.
+      // Sai o que mais encurta a estrada; um lugar isolado (mesmo o primeiro) sai antes de um grupo de vizinhos.
+      const caminho = [];
+      r.agenda.forEach((dia) => [dia[0], dia[1]].forEach((tu) => tu.itens.forEach((y) => { if (y.l && y.coords && !caminho.includes(y)) caminho.push(y); })));
+      const min = (a, b) => (a && b ? (estradaEntre(a.coords, b.coords) || {}).min || 0 : 0);
+      const desvio = (i) => min(caminho[i - 1], caminho[i]) + min(caminho[i], caminho[i + 1]) - min(caminho[i - 1], caminho[i + 1]);
+      const candidatos = caminho.map((x, i) => [x, desvio(i)]).filter(([, d]) => d > 0)
+        .sort((a, b) => (podeTirarObrig ? 0 : a[0].obrig - b[0].obrig) || (b[1] - a[1]));
+      if (!candidatos.length) break;
+      const [sai] = candidatos[0];
+      escolhidos.delete(sai);
+      longe.push(sai);
+      r = agendar(escolhidos, dias);
+      conta = estradaDe(r.agenda);
+    }
+    // Depois do corte, sobra tempo: entram os lugares mais perto dos que ficaram, enquanto couberem
+    // nos dias e a estrada seguir dentro do limite. Assim o dia fica cheio sem ir longe.
+    if (limiteEstrada !== null && conta.fracao <= limiteEstrada) {
+      const noPlano = () => [...escolhidos].filter((x) => x.coords);
+      const perto = (x) => (x.coords ? Math.min(Infinity, ...noPlano().map((y) => (estradaEntre(x.coords, y.coords) || {}).min || 0)) : 0);
+      const fila = grupos.flatMap((g) => g.itens).filter((x) => !escolhidos.has(x) && !r.fora.includes(x))
+        .map((x) => [x, perto(x)]).sort((a, b) => b[0].obrig - a[0].obrig || a[1] - b[1]).map(([x]) => x);
+      for (const x of fila) {
+        escolhidos.add(x);
+        const t = agendar(escolhidos, dias);
+        const c = estradaDe(t.agenda);
+        if (t.fora.length <= r.fora.length && c.fracao <= limiteEstrada) { r = t; conta = c; if (longe.includes(x)) longe.splice(longe.indexOf(x), 1); }
+        else escolhidos.delete(x);
+      }
+    }
     r.fora.forEach((x) => escolhidos.delete(x));
     const faltam = obrig.filter((x) => !escolhidos.has(x));
     // Mínimo de dias: o menor número de dias em que todo o obrigatório cabe.
@@ -529,7 +575,7 @@
       while (minimo < 60 && agendar(soObrig, minimo).fora.length) minimo++;
     }
     const sobras = grupos.flatMap((g) => g.itens.filter((x) => !x.obrig && !escolhidos.has(x)));
-    return { agenda: r.agenda, faltam, sobras, minimo, escolhidos };
+    return { agenda: r.agenda, faltam, sobras, minimo, escolhidos, longe, estrada: conta };
   }
   function pedirPosicao() {
     if (!("geolocation" in navigator)) {
@@ -1132,15 +1178,17 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const fui = new Set(Object.keys(jaFui));
       const meus = new Set(queroIr.filter((n) => lugarPorNome(n)));
       const cidades = pais.cidades.filter((c) => roteiro.cidades.includes(c));
+      // Estrada: no automático, no máximo 25% do tempo; no "Do meu jeito", o limite que a pessoa escolher.
+      const limite = meu ? (roteiro.limite === undefined ? 0.25 : roteiro.limite) : 0.25;
       const r = meu
-        ? (meus.size ? montarRoteiro(pais.cidades, roteiro.dias, { so: meus }) : null)
-        : (cidades.length ? montarRoteiro(cidades, roteiro.dias, { sem: fui }) : null);
+        ? (meus.size ? montarRoteiro(pais.cidades, roteiro.dias, { so: meus, limiteEstrada: limite, podeTirarObrig: true }) : null)
+        : (cidades.length ? montarRoteiro(cidades, roteiro.dias, { sem: fui, limiteEstrada: limite }) : null);
       const visitados = meu ? 0 : pais.lugares.filter((c) => cidades.includes(c.cidade)).reduce((s, c) => s + c.itens.filter((l) => fui.has(l.nome)).length, 0);
       const naoCouberam = meu && r ? [...r.faltam, ...r.sobras] : [];
       let diasPrecisos = roteiro.dias;
       if (naoCouberam.length) {
         do diasPrecisos++;
-        while (diasPrecisos < 30 && (() => { const t = montarRoteiro(pais.cidades, diasPrecisos, { so: meus }); return t.faltam.length + t.sobras.length; })());
+        while (diasPrecisos < 30 && (() => { const t = montarRoteiro(pais.cidades, diasPrecisos, { so: meus, limiteEstrada: limite, podeTirarObrig: true }); return t.faltam.length + t.sobras.length - t.longe.length; })());
       }
       const nome = semTraducao ? "regiões" : "cidades";
       const historia = (l) => pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("");
@@ -1206,6 +1254,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ${meu ? "" : `<div class="filtros" role="group" aria-label="${semTraducao ? "Regiões" : "Cidades"}">${pais.cidades.map((c) => `
           <button class="btn ${cidades.includes(c) ? "on" : ""}" data-acao="roteiro-cidade" data-cidade="${esc(c)}" aria-pressed="${cidades.includes(c)}">${esc(c)}</button>`).join("")}
         </div>`}
+        ${meu ? `<div class="filtros" role="group" aria-label="Tempo máximo em estrada"><span class="filtros-rotulo">Estrada, no máximo:</span>${[[0.15, "15%"], [0.25, "25%"], [0.4, "40%"], [null, "Sem limite"]].map(([v, rot]) => `
+          <button class="btn ${limite === v ? "on" : ""}" data-acao="roteiro-limite" data-limite="${v === null ? "" : v}" aria-pressed="${limite === v}">${rot}</button>`).join("")}
+        </div>` : ""}
         <div class="roteiro-dias" role="group" aria-label="Dias de viagem">
           <button class="btn" data-acao="roteiro-dias" data-delta="-1" aria-label="Menos um dia" ${roteiro.dias <= 1 ? "disabled" : ""}>−</button>
           <strong aria-live="polite">${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}</strong>
@@ -1216,9 +1267,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           : `<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>`) : `
           <p class="lead">${meu
             ? `Cabem ${r.escolhidos.size} de ${meus.size} ${meus.size === 1 ? "lugar" : "lugares"}.`
-            : `${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}.`} Tempos e estradas são estimativas.</p>
+            : `${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}.`} Estrada: ${Math.round(r.estrada.fracao * 100)}% do tempo${limite !== null ? ` (limite de ${Math.round(limite * 100)}%)` : ""}. Tempos e estradas são estimativas.</p>
+          ${r.longe.length ? `<p class="gps-nota">Para a estrada não passar do limite, ${r.longe.length === 1 ? "ficou de fora" : "ficaram de fora"}: ${r.longe.map((x) => esc(x.l.nome)).join(", ")}.${meu ? " Aumente o limite de estrada para incluir." : " Para incluir, use o Do meu jeito e escolha um limite maior."}</p>` : ""}
+          ${limite !== null && r.estrada.fracao > limite ? `<p class="gps-nota">Mesmo com poucos lugares, a estrada passa do limite: as regiões escolhidas são longe umas das outras.</p>` : ""}
           ${visitados ? `<p class="gps-nota">${visitados === 1 ? "Um lugar onde você já foi ficou" : `${visitados} lugares onde você já foi ficaram`} de fora. Para incluir de novo, desmarque Já fui.</p>` : ""}
-          ${!meu && r.faltam.length ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</p>` : ""}
+          ${!meu && r.faltam.some((x) => !r.longe.includes(x)) ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.filter((x) => !r.longe.includes(x)).length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.filter((x) => !r.longe.includes(x)).map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</p>` : ""}
           ${r.agenda.map((dia, i) => {
             const onde = [...new Set(dia.flatMap((tu) => tu.itens.map((y) => y.cidade || (y.ate && y.ate.cidade) || (y.estradaSegue && y.estradaSegue.cidade) || (y.continua && y.continua.cidade))).filter(Boolean))];
             if (!onde.length && dia.every((tu) => !tu.itens.length)) return "";
@@ -1229,7 +1282,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           }).join("")}
           ${meu && naoCouberam.length ? `<details class="item roteiro-fora">
             <summary>${naoCouberam.length} ${naoCouberam.length === 1 ? "lugar não coube" : "lugares não couberam"} · ver</summary>
-            <p class="suave">Faltou tempo nos ${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}. Para caber tudo, são uns ${diasPrecisos} dias. Sai primeiro o recomendado, depois o obrigatório.</p>
+            <p class="suave">${r.longe.length ? `${r.longe.length} por estrada demais (veja o limite acima)${naoCouberam.length > r.longe.length ? " e o resto por " : "."}` : ""}${naoCouberam.length > r.longe.length ? `falta de tempo nos ${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}. Para caber, são uns ${diasPrecisos} dias.` : ""} Sai primeiro o recomendado, depois o obrigatório.</p>
             <button class="btn btn-gps" data-acao="roteiro-dias" data-delta="1">Adicionar 1 dia</button>
             <ol class="roteiro-lista">${naoCouberam.map(lugar).join("")}</ol>
           </details>` : ""}
@@ -1470,6 +1523,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       else delete jaFui[nome];
       salvarMarcas();
       avisar(on ? `Figurinha colada em ${NOME_ALBUM}` : `Tirado de ${NOME_ALBUM}`);
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-limite") {
+      roteiro.limite = b.dataset.limite === "" ? null : Number(b.dataset.limite);
+      salvarRoteiro();
       return render();
     }
     if (b.dataset.acao === "roteiro-modo") {

@@ -468,3 +468,4 @@ a.btn { text-decoration: none; }
   .pais { gap: 6px; }
   .pais select { max-width: 150px; height: 36px; padding: 0 6px; }
 }
+.filtros-rotulo { align-self: center; font-size: 14px; font-weight: 600; margin-right: 4px; }
