@@ -435,3 +435,10 @@ a.btn { text-decoration: none; }
 .kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 3px 10px; border-radius: 999px;
   background: var(--sol-claro); border: 1px solid var(--sol); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 @media (max-width: 420px) { .album-peca { padding: 5px; } .album-peca span { font-size: 10px; } .album-peca strong { font-size: 13px; } }
+
+/* Quiz: na barra a partir de 360 px; em telas menores, oito abas ficariam com menos de 44 px e ele vai para "Mais". */
+.mais a.so-estreito { display: none; }
+@media (max-width: 359px) {
+  .abas > a.so-largo { display: none; }
+  .mais a.so-estreito:not([hidden]) { display: flex; }
+}
