@@ -10,6 +10,12 @@ window.VIAJADOR.paises.rs = {
   voz: ["pt-BR", "pt"],
   // Só as ilustrações que não são do Uruguai (as outras têm bandeira e frases em espanhol).
   capas: ["lugares", "dicas", "favoritos"],
+  rapidas: [
+    { rotulo: "Pão", icone: "🥖", es: "Me vê dois cacetinhos" },
+    { rotulo: "Xis", icone: "🍔", es: "Um xis coração, por favor" },
+    { rotulo: "Carne", icone: "🔥", es: "Pra mim, ao ponto" },
+    { rotulo: "Chimarrão", icone: "🧉", es: "Queres um mate?" },
+  ],
   cidades: [
     "Metropolitana e Vales",
     "Serra Gaúcha",
