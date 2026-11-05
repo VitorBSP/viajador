@@ -374,3 +374,14 @@ a.btn { text-decoration: none; }
   opacity: 0; transition: .2s; pointer-events: none;
 }
 .aviso.visivel { opacity: 1; transform: translateX(-50%); }
+
+/* Roteiro */
+.roteiro-dias { display: flex; align-items: center; gap: 12px; margin: 8px 0 16px; }
+.roteiro-dias strong { min-width: 64px; text-align: center; }
+.roteiro-lista { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 14px; }
+.roteiro-item { display: grid; grid-template-columns: 76px 1fr; gap: 8px; }
+.roteiro-item .suave { margin: 4px 0 0; }
+.roteiro-quando { font-size: 13px; font-weight: 600; color: var(--celeste); padding-top: 2px; }
+.roteiro-dia h2 { margin-top: 0; }
+.etiqueta-roteiro { display: inline-block; margin-left: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--celeste-claro); color: var(--texto); vertical-align: middle; }
+.etiqueta-roteiro.obrig { background: var(--sol); color: #1b2433; }

@@ -565,6 +565,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Ciudad Vieja & Peatonal Sarandí",
           icone: "🏛️",
+          prioridade: "obrigatorio",
           dica: "Centro histórico para andar a pé. Vá de dia; à noite, prefira ruas movimentadas. Tem muitas feirinhas de artesanato.",
           frases: [
             { es: "¿Por dónde se va a la Peatonal Sarandí?", pt: "Por onde vai pra Peatonal Sarandí?", pr: "por DON-de se BA a la pe-a-to-NAL sa-ran-DI?" },
@@ -574,6 +575,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Mercado del Puerto",
           icone: "🥩",
+          prioridade: "obrigatorio",
           dica: "Galpão de ferro cheio de parrillas. Sente no balcão para ver o assador. Peça um medio y medio.",
           frases: [
             { es: "¿Hay lugar en la barra?", pt: "Tem lugar no balcão?", pr: "AI lu-GAR en la BA-rra?" },
@@ -584,6 +586,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Rambla",
           icone: "🌅",
+          prioridade: "obrigatorio",
           dica: "Calçadão de mais de 20 km à beira do Rio da Prata. Programa local: caminhar, tomar mate e ver o pôr do sol.",
           frases: [
             { es: "¿Dónde puedo alquilar una bici?", pt: "Onde posso alugar uma bicicleta?", pr: "DON-de PUE-do al-ki-LAR U-na BI-si?" },
@@ -593,6 +596,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Plaza Independencia & Palacio Salvo",
           icone: "🗼",
+          prioridade: "obrigatorio",
           dica: "Praça com o mausoléu de Artigas e o Palacio Salvo, prédio símbolo da cidade. Pergunte se há visita guiada ao Salvo.",
           frases: [
             { es: "¿Se puede subir al Palacio Salvo?", pt: "Dá pra subir no Palacio Salvo?", pr: "se PUE-de su-BIR al pa-LA-sio SAL-bo?" },
@@ -602,6 +606,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Teatro Solís",
           icone: "🎭",
+          prioridade: "obrigatorio",
           dica: "O teatro mais importante do país. Vale a visita guiada mesmo sem assistir a um espetáculo.",
           frases: [
             { es: "Dos entradas para la función de hoy", pt: "Duas entradas para a sessão de hoje", pr: "DOS en-TRA-das PA-ra la fun-SION de OI" },
@@ -781,6 +786,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "La Mano (Los Dedos) — Playa Brava",
           icone: "✋",
+          prioridade: "obrigatorio",
           dica: "A escultura dos dedos saindo da areia. Foto obrigatória: vá cedo para pegar sem fila.",
           frases: [
             { es: "¿Me sacás una foto con la mano entera?", pt: "Tira uma foto pegando a mão inteira?", pr: "me sa-KÁS U-na FO-to kon la MA-no en-TE-ra?" },
@@ -790,6 +796,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Puerto de Punta del Este",
           icone: "🦭",
+          prioridade: "obrigatorio",
           dica: "Os lobos-marinhos aparecem perto das bancas de peixe. Bom lugar para comer frutos do mar.",
           frases: [
             { es: "¿Dónde se ven los lobos marinos?", pt: "Onde dá pra ver os lobos-marinhos?", pr: "DON-de se BEN los LO-bos ma-RI-nos?" },
@@ -799,6 +806,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Casapueblo (Punta Ballena)",
           icone: "🌇",
+          prioridade: "obrigatorio",
           dica: "Obra de Carlos Páez Vilaró. No pôr do sol acontece a \"Ceremonia del Sol\": um poema gravado na voz do próprio artista. Chegue antes para pegar lugar.",
           frases: [
             { es: "¿A qué hora es la ceremonia del sol?", pt: "Que horas é a cerimônia do sol?", pr: "a KE O-ra ES la se-re-MO-nia del SOL?" },
@@ -808,6 +816,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Isla Gorriti",
           icone: "⛵",
+          periodos: 2,
           dica: "Ilha em frente ao porto, com praias calmas. Barcos saem do porto na temporada.",
           frases: [
             { es: "¿De dónde sale el barco a la Isla Gorriti?", pt: "De onde sai o barco pra Isla Gorriti?", pr: "de DON-de SA-le el BAR-ko a la IS-la go-RRI-ti?" },
@@ -825,6 +834,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "La Barra & José Ignacio",
           icone: "🍸",
+          prioridade: "obrigatorio",
           dica: "La Barra: galerias, bares e a ponte ondulada. José Ignacio: vila charmosa (e salgada!) com o farol.",
           frases: [
             { es: "¿Hay que reservar para cenar?", pt: "Precisa reservar pra jantar?", pr: "AI ke rre-ser-BAR PA-ra se-NAR?" },
@@ -904,6 +914,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Faro de José Ignacio",
           icone: "🗼",
+          prioridade: "obrigatorio",
           dica: "José Ignacio fica a leste de Punta. Pergunte no local se a torre está aberta.",
           frases: [
             { es: "¿Se ve el faro desde la playa?", pt: "Dá pra ver o farol da praia?", pr: "se BE el FA-ro DES-de la PLA-sha?" },
@@ -912,6 +923,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Puente de Laguna Garzón",
           icone: "⭕",
+          prioridade: "obrigatorio",
           dica: "Na Ruta 10, depois de José Ignacio. Dirija devagar e pare só em lugar seguro.",
           frases: [
             { es: "¿Dónde puedo dejar el auto para ver el puente?", pt: "Onde posso deixar o carro para ver a ponte?", pr: "DON-de PUE-do de-RRAR el AU-to PA-ra BER el PUEN-te?" },
@@ -965,6 +977,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Castillo de Piria",
           icone: "🏰",
+          prioridade: "obrigatorio",
           dica: "Fica na Ruta 37, fora do centro de Piriápolis. O andar de cima só é visitado com guia.",
           frases: [
             { es: "¿A qué hora es la visita al piso de arriba?", pt: "Que horas é a visita ao andar de cima?", pr: "a KE O-ra ES la bi-SI-ta al PI-so de a-RRI-ba?" },
@@ -981,6 +994,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Rambla de los Argentinos",
           icone: "🌊",
+          prioridade: "obrigatorio",
           dica: "O eixo do balneário. Bom para caminhar no fim da tarde.",
           frases: [
             { es: "¿Hasta dónde llega la rambla?", pt: "Até onde vai a rambla?", pr: "AS-ta DON-de SHE-ga la RRAM-bla?" },
@@ -989,6 +1003,7 @@ window.VIAJADOR.paises.uy = {
         {
           nome: "Cerro Pan de Azúcar",
           icone: "⛰️",
+          prioridade: "obrigatorio",
           dica: "Pergunte antes se a trilha e o topo estão abertos. Leve água e calçado fechado.",
           frases: [
             { es: "¿Está abierto el camino hasta la cima?", pt: "O caminho até o topo está aberto?", pr: "es-TÁ a-BIER-to el ka-MI-no AS-ta la SI-ma?" },

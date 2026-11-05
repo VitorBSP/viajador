@@ -241,18 +241,21 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Mercado Público de Porto Alegre",
           icone: "🏛️",
+          prioridade: "obrigatorio",
           dica: "No Centro Histórico: bancas de erva-mate, temperos, peixe e restaurantes no segundo andar. Bom lugar para comprar cuia e erva.",
           frases: [{ es: "Erva moída grossa", pt: "Erva-mate de folha mais graúda", dica: "Peça para provar antes: cada banca tem a sua." }],
         },
         {
           nome: "Usina do Gasômetro & Orla do Guaíba",
           icone: "🌅",
+          prioridade: "obrigatorio",
           dica: "A chaminé é o cartão-postal e a orla é o programa: caminhar ou pedalar e ver o pôr do sol sobre o Guaíba.",
           frases: [{ es: "Guaíba", pt: "O lago em frente à cidade", dica: "Todo mundo chama de rio, mas oficialmente é lago." }],
         },
         {
           nome: "Parque Farroupilha (Redenção)",
           icone: "🌳",
+          prioridade: "obrigatorio",
           dica: "O parque mais popular da cidade. Aos domingos, o Brique da Redenção ocupa a Avenida José Bonifácio.",
           frases: [{ es: "Brique", pt: "Feira de antiguidades e artesanato" }],
         },
@@ -265,6 +268,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Casa de Cultura Mario Quintana",
           icone: "📖",
+          prioridade: "obrigatorio",
           dica: "No antigo Hotel Majestic, na Rua da Praia. Tem cinema, exposições e um café no terraço.",
           frases: [{ es: "Rua da Praia", pt: "Apelido da Rua dos Andradas, a mais tradicional do Centro" }],
         },
@@ -300,6 +304,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Gramado",
           icone: "🎄",
+          prioridade: "obrigatorio",
           dica: "Rua Coberta, Lago Negro e chocolate. O Natal Luz vai do fim de outubro a janeiro e o Festival de Cinema é em agosto: reserve cedo e espere preço alto.",
           frases: [{ es: "Café colonial", pt: "Refeição farta da tarde, herança dos imigrantes" }],
         },
@@ -312,18 +317,22 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Catedral de Pedra",
           icone: "⛪",
+          prioridade: "obrigatorio",
           dica: "No centro de Canela. Agora tem espetáculo diário de luzes na fachada.",
           frases: [{ es: "Matriz", pt: "A igreja principal da cidade", dica: "Apesar do apelido, a Catedral de Pedra não é catedral: é a matriz de Canela." }],
         },
         {
           nome: "Cascata do Caracol",
           icone: "💧",
+          prioridade: "obrigatorio",
           dica: "No Parque do Caracol, a 7 km do centro de Canela. Os mirantes ficam perto da entrada; a escadaria até a base cansa.",
           frases: [{ es: "Cascata", pt: "Cachoeira" }],
         },
         {
           nome: "Vale dos Vinhedos",
           icone: "🍷",
+          prioridade: "obrigatorio",
+          periodos: 2,
           dica: "Entre Bento Gonçalves, Garibaldi e Monte Belo do Sul. Vinícolas com degustação e, perto dali, o passeio de Maria Fumaça. Confira horários com antecedência.",
           frases: [{ es: "Gringo", pt: "Descendente de italianos", dica: "Na Serra, é dito com orgulho, não como \"estrangeiro\"." }],
         },
@@ -336,6 +345,8 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Cânion Itaimbezinho",
           icone: "🏞️",
+          prioridade: "obrigatorio",
+          periodos: 2,
           dica: "No Parque Nacional de Aparados da Serra, perto de Cambará do Sul. A cerração muda tudo: vá cedo e leve casaco mesmo no verão.",
           frases: [{ es: "Aparados", pt: "As bordas retas dos cânions da Serra Geral" }],
         },
@@ -359,12 +370,14 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Santana do Livramento & Rivera",
           icone: "🇺🇾",
+          prioridade: "obrigatorio",
           dica: "Fronteira seca: uma praça separa o Brasil do Uruguai. Há free shops dos dois lados e cota de compras, então guarde as notas.",
           frases: [{ es: "Fronteira seca", pt: "Divisa sem rio nem ponte: é só atravessar a rua" }],
         },
         {
           nome: "Bagé",
           icone: "🐎",
+          prioridade: "obrigatorio",
           dica: "Coração do Pampa, de estâncias e cavalos crioulos. Bom lugar para ver a cultura campeira de perto.",
           frases: [{ es: "Estância", pt: "Fazenda de gado" }],
         },
@@ -383,6 +396,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Cerro do Jarau",
           icone: "⛰️",
+          periodos: 2,
           dica: "Em Quaraí, perto da fronteira com o Uruguai. Fica em área rural: vá com guia ou com indicação local.",
           frases: [{ es: "Cerro", pt: "Morro, na fala da Campanha" }],
         },
@@ -400,12 +414,14 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Ruínas de São Miguel Arcanjo",
           icone: "⛪",
+          prioridade: "obrigatorio",
           dica: "Patrimônio Mundial da Unesco, em São Miguel das Missões. À noite costuma haver o espetáculo Som e Luz: confirme o horário na cidade.",
           frases: [{ es: "Redução", pt: "Povoado indígena organizado pelos jesuítas" }],
         },
         {
           nome: "Catedral Angelopolitana",
           icone: "🕍",
+          prioridade: "obrigatorio",
           dica: "Em Santo Ângelo, a porta de entrada da região. Foi inspirada na igreja de São Miguel.",
           frases: [{ es: "Sete Povos", pt: "As sete reduções jesuíticas do lado gaúcho do rio Uruguai" }],
         },
@@ -418,6 +434,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Museu das Missões",
           icone: "🗿",
+          prioridade: "obrigatorio",
           dica: "Ao lado das ruínas de São Miguel. Junte as duas visitas.",
           frases: [{ es: "Estatuária missioneira", pt: "Imagens de santos esculpidas nas reduções" }],
         },
@@ -447,6 +464,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Passo Fundo",
           icone: "📚",
+          prioridade: "obrigatorio",
           dica: "Capital Nacional da Literatura, por lei. Maior cidade do norte gaúcho e polo de serviços do agro.",
           frases: [{ es: "Jornada", pt: "A Jornada Nacional de Literatura, festa dos livros da cidade" }],
         },
@@ -465,6 +483,8 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Salto do Yucumã",
           icone: "🌊",
+          prioridade: "obrigatorio",
+          periodos: 2,
           dica: "No Parque Estadual do Turvo, em Derrubadas. O salto aparece com o rio baixo: com cheia, ele some. Confira antes de ir.",
           frases: [{ es: "Moconá", pt: "Nome do salto do lado argentino. Em guarani, \"que tudo engole\"" }],
         },
@@ -482,12 +502,15 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Santa Maria",
           icone: "🎓",
+          prioridade: "obrigatorio",
           dica: "Cidade universitária (UFSM) e militar, no centro do estado. Muito estudante, bar e vida noturna.",
           frases: [{ es: "Coração do Rio Grande", pt: "Apelido de Santa Maria, pelo lugar no mapa" }],
         },
         {
           nome: "Quarta Colônia",
           icone: "🦕",
+          prioridade: "obrigatorio",
+          periodos: 2,
           dica: "Colônia italiana perto de Santa Maria e Geoparque Mundial da Unesco, com fósseis de alguns dos dinossauros mais antigos já encontrados. O centro turístico é Vale Vêneto.",
           frases: [{ es: "Quarta Colônia", pt: "A quarta colônia italiana do estado, a primeira fora da Serra" }],
         },
@@ -511,12 +534,14 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Parque da Guarita",
           icone: "🪨",
+          prioridade: "obrigatorio",
           dica: "Em Torres, as únicas praias com paredões de rocha do litoral gaúcho. No inverno, lobos-marinhos descansam na Ilha dos Lobos, em frente à cidade.",
           frases: [{ es: "Guarita", pt: "O morro de pedra à beira-mar que dá nome ao parque" }],
         },
         {
           nome: "Capão da Canoa & Tramandaí",
           icone: "🏖️",
+          prioridade: "obrigatorio",
           dica: "Veraneio gaúcho: muita gente, mar agitado e água mais escura que no Nordeste, por causa dos sedimentos, não de sujeira. Em Tramandaí, botos ajudam os pescadores na barra do rio.",
           frases: [{ es: "Guarda-vidas", pt: "Salva-vidas" }],
         },
@@ -546,6 +571,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Pelotas",
           icone: "🍮",
+          prioridade: "obrigatorio",
           dica: "Casarões do século XIX em volta da praça Coronel Pedro Osório e o Mercado Central. Para os doces, procure as confeitarias do centro.",
           frases: [{ es: "Doce fino", pt: "Doce de confeitaria de tradição portuguesa, como quindim, camafeu e bem-casado" }],
         },
@@ -558,6 +584,7 @@ window.VIAJADOR.paises.rs = {
         {
           nome: "Praia do Cassino & Molhes da Barra",
           icone: "⚓",
+          prioridade: "obrigatorio",
           dica: "Em Rio Grande, a cidade mais antiga do estado. Nos Molhes, as vagonetas andam a vela sobre os trilhos até o farol.",
           frases: [{ es: "Vagoneta", pt: "Carrinho sobre trilhos, empurrado por uma vela" }],
         },

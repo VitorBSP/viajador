@@ -23,7 +23,7 @@ FALSO_AMIGO = {"es": True, "pt": True, "errado": True}
 REGRA = {"regra": True, "ex": True, "dica": False}
 COMIDA = {"nome": True, "desc": True, "pedir": True, "regioes": False}
 CIDADE = {"cidade": True, "itens": True}
-LUGAR = {"nome": True, "icone": True, "dica": True, "frases": True}
+LUGAR = {"nome": True, "icone": True, "dica": True, "frases": True, "prioridade": False, "periodos": False}
 PAIS = {
     "codigo": True, "nome": True, "bandeira": True, "voz": True, "cidades": True, "intro": True,
     "situacoes": True, "girias": True, "ditados": True, "falsosAmigos": True,
@@ -227,7 +227,7 @@ def checar_campos(r, obj, spec, onde, linha_pai=0):
         if campo not in obj:
             if obrigatorio:
                 r.erro(obj.linha, onde, f'falta o campo obrigatório "{campo}"')
-        elif not isinstance(obj[campo], (str, list, dict, bool)):
+        elif not isinstance(obj[campo], (str, list, dict, bool, int, float)):
             r.erro(obj.linha, onde, f'"{campo}" tem tipo errado')
         elif isinstance(obj[campo], str) and not obj[campo].strip():
             r.erro(obj.linha, onde, f'"{campo}" está vazio')
@@ -360,6 +360,11 @@ def checar_pais(r, chave, p, esperado):
         for m, lugar in enumerate(itens):
             lugar_onde = f"{onde}.itens[{m}]"
             if checar_campos(r, lugar, LUGAR, lugar_onde, c.linha):
+                # Roteiro: só "obrigatorio" ou "recomendado"; `periodos` é 1 (meio dia) ou 2 (dia inteiro).
+                if lugar.get("prioridade", "recomendado") not in ("obrigatorio", "recomendado"):
+                    r.erro(lugar.linha, lugar_onde, f'prioridade deveria ser "obrigatorio" ou "recomendado", veio {lugar["prioridade"]!r}')
+                if lugar.get("periodos", 1) not in (1, 2):
+                    r.erro(lugar.linha, lugar_onde, f'periodos deveria ser 1 ou 2, veio {lugar["periodos"]!r}')
                 frases += checar_frases(r, lugar, lugar_onde, frase_spec)
 
     declaradas = {c for c in lista_de(r, p, "cidades", "cidades") if isinstance(c, str)}

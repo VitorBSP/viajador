@@ -34,7 +34,8 @@
   const RODADA = 10;
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
-  const VERSAO_APP = "27";
+  // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
+  const VERSAO_APP = "1.28";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -294,6 +295,7 @@
     conversas: (pais.conversas || []).length > 0,
     preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0,
     dicas: pais.pronuncia.length > 0,
+    roteiro: pais.lugares.some((c) => c.itens.some((l) => l.prioridade)),
     // O GuIA (supabase/functions/guia) escolhe a persona pelo código do país; só aparece onde o país tem `ia: true` (ou no Uruguai).
     ia: pais.codigo === "uy" || pais.ia === true,
   };
@@ -311,6 +313,96 @@
     return 6371 * 2 * Math.asin(Math.sqrt(h));
   }
   const formatarDist = (km) => (km < 1 ? `${Math.round(km * 100) * 10} m` : `${km < 10 ? km.toFixed(1).replace(".", ",") : Math.round(km)} km`);
+
+  // Roteiro: o viajante escolhe cidades (ou regiões) e dias, e o app distribui os lugares em manhãs e tardes.
+  // No dado, cada lugar pode ter `prioridade: "obrigatorio"` (o resto é recomendado) e `periodos: 2` (dia inteiro).
+  const CHAVE_ROTEIRO = doPais("viajador:roteiro");
+  const KM_DESLOCAMENTO = 60; // acima disso, trocar de cidade custa meio dia de estrada
+  const KM_DIA_DE_ESTRADA = 250; // acima disso, o dia inteiro
+  let roteiro = { cidades: [], dias: 3 };
+  try { roteiro = { ...roteiro, ...JSON.parse(localStorage.getItem(CHAVE_ROTEIRO)) }; } catch (e) {}
+  const salvarRoteiro = () => { try { localStorage.setItem(CHAVE_ROTEIRO, JSON.stringify(roteiro)); } catch (e) {} };
+
+  function centroDe(itens) {
+    const cs = itens.map((x) => x.coords).filter(Boolean);
+    return cs.length ? [cs.reduce((s, c) => s + c[0], 0) / cs.length, cs.reduce((s, c) => s + c[1], 0) / cs.length] : null;
+  }
+  // Ordena pelo vizinho mais próximo, a partir do primeiro da lista.
+  function porProximidade(lista, coordsDe) {
+    const resto = [...lista];
+    const ordem = resto.length ? [resto.shift()] : [];
+    while (resto.length) {
+      const atual = coordsDe(ordem[ordem.length - 1]);
+      let i = 0;
+      if (atual) {
+        let melhor = Infinity;
+        resto.forEach((x, j) => { const c = coordsDe(x); const d = c ? distanciaKm(atual, c) : Infinity; if (d < melhor) { melhor = d; i = j; } });
+      }
+      ordem.push(resto.splice(i, 1)[0]);
+    }
+    return ordem;
+  }
+
+  function montarRoteiro(cidades, dias) {
+    const coordsDe = (nome) => (pontos().find((g) => g.lugar === nome) || {}).coords;
+    let grupos = pais.lugares.filter((c) => cidades.includes(c.cidade)).map((c) => ({
+      cidade: c.cidade,
+      itens: c.itens.map((l) => ({ l, obrig: l.prioridade === "obrigatorio", periodos: l.periodos === 2 ? 2 : 1, coords: coordsDe(l.nome) })),
+    }));
+    grupos.forEach((g) => { g.centro = centroDe(g.itens); });
+    grupos = porProximidade(grupos, (g) => g.centro);
+    grupos.forEach((g, i) => {
+      const km = i > 0 && g.centro && grupos[i - 1].centro ? distanciaKm(grupos[i - 1].centro, g.centro) : 0;
+      g.viagem = i === 0 ? 0 : km > KM_DIA_DE_ESTRADA ? 2 : km > KM_DESLOCAMENTO || !km ? 1 : 0;
+    });
+    const estrada = grupos.reduce((s, g) => s + g.viagem, 0);
+
+    // Primeiro o obrigatório, depois o recomendado. Nos dois, um de cada cidade por vez, enquanto couber,
+    // para nenhuma cidade escolhida ficar sem nada.
+    let livres = dias * 2 - estrada;
+    const escolhidos = new Set();
+    const caber = (x) => { if (x.periodos > livres) return false; escolhidos.add(x); livres -= x.periodos; return true; };
+    const revezar = (filas) => {
+      const fora = [];
+      for (let i = 0; filas.some((f) => i < f.length); i++) filas.forEach((f) => { if (f[i] && !caber(f[i])) fora.push(f[i]); });
+      return fora;
+    };
+    const obrig = grupos.flatMap((g) => g.itens.filter((x) => x.obrig));
+    const faltam = revezar(grupos.map((g) => g.itens.filter((x) => x.obrig)));
+    revezar(grupos.map((g) => g.itens.filter((x) => !x.obrig)));
+
+    // Monta os períodos. Dia inteiro sempre começa de manhã: se a cidade começa à tarde, um passeio curto vem antes.
+    const periodos = [];
+    for (const g of grupos) {
+      const meus = g.itens.filter((x) => escolhidos.has(x)).sort((a, b) => b.obrig - a.obrig);
+      if (!meus.length) continue;
+      if (g.viagem && periodos.length) {
+        // Dia inteiro de estrada só quando começa de manhã; à tarde, vira dois meios períodos seguidos.
+        const v = { viagem: g.cidade, periodos: g.viagem === 2 && periodos.length % 2 === 0 ? 2 : 1 };
+        periodos.push(v);
+        if (v.periodos === 2) periodos.push({ continua: v });
+        else if (g.viagem === 2) periodos.push({ viagem: g.cidade, periodos: 1 });
+      }
+      const curtos = porProximidade(meus.filter((x) => x.periodos === 1), (x) => x.coords);
+      const longos = meus.filter((x) => x.periodos === 2);
+      const fila = periodos.length % 2 === 1 && curtos.length ? [curtos.shift(), ...longos, ...curtos] : [...longos, ...curtos];
+      for (const x of fila) {
+        if (x.periodos === 2 && periodos.length % 2 === 1) periodos.push({ livre: true });
+        x.cidade = g.cidade;
+        periodos.push(x);
+        if (x.periodos === 2) periodos.push({ continua: x });
+      }
+    }
+    // Se as tardes livres empurraram algo para além do último dia, ele sai do roteiro.
+    const sobraram = periodos.splice(dias * 2);
+    if (periodos.length && periodos[periodos.length - 1].periodos === 2) sobraram.unshift(periodos.pop());
+    sobraram.filter((p) => p.l).forEach((x) => { escolhidos.delete(x); if (x.obrig) faltam.push(x); });
+    const sobras = grupos.flatMap((g) => g.itens.filter((x) => !x.obrig && !escolhidos.has(x)));
+    const minimo = Math.ceil((obrig.reduce((s, x) => s + x.periodos, 0) + estrada) / 2);
+    const lista = [];
+    for (let i = 0; i < periodos.length; i += 2) lista.push([periodos[i], periodos[i + 1]]);
+    return { dias: lista, faltam, sobras, minimo, escolhidos };
+  }
   function pedirPosicao() {
     if (!("geolocation" in navigator)) {
       estadoGps = "Este aparelho não informa a localização. Escolha um ponto na lista.";
@@ -899,6 +991,51 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           </div>`).join("")}
         </div>`;
     },
+    roteiro() {
+      const cidades = pais.cidades.filter((c) => roteiro.cidades.includes(c));
+      const r = cidades.length ? montarRoteiro(cidades, roteiro.dias) : null;
+      const nome = semTraducao ? "regiões" : "cidades";
+      const historia = (l) => pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("");
+      const lugar = (x, quando) => `
+        <li class="roteiro-item">
+          <span class="roteiro-quando">${quando}</span>
+          <div>
+            <strong><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span></strong>
+            <span class="etiqueta-roteiro ${x.obrig ? "obrig" : ""}">${x.obrig ? "Obrigatório" : "Recomendado"}</span>
+            <p class="suave">${esc(x.l.dica)}</p>
+            ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
+            ${historia(x.l)}
+          </div>
+        </li>`;
+      const periodo = (p, quando) => {
+        if (!p || p.continua) return "";
+        if (p.viagem) return `<li class="roteiro-item"><span class="roteiro-quando">${p.periodos === 2 ? "Dia inteiro" : quando}</span><div><strong><span aria-hidden="true">🚗</span> Estrada até ${esc(p.viagem)}</strong><p class="suave">Reserve este período para o deslocamento.</p></div></li>`;
+        if (p.livre) return `<li class="roteiro-item"><span class="roteiro-quando">${quando}</span><div><strong>Tempo livre</strong><p class="suave">Bom para descansar, comer bem ou voltar a um lugar de que gostou.</p></div></li>`;
+        return lugar(p, p.periodos === 2 ? "Dia inteiro" : quando);
+      };
+      const qtd = r ? [...r.escolhidos].filter((x) => x.obrig).length : 0;
+      return `<h1>Roteiro</h1>
+        <p class="lead">Escolha as ${nome} e quantos dias vai ficar. O roteiro se monta sozinho: primeiro o obrigatório, depois o recomendado, na ordem do caminho.</p>
+        <div class="filtros" role="group" aria-label="${semTraducao ? "Regiões" : "Cidades"}">${pais.cidades.map((c) => `
+          <button class="btn ${cidades.includes(c) ? "on" : ""}" data-acao="roteiro-cidade" data-cidade="${esc(c)}" aria-pressed="${cidades.includes(c)}">${esc(c)}</button>`).join("")}
+        </div>
+        <div class="roteiro-dias" role="group" aria-label="Dias de viagem">
+          <button class="btn" data-acao="roteiro-dias" data-delta="-1" aria-label="Menos um dia" ${roteiro.dias <= 1 ? "disabled" : ""}>−</button>
+          <strong aria-live="polite">${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}</strong>
+          <button class="btn" data-acao="roteiro-dias" data-delta="1" aria-label="Mais um dia" ${roteiro.dias >= 30 ? "disabled" : ""}>+</button>
+        </div>
+        ${!r ? `<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>` : `
+          <p class="lead">${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}.</p>
+          ${r.faltam.length ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são pelo menos ${r.minimo} dias.</p>` : ""}
+          ${r.dias.map(([manha, tarde], i) => {
+            const onde = [...new Set([manha, tarde].map((p) => p && (p.cidade || p.viagem || (p.continua && p.continua.cidade))).filter(Boolean))];
+            return `<section class="item roteiro-dia">
+              <h2>Dia ${i + 1}${onde.length ? ` · ${onde.map(esc).join(" → ")}` : ""}</h2>
+              <ol class="roteiro-lista">${periodo(manha, "Manhã")}${periodo(tarde, "Tarde")}</ol>
+            </section>`;
+          }).join("")}
+          ${r.sobras.length ? `<h2>Se sobrar tempo</h2><ol class="roteiro-lista">${r.sobras.map((x) => lugar(x, "Extra")).join("")}</ol>` : ""}`}`;
+    },
     favoritos() {
       const fs = favoritos.map((es) => todas.find((f) => f.es === es)).filter(Boolean);
       return `<h1>★ Salvos</h1>
@@ -1029,6 +1166,17 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     }
     if (b.dataset.acao === "regiao") {
       filtroRegiao = b.dataset.regiao;
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-cidade") {
+      const c = b.dataset.cidade;
+      roteiro.cidades = roteiro.cidades.includes(c) ? roteiro.cidades.filter((x) => x !== c) : [...roteiro.cidades, c];
+      salvarRoteiro();
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-dias") {
+      roteiro.dias = Math.min(30, Math.max(1, roteiro.dias + Number(b.dataset.delta)));
+      salvarRoteiro();
       return render();
     }
     if (b.dataset.acao === "ver-todos") {

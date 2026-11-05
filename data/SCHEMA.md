@@ -52,8 +52,8 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 | `pronuncia[]` | `regra`, `ex` | `dica` | `regra` |
 | `comidas[]` | `nome`, `desc`, `pedir` | `regioes` | `nome` |
 | `lugares[]` | `cidade`, `itens` | | `cidade` |
-| `lugares[].itens[]` | `nome`, `icone`, `dica`, `frases` | | `nome` (na cidade) |
-| frase (em `frases[]`) | `es`, `pt`, `pr` | `dica` | ver abaixo |
+| `lugares[].itens[]` | `nome`, `icone`, `dica`, `frases` | `prioridade`, `periodos` | `nome` (na cidade) |
+| frase (em `frases[]`) | `es`, `pt`, `pr` | `dica`, `regioes` | ver abaixo |
 | `conversas[]` | `id`, `icone`, `titulo`, `passos` | | `id` |
 | `conversas[].passos[]` | `titulo`, `es` | | |
 | `etiqueta[]` | `titulo`, `texto` | | |
@@ -72,6 +72,8 @@ Na coluna "Opcionais", o campo pode faltar, mas não pode estar vazio. Nos demai
 - **`frases`:** pelo menos 1 em cada situação e em cada lugar.
 - **`girias[]`:** use `ex` ou `dica`. Se houver os dois, o app mostra só `ex`.
 - **`conversas[].passos[].es`:** lista de frases de `situacoes` ou `lugares`, citadas pelo texto exato de `es`. Citação inexistente é erro.
+- **Roteiro (`lugares[].itens[]`):** `prioridade` é `"obrigatorio"` ou `"recomendado"` (sem o campo, recomendado). `periodos` é `1` (meio dia, o padrão) ou `2` (dia inteiro). A aba Roteiro só aparece se algum lugar tiver `prioridade`. As distâncias entre cidades saem das `coords` do `guia`.
+- **`regioes`** (em palavras de `situacoes`, `girias`, `ditados` e `comidas`): nomes iguais aos de `cidades`. Ao filtrar por uma região, aparece só o que tem ela em `regioes`; o que não tem `regioes` vale para o país todo e aparece só em "Todas".
 - **`guia[]`:** `lugar` é o `nome` exato de um item de `lugares`, de onde vêm as frases. `coords` é `[latitude, longitude]`. `revisado` é o mês da última conferência (`AAAA-MM`). `historia` é uma lista de parágrafos, e cada fato precisa estar nas `fontes`.
 - **`falsosAmigos[].pt`:** começar com `⚠️` destaca o item como alerta (palavrão, por exemplo).
 - **`ditados[]` e `comidas[].pedir`:** não têm campo de pronúncia, e o app não mostra pronúncia neles.
