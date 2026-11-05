@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.32";
+  const VERSAO_APP = "1.33";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -374,9 +374,18 @@
     return cs.length ? [cs.reduce((s, c) => s + c[0], 0) / cs.length, cs.reduce((s, c) => s + c[1], 0) / cs.length] : null;
   }
   // Ordena pelo vizinho mais próximo, a partir do primeiro da lista.
-  function porProximidade(lista, coordsDe) {
+  // Com `inicio`, o primeiro é o mais perto dali (de onde a pessoa está); sem ele, o primeiro da lista.
+  function porProximidade(lista, coordsDe, inicio = null) {
     const resto = [...lista];
-    const ordem = resto.length ? [resto.shift()] : [];
+    const ordem = [];
+    if (resto.length) {
+      let i = 0;
+      if (inicio) {
+        let melhor = Infinity;
+        resto.forEach((x, j) => { const c = coordsDe(x); const d = c ? distanciaKm(inicio, c) : Infinity; if (d < melhor) { melhor = d; i = j; } });
+      }
+      ordem.push(resto.splice(i, 1)[0]);
+    }
     while (resto.length) {
       const atual = coordsDe(ordem[ordem.length - 1]);
       let i = 0;
@@ -430,12 +439,13 @@
       const fora = [];
       for (const g of grupos) {
         const meus = g.itens.filter((x) => conjunto.has(x));
-        const deDia = porProximidade(meus.filter((x) => !x.noite).sort((a, b) => b.obrig - a.obrig), (x) => x.coords);
+        const deDia = meus.filter((x) => !x.noite).sort((a, b) => b.obrig - a.obrig);
         // Passeio de dia inteiro começa de manhã: o obrigatório vem antes dos curtos quando a cidade começa de manhã;
-        // o recomendado de dia inteiro fica para o fim, depois do que é obrigatório.
+        // o recomendado de dia inteiro fica para o fim, depois do que é obrigatório. A ordem por proximidade vale só
+        // para os curtos, a partir de onde a pessoa está: os de dia inteiro são bate-voltas e não entram no caminho.
         const longos = deDia.filter((x) => x.min > DIA_INTEIRO && x.obrig);
         const longosRec = deDia.filter((x) => x.min > DIA_INTEIRO && !x.obrig);
-        const curtos = deDia.filter((x) => x.min <= DIA_INTEIRO);
+        const curtos = porProximidade(deDia.filter((x) => x.min <= DIA_INTEIRO), (x) => x.coords, antes);
         const fila = d < nDias && t === 0 && agenda[d][0].usado === 0
           ? [...longos, ...curtos, ...longosRec]
           : [...curtos.slice(0, 1), ...longos, ...curtos.slice(1), ...longosRec];
@@ -491,8 +501,10 @@
         return deDia[deDia.length - 1];
       };
       agenda.forEach((dia, i) => { dia.cidade = cidadeDaNoite(dia) || (i ? agenda[i - 1].cidade : grupos[0] && grupos[0].cidade); });
+      // Se a estrada continua no dia seguinte, a pessoa dorme no caminho: nada de passeio à noite.
+      agenda.forEach((dia, i) => { dia.naEstrada = Boolean(agenda[i + 1] && agenda[i + 1][0].itens[0] && agenda[i + 1][0].itens[0].estradaSegue); });
       for (const x of noites) {
-        const dia = agenda.find((dia) => dia.cidade === x.cidade && dia[2].usado + x.min <= dia[2].cap);
+        const dia = agenda.find((dia) => !dia.naEstrada && dia.cidade === x.cidade && dia[2].usado + x.min <= dia[2].cap);
         if (!dia) { fora.push(x); continue; }
         dia[2].itens.push(x); dia[2].usado += x.min;
       }
