@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-label="Pampa gaúcho ao pôr do sol">
+  <defs>
+    <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b4a7a"/>
+      <stop offset="0.55" stop-color="#e98a4a"/>
+      <stop offset="1" stop-color="#f6c76b"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="420" fill="url(#ceu)"/>
+  <circle cx="560" cy="250" r="54" fill="#fff3c4" opacity="0.95"/>
+  <path d="M0 270 Q120 235 260 262 T520 255 T800 262 L800 420 L0 420 Z" fill="#5b8f3e"/>
+  <path d="M0 315 Q160 280 320 308 T620 300 T800 312 L800 420 L0 420 Z" fill="#3f7a31"/>
+  <path d="M0 365 Q200 335 400 358 T800 352 L800 420 L0 420 Z" fill="#2d5f27"/>
+  <g transform="translate(150 292)">
+    <rect x="-3" y="0" width="6" height="40" fill="#3b2a1b"/>
+    <path d="M0 -4 L-34 22 L-18 22 L-44 44 L44 44 L18 22 L34 22 Z" fill="#1f4d2a"/>
+  </g>
+  <g transform="translate(380 320)">
+    <path d="M-36 0 C-36 38 -18 54 0 54 C18 54 36 38 36 0 Z" fill="#c98b3c"/>
+    <ellipse cx="0" cy="0" rx="36" ry="9" fill="#7a4a1e"/>
+    <ellipse cx="0" cy="-1" rx="28" ry="5.5" fill="#4f7a2f"/>
+    <rect x="-3" y="-46" width="6" height="46" rx="3" fill="#c0c4c8" transform="rotate(12)"/>
+  </g>
+</svg>

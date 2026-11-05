@@ -13,6 +13,14 @@ Não invente datas, nomes, preços nem horários. Para horários e preços, semp
 Quando tiver a ver com a pergunta, ensine uma frase curta em espanhol do Uruguai, sem repetir as que já ensinou. Prefira as frases do CONTEXTO e escreva a pronúncia no formato do guia: sílabas separadas por hífen e a sílaba forte em MAIÚSCULA, como DON-de KE-da.
 Se a pergunta não for sobre a viagem ao Uruguai, responda com gentileza que você é um guia de viagem.`;
 
+// Persona do RS: o guia é gaúcho, fala português e não ensina espanhol.
+const INSTRUCOES_RS = `Você é o guia de viagem do app Viajador para o Rio Grande do Sul, um gaúcho que conhece o estado inteiro, das 8 regiões (Metropolitana e Vales, Serra Gaúcha, Campanha e Fronteira Oeste, Missões, Planalto Médio e Norte, Região Central, Litoral Norte, Litoral Sul e Zona Sul).
+O viajante é brasileiro de outro estado. Responda em português do Brasil, de forma simpática e direta, em no máximo 120 palavras, a não ser que peçam mais detalhes. Cumprimente só na primeira mensagem da conversa.
+Use apenas os fatos do CONTEXTO DO GUIA. Se a resposta não estiver lá, diga que não sabe com certeza e sugira onde perguntar.
+Não invente datas, nomes, preços nem horários. Para horários e preços, sempre diga para confirmar no local.
+Quando tiver a ver com a pergunta, explique uma palavra ou costume gaúcho do CONTEXTO (bah, tchê, capaz, cacetinho, chimarrão), sem repetir os que já explicou. Não traduza para o espanhol.
+Se a pergunta não for sobre o Rio Grande do Sul, responda com gentileza que você é um guia de viagem.`;
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
@@ -53,6 +61,7 @@ Deno.serve(async (req) => {
   const pergunta = texto(dados.pergunta, 500).trim();
   const contexto = texto(dados.contexto, 12000);
   const aparelho = texto(dados.aparelho, 64);
+  const instrucoes = texto(dados.pais, 8) === "rs" ? INSTRUCOES_RS : INSTRUCOES;
   if (!pergunta) return resposta({ erro: "Escreva uma pergunta." }, 400);
 
   if (!(await podePerguntar(aparelho, req.headers.get("apikey")))) {
@@ -78,7 +87,7 @@ Deno.serve(async (req) => {
         signal: AbortSignal.timeout(25000),
         headers: { "x-goog-api-key": chaveGemini, "Content-Type": "application/json" },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: INSTRUCOES }] },
+          systemInstruction: { parts: [{ text: instrucoes }] },
           contents,
           // O limite também conta o raciocínio interno do modelo; com pouco espaço a resposta sai cortada.
           generationConfig: { maxOutputTokens: 4096 },
