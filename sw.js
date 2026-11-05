@@ -1,6 +1,6 @@
 // Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-v24";
+const VERSAO = "viajador-v25";
 const NUCLEO = [
   "./",
   "styles.css",
@@ -14,6 +14,7 @@ const NUCLEO = [
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
   "img/arte/inicio.svg",
+  "img/arte/origem-rs.svg",
   "img/arte/ia.svg",
   "img/arte/guia.svg",
   "img/arte/historia.svg",
