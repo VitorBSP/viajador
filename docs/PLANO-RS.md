@@ -41,7 +41,7 @@ A seção 6 de `docs/IDEIAS.md` (branch `claude/ideias-roadmap-93e9a5`) propõe 
 ## Falta
 
 1. ~~**Frontend:** abrir na aba de turismo e trocar os textos de comunicação.~~ Feito no commit `9646301` (`claude/abas-navegacao`): o RS abre em Perto de você, "Situações" virou "Palavras" e os textos foram trocados.
-2. **Conteúdo:** pontos de "Perto de você" em Campanha, Planalto e Região Central. Até lá, o filtro de regiões do guia esconde as três. Falta também um quiz do RS.
+2. ~~**Conteúdo:** pontos de "Perto de você" em Campanha, Planalto e Região Central.~~ Feito na versão 1.29: todas as regiões têm pontos (ver abaixo).
 3. **Conteúdo:** revisão das gírias e expressões por alguém gaúcho; elas vêm de conhecimento geral, sem fonte.
 
 ## Lugares, não cidades (versão 1.29)
