@@ -1075,9 +1075,24 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       // Para o jantar, uma comida da região (ou do país), sem repetir entre as noites.
       const comidas = (cidade) => pais.comidas.filter((c) => !c.regioes || c.regioes.includes(cidade));
       let jantares = 0;
+      // Plano B nunca é um lugar que já está no roteiro. Se a alternativa do dado já está, vale o lugar mais perto,
+      // da mesma cidade e do mesmo turno, que ficou de fora, de preferência um que ainda não foi plano B de outro.
+      const noPlano = new Set(r ? [...r.escolhidos].map((x) => x.l.nome) : []);
+      const jaPlanoB = new Set();
+      const escolherPlanoB = (l) => {
+        if (l.alternativa && !noPlano.has(l.alternativa) && lugarPorNome(l.alternativa)) return lugarPorNome(l.alternativa);
+        const grupo = pais.lugares.find((c) => c.itens.includes(l));
+        if (!grupo) return null;
+        const aqui = coordsDoLugar(l);
+        const livres = grupo.itens.filter((o) => o !== l && !noPlano.has(o.nome) && (o.turno === "noite") === (l.turno === "noite"));
+        const dist = (o) => { const c = coordsDoLugar(o); return aqui && c ? distanciaKm(aqui, c) : 9999; };
+        const melhor = livres.sort((a, b) => jaPlanoB.has(a.nome) - jaPlanoB.has(b.nome) || dist(a) - dist(b))[0];
+        return melhor ? { l: melhor, cidade: grupo.cidade } : null;
+      };
       const planoB = (l) => {
-        const alt = l.alternativa && lugarPorNome(l.alternativa);
+        const alt = escolherPlanoB(l);
         if (!alt) return "";
+        jaPlanoB.add(alt.l.nome);
         const g = pontos().find((p) => p.lugar === alt.l.nome);
         return `<p class="roteiro-b"><span aria-hidden="true">🔁</span> Plano B: ${g ? `<a href="#/guia/${g.id}">${esc(alt.l.nome)}</a>` : esc(alt.l.nome)}${alt.l.minutos ? ` · ${formatarTempo(alt.l.minutos)}` : ""}</p>`;
       };
