@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.36";
+  const VERSAO_APP = "1.37";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -640,6 +640,7 @@
 
   // Quiz: perguntas e opções embaralhadas a cada rodada; o recorde fica no aparelho.
   let quizAtual = null;
+  let rankingNivel = null; // nível cujo ranking aparece na lista de níveis
   let recordes = {};
   try { recordes = JSON.parse(localStorage.getItem(CHAVE_QUIZ)) || {}; } catch (e) {}
   // Perguntas já respondidas por nível: só voltam depois que o banco inteiro for visto.
@@ -726,6 +727,33 @@
     }
     return a;
   };
+  function responderQuiz(op) {
+    const z = quizAtual;
+    if (!z || z.escolhida !== null || z.i >= z.perguntas.length) return;
+    const q = z.perguntas[z.i];
+    if (!q.opcoes[op]) return;
+    z.escolhida = op;
+    z.respostas[z.i] = op;
+    const acertou = q.opcoes[op] === q.certa;
+    if (acertou) z.acertos++;
+    z.seguidas = acertou ? z.seguidas + 1 : 0;
+    const ja = vistasQuiz[z.id] || [];
+    if (!ja.includes(q.pergunta)) vistasQuiz[z.id] = [...ja, q.pergunta];
+    salvarVistasQuiz();
+    render();
+    // O resultado e o "Próxima" ficam à vista e o foco vai para o botão, para seguir com Enter ou um toque.
+    const prox = $("#quiz-proxima");
+    if (prox) {
+      prox.focus({ preventScroll: true });
+      prox.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
+  }
+  // Teclado: 1 a 4 (ou A a D) respondem a pergunta aberta.
+  document.addEventListener("keydown", (e) => {
+    if (!quizAtual || e.ctrlKey || e.metaKey || e.altKey || !/^#\/quiz\//.test(location.hash) || /input|textarea|select/i.test(e.target.tagName)) return;
+    const op = "1234".indexOf(e.key) >= 0 ? "1234".indexOf(e.key) : "abcd".indexOf(e.key.toLowerCase());
+    if (op >= 0 && e.key.length === 1 && quizAtual.escolhida === null) responderQuiz(op);
+  });
   function iniciarQuiz(nivel) {
     const ja = vistasQuiz[nivel.id] || [];
     const novas = embaralhar(nivel.perguntas.filter((q) => !ja.includes(q.pergunta)));
@@ -743,6 +771,8 @@
       i: 0,
       acertos: 0,
       escolhida: null,
+      respostas: [], // índice escolhido em cada pergunta, para a barra e a revisão no fim
+      seguidas: 0,
       perguntas: embaralhar(escolhidas).map((q) => ({ ...q, opcoes: embaralhar([q.certa, ...q.erradas]) })),
     };
   }
@@ -975,34 +1005,66 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       if (!nivel) {
         return `<h1>Quiz ${esc(doNome)}</h1>
           <p class="lead">${niveis.length} ${niveis.length === 1 ? "nível" : "níveis"}. Cada rodada tem 10 perguntas, e elas só se repetem depois que você vir todas.</p>
-          <div class="tabela">${niveis.map((n) => `
+          <div class="tabela">${niveis.map((n) => {
+            const vistas = (vistasQuiz[n.id] || []).length;
+            const rec = recordes[n.id];
+            return `
             <a class="item ponto nivel nivel-${n.id}" href="#/quiz/${n.id}">
               <img class="selo" src="img/arte/nivel-${n.id}.svg" alt="">
               <span class="ponto-texto">
                 <strong>${esc(n.titulo)}</strong>
                 <small class="suave">${esc(n.descricao)}</small>
-                <small class="ponto-dist">${(vistasQuiz[n.id] || []).length} de ${n.perguntas.length} perguntas vistas${recordes[n.id] === undefined ? "" : ` · Recorde: ${recordes[n.id]} de ${RODADA}`}</small>
+                <span class="nivel-progresso" role="progressbar" aria-label="Perguntas vistas" aria-valuemin="0" aria-valuemax="${n.perguntas.length}" aria-valuenow="${vistas}"><span style="width:${(vistas / n.perguntas.length) * 100}%"></span></span>
+                <small class="nivel-info">${vistas} de ${n.perguntas.length} vistas${rec === undefined ? "" : ` · <span class="recorde">Recorde ${rec}/${RODADA}</span>`}</small>
               </span>
-            </a>`).join("")}
+            </a>`;
+          }).join("")}
           </div>
           <h2>Ranking</h2>
-          <p class="lead">${rankingOnline() ? "Os melhores resultados de todo mundo, por nível." : "Fica só neste celular. Passe o aparelho para os amigos jogarem."}</p>
-          ${niveis.map((n) => `<h3 class="ranking-nivel">${n.icone} ${esc(n.titulo)}</h3>${tabelaRanking(n.id)}`).join("")}`;
+          <p class="gps-nota">${rankingOnline() ? "Os melhores resultados de todo mundo." : "Fica só neste celular. Passe o aparelho para os amigos jogarem."}</p>
+          ${niveis.length > 1 ? `<div class="filtros" role="group" aria-label="Nível do ranking">${niveis.map((n) => `
+            <button class="btn ${n.id === (rankingNivel || niveis[0].id) ? "on" : ""}" data-acao="ranking-nivel" data-nivel="${n.id}" aria-pressed="${n.id === (rankingNivel || niveis[0].id)}">${n.icone} ${esc(n.titulo)}</button>`).join("")}
+          </div>` : ""}
+          ${niveis.length ? tabelaRanking(rankingNivel || niveis[0].id) : ""}`;
       }
       if (!quizAtual || quizAtual.id !== nivel.id) iniciarQuiz(nivel);
       const z = quizAtual;
+      // Barra em segmentos: verde para acerto, vermelho para erro, contorno na pergunta atual.
+      const segmentos = () => `<ol class="quiz-segmentos" aria-label="${z.acertos} ${z.acertos === 1 ? "acerto" : "acertos"} em ${z.respostas.length} ${z.respostas.length === 1 ? "resposta" : "respostas"}">${z.perguntas.map((p, k) => {
+          const r = z.respostas[k];
+          const estado = r === undefined ? (k === z.i ? "atual" : "") : p.opcoes[r] === p.certa ? "certa" : "errada";
+          return `<li class="${estado}"></li>`;
+        }).join("")}</ol>`;
+      // "Era: ¿Hablás portugués?." vira "Era: ¿Hablás portugués?": ponto só quando a resposta não termina em pontuação.
+      const comPonto = (s) => (/[.!?…]$/.test(s) ? s : s + ".");
+      // Explicações geradas a partir de frases trazem "a-KÁ?." : tira o ponto depois de ? ou !.
+      const semPontoDuplo = (s) => s.replace(/([?!])\.(?=\s|$)/g, "$1");
       if (z.i >= z.perguntas.length) {
+        const erros = z.perguntas.map((p, k) => ({ p, r: z.respostas[k] })).filter((x) => x.p.opcoes[x.r] !== x.p.certa);
         return `<a class="voltar" href="#/quiz">← Níveis</a>
-          <img class="medalha" src="img/arte/${z.acertos >= 9 ? "medalha-ouro" : z.acertos >= 7 ? "medalha-prata" : z.acertos >= 5 ? "medalha-bronze" : "mate-consolo"}.svg" alt="">
-          <h1>${nivel.icone} ${z.acertos} de ${z.perguntas.length}</h1>
-          <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
+          <div class="quiz-resultado">
+            <img class="medalha" src="img/arte/${z.acertos >= 9 ? "medalha-ouro" : z.acertos >= 7 ? "medalha-prata" : z.acertos >= 5 ? "medalha-bronze" : "mate-consolo"}.svg" alt="">
+            <h1>${z.acertos} de ${z.perguntas.length}</h1>
+            <p class="lead">${z.acertos === z.perguntas.length ? "Perfeito. Pode pedir a cidadania." : z.acertos >= z.perguntas.length / 2 ? "Bien ahí! Mandou bem." : "Tranqui: a seção de História ajuda."}</p>
+            ${segmentos()}
+            ${recordes[nivel.id] === z.acertos && z.acertos > 0 ? `<p><span class="recorde">Seu melhor resultado em ${esc(nivel.titulo)}</span></p>` : ""}
+          </div>
+          <button class="btn btn-principal ver-todos" data-acao="quiz-repetir">Jogar de novo, com novas perguntas</button>
+          ${erros.length ? `<details class="item quiz-revisao" open>
+            <summary>Revise ${erros.length === 1 ? "a que errou" : `as ${erros.length} que errou`}</summary>
+            <ol>${erros.map(({ p, r }) => `<li>
+              <strong>${esc(p.pergunta)}</strong>
+              <p><span class="quiz-marca errada" aria-hidden="true">✗</span> <span class="sr">Sua resposta:</span> ${esc(p.opcoes[r])}</p>
+              <p><span class="quiz-marca certa" aria-hidden="true">✓</span> <span class="sr">Resposta certa:</span> ${esc(p.certa)}</p>
+              ${p.explica ? `<p class="suave">${esc(semPontoDuplo(p.explica))}</p>` : ""}
+            </li>`).join("")}</ol>
+          </details>` : ""}
+          <h2>Ranking de ${esc(nivel.titulo)}</h2>
           ${z.salvo ? "" : `<label class="ranking-nome">Seu nome no ranking${rankingOnline() ? " (fica visível para todos)" : ""}
             <input id="nome-ranking" type="text" maxlength="20" value="${esc(nomeJogador)}" autocomplete="off">
           </label>
           <button class="btn btn-gps ver-todos" data-acao="quiz-salvar">Salvar no ranking</button>`}
-          <h2>Ranking de ${esc(nivel.titulo)}</h2>
           ${tabelaRanking(nivel.id)}
-          <button class="btn btn-gps ver-todos" data-acao="quiz-repetir">Jogar com novas perguntas</button>
           ${temSecao.historia ? `<a class="btn btn-gps ver-todos" href="#/historia">Rever a História</a>` : ""}`;
       }
       const q = z.perguntas[z.i];
@@ -1014,18 +1076,25 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       return `<a class="voltar" href="#/quiz">← Níveis</a>
         <div class="quiz-topo nivel-${nivel.id}">
           <img class="selo" src="img/arte/nivel-${nivel.id}.svg" alt="">
-          <p class="ponto-dist">${esc(nivel.titulo)} · Pergunta ${z.i + 1} de ${z.perguntas.length} · ${z.acertos} ${z.acertos === 1 ? "acerto" : "acertos"}</p>
+          <p><strong>${esc(nivel.titulo)}</strong><br><span class="suave">Pergunta ${z.i + 1} de ${z.perguntas.length}</span></p>
+          <p class="quiz-placar"><span class="quiz-acertos">${z.acertos}</span> ${z.acertos === 1 ? "acerto" : "acertos"}${z.seguidas >= 3 ? `<br><span class="quiz-seguidas">${z.seguidas} seguidas</span>` : ""}</p>
         </div>
-        <div class="quiz-barra" role="progressbar" aria-valuemin="0" aria-valuemax="${z.perguntas.length}" aria-valuenow="${z.i + (respondida ? 1 : 0)}"><span style="width:${((z.i + (respondida ? 1 : 0)) / z.perguntas.length) * 100}%"></span></div>
+        ${segmentos()}
         <h1 class="quiz-pergunta">${esc(q.pergunta)}</h1>
         ${q.imagem ? `<img class="quiz-imagem" src="${esc(q.imagem)}" alt="Imagem da pergunta">` : ""}
         <div class="quiz-opcoes">${q.opcoes.map((o, i) => {
-          const classe = !respondida ? "" : o === q.certa ? "certa" : i === z.escolhida ? "errada" : "";
-          return `<button class="quiz-opcao ${classe}" data-acao="quiz-responder" data-op="${i}" ${respondida ? "disabled" : ""}>${esc(o)}</button>`;
+          const certa = o === q.certa;
+          const classe = !respondida ? "" : certa ? "certa" : i === z.escolhida ? "errada" : "apagada";
+          const marca = !respondida ? "" : certa ? `<span class="quiz-marca certa" aria-hidden="true">✓</span><span class="sr"> (resposta certa)</span>` : i === z.escolhida ? `<span class="quiz-marca errada" aria-hidden="true">✗</span><span class="sr"> (sua resposta)</span>` : "";
+          return `<button class="quiz-opcao ${classe}" data-acao="quiz-responder" data-op="${i}" ${respondida ? "disabled" : ""}><span class="quiz-letra" aria-hidden="true">${"ABCD"[i] || ""}</span><span class="quiz-texto">${esc(o)}</span>${marca}</button>`;
         }).join("")}</div>
-        ${respondida ? `<p class="frase-dica" role="status"><strong>${q.opcoes[z.escolhida] === q.certa ? "Acertou." : `Era: ${esc(q.certa)}.`}</strong> ${esc(q.explica)}</p>
+        ${respondida ? `<div class="quiz-retorno ${q.opcoes[z.escolhida] === q.certa ? "certa" : "errada"}" role="status">
+            <strong>${q.opcoes[z.escolhida] === q.certa ? "✓ Acertou!" : "✗ Não foi dessa vez"}</strong>
+            ${q.opcoes[z.escolhida] === q.certa ? "" : `<p>Resposta: <strong>${esc(comPonto(q.certa))}</strong></p>`}
+            ${q.explica ? `<p>${esc(semPontoDuplo(q.explica))}</p>` : ""}
+          </div>
           ${revelada}
-          <button class="btn btn-gps ver-todos" data-acao="quiz-proxima">${z.i + 1 < z.perguntas.length ? "Próxima pergunta" : "Ver resultado"}</button>` : ""}`;
+          <button class="btn btn-principal ver-todos" id="quiz-proxima" data-acao="quiz-proxima">${z.i + 1 < z.perguntas.length ? "Próxima pergunta →" : "Ver resultado"}</button>` : ""}`;
     },
     guia(id) {
       const g = pontos().find((x) => x.id === id);
@@ -1641,12 +1710,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     }
     if (b.dataset.acao === "quiz-responder") {
       if (quizAtual.escolhida !== null) return;
-      quizAtual.escolhida = +b.dataset.op;
-      const q = quizAtual.perguntas[quizAtual.i];
-      if (q.opcoes[quizAtual.escolhida] === q.certa) quizAtual.acertos++;
-      const ja = vistasQuiz[quizAtual.id] || [];
-      if (!ja.includes(q.pergunta)) vistasQuiz[quizAtual.id] = [...ja, q.pergunta];
-      salvarVistasQuiz();
+      return responderQuiz(+b.dataset.op);
+    }
+    if (b.dataset.acao === "ranking-nivel") {
+      rankingNivel = b.dataset.nivel;
       return render();
     }
     if (b.dataset.acao === "quiz-proxima") {

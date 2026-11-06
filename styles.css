@@ -273,9 +273,54 @@ mark { background: #ffe08a; color: #1b2433; border-radius: 3px; padding: 0 1px; 
 .nivel-futebol { --cor-nivel: #2e8b3d; }
 .quiz-topo { display: flex; align-items: center; gap: 10px; }
 .quiz-topo .selo { width: 44px; height: 44px; }
-.quiz-topo p { margin: 0; }
-.quiz-barra { height: 10px; margin: 12px 0; border-radius: 999px; background: var(--linha); overflow: hidden; }
-.quiz-barra span { display: block; height: 100%; background: var(--sol); transition: width .35s; }
+.quiz-topo p { margin: 0; line-height: 1.3; }
+.quiz-topo .suave { font-size: 14px; color: var(--suave); }
+.quiz-placar { margin-left: auto !important; text-align: right; font-size: 14px; color: var(--suave); }
+.quiz-acertos { font: 700 22px Fraunces, Georgia, serif; color: var(--texto); }
+.quiz-seguidas { font-weight: 600; color: #b55a00; }
+/* Uma casa por pergunta: verde acertou, vermelho errou, contorno na atual. */
+.quiz-segmentos { list-style: none; display: flex; gap: 4px; margin: 12px 0 4px; padding: 0; }
+.quiz-segmentos li { flex: 1; height: 8px; border-radius: 999px; background: var(--linha); transition: background .25s; }
+.quiz-segmentos li.atual { background: var(--sol); }
+.quiz-segmentos li.certa { background: #1b7f4b; }
+.quiz-segmentos li.errada { background: #c0392b; }
+.quiz-opcao { display: flex; align-items: center; gap: 12px; width: 100%; font-size: 16px; }
+.quiz-opcao:not(:disabled):hover { border-color: var(--celeste); }
+.quiz-letra {
+  flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px;
+  background: var(--celeste-claro); color: var(--celeste); font-size: 14px; font-weight: 700;
+}
+.quiz-texto { flex: 1; min-width: 0; }
+.quiz-marca { flex: none; font-weight: 700; font-size: 18px; }
+.quiz-marca.certa { color: #1b7f4b; }
+.quiz-marca.errada { color: #c0392b; }
+.quiz-opcao.certa .quiz-letra { background: #1b7f4b; color: #fff; }
+.quiz-opcao.errada .quiz-letra { background: #c0392b; color: #fff; }
+.quiz-opcao.apagada { opacity: .6; }
+.quiz-retorno { margin: 0 0 4px; padding: 12px 14px; border-radius: 12px; border-left: 4px solid; animation: surgir .25s ease-out; }
+.quiz-retorno p { margin: 6px 0 0; }
+.quiz-retorno > strong { font-size: 17px; }
+.quiz-retorno.certa { background: #dff5e8; border-color: #1b7f4b; color: #123; }
+.quiz-retorno.errada { background: #fbe4e1; border-color: #c0392b; color: #123; }
+.btn-principal { min-height: 52px; background: var(--sol); border-color: var(--sol); color: #1b2433; font-size: 16px; font-weight: 600; }
+.btn-principal:hover { background: #ffc23d; }
+#quiz-proxima { scroll-margin-bottom: 96px; } /* acima da barra de abas */
+.quiz-resultado { text-align: center; }
+.quiz-resultado h1 { font-size: 34px; }
+.quiz-resultado .lead { margin-bottom: 8px; }
+.quiz-resultado .quiz-segmentos { max-width: 320px; margin: 8px auto 12px; }
+.recorde { display: inline-block; padding: 2px 10px; border-radius: 999px; background: var(--sol-claro); color: var(--texto); font-weight: 600; font-size: 13px; }
+.quiz-revisao { margin-top: 20px; }
+.quiz-revisao summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+.quiz-revisao ol { margin: 4px 0 0; padding-left: 20px; }
+.quiz-revisao li { margin-bottom: 14px; }
+.quiz-revisao li p { margin: 4px 0 0; }
+.nivel-progresso { display: block; height: 6px; margin: 8px 0 4px; border-radius: 999px; background: var(--linha); overflow: hidden; }
+.nivel-progresso span { display: block; height: 100%; background: var(--cor-nivel, var(--sol)); }
+.nivel-info { font-size: 13px; color: var(--suave); }
+.nivel-info .recorde { margin-left: 2px; }
+@media (prefers-reduced-motion: reduce) { .quiz-retorno { animation: none; } }
+@media (prefers-color-scheme: dark) { .quiz-seguidas { color: var(--sol); } }
 .quiz-imagem, .quiz-revela { display: block; width: 100%; max-height: 300px; object-fit: cover; border-radius: var(--raio); margin-bottom: 14px; background: var(--linha); }
 .quiz-revela { margin-top: 12px; animation: surgir .35s ease-out; }
 .quiz-revela-pessoa { width: 140px; height: 140px; border-radius: 50%; object-position: top; }
