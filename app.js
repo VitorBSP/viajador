@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.37";
+  const VERSAO_APP = "1.38";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -295,6 +295,17 @@
     return { botoes, itens: ativa ? itens.filter((x) => (x.regioes || []).includes(ativa)) : itens };
   }
 
+  // Chamada para o GuIA. Com `pergunta`, abre o GuIA já perguntando sobre aquilo.
+  function chamadaGuia(titulo, texto, pergunta) {
+    if (!temSecao.ia) return "";
+    const conteudo = `<span class="chamada-icone" aria-hidden="true">✨</span>
+      <span><strong>${titulo}</strong><small>${esc(texto)}</small></span>
+      <span class="chamada-seta" aria-hidden="true">→</span>`;
+    return pergunta
+      ? `<button class="chamada-guia" data-acao="ia-atalho" data-pergunta="${esc(pergunta)}">${conteudo}</button>`
+      : `<a class="chamada-guia" href="#/ia">${conteudo}</a>`;
+  }
+
   function rapidas() {
     const botoes = RAPIDAS.map((r) => {
       const f = r.es ? todas.find((x) => x.es === r.es) : todas.find((x) => normal(x.es).includes(normal(r.chave)));
@@ -361,7 +372,19 @@
   const DIA_INTEIRO = 270; // acima disso, o lugar ocupa manhã e tarde
   const BATE_VOLTA = 180; // estrada de até 3h cabe no mesmo dia de um passeio de dia inteiro
   // `tirados`: lugares que a pessoa tirou do automático. `detalhes`: tudo aberto. `salvos`: Meus roteiros.
-  let roteiro = { cidades: [], dias: 3, modo: "auto", tirados: [], detalhes: false, salvos: [] };
+  // `trocas`: [{ de, para }] escolhidas pela pessoa no automático.
+  let roteiro = { cidades: [], dias: 3, modo: "auto", tirados: [], trocas: [], detalhes: false, salvos: [] };
+  // Blocos que a pessoa abriu (Ajustar, um lugar, uma troca): continuam abertos quando a tela se redesenha.
+  const abertos = new Set();
+  const aberto = (chave) => (abertos.has(chave) ? "open" : "");
+  main.addEventListener("toggle", (e) => {
+    const d = e.target;
+    if (!d.dataset || !d.dataset.chave) return;
+    if (d.open) abertos.add(d.dataset.chave);
+    else abertos.delete(d.dataset.chave);
+  }, true);
+  // "Do meu jeito" sem nenhum Quero ir mostra o automático; para tudo o mais, vale como "Montar pra mim".
+  const modoMeu = () => roteiro.modo === "meu" && queroIr.some((n) => lugarPorNome(n));
   let nivelAlbum = "turista";
   // Três níveis do álbum, a partir da `prioridade` que o lugar já tem: nada de campo novo no dado.
   const NIVEIS_ALBUM = [
@@ -385,9 +408,10 @@
   try { roteiro = { ...roteiro, ...JSON.parse(localStorage.getItem(CHAVE_ROTEIRO)) }; } catch (e) {}
   const salvarRoteiro = () => { try { localStorage.setItem(CHAVE_ROTEIRO, JSON.stringify(roteiro)); } catch (e) {} };
   // O que define um roteiro salvo: dois iguais nestes campos são o mesmo roteiro.
-  const escolhaRoteiro = () => roteiro.modo === "meu"
+  const escolhaRoteiro = () => modoMeu()
     ? { modo: "meu", dias: roteiro.dias, limite: roteiro.limite === undefined ? 0.25 : roteiro.limite, lugares: [...queroIr].sort() }
-    : { modo: "auto", dias: roteiro.dias, cidades: pais.cidades.filter((c) => roteiro.cidades.includes(c)), tirados: [...(roteiro.tirados || [])].sort() };
+    : { modo: "auto", dias: roteiro.dias, cidades: pais.cidades.filter((c) => roteiro.cidades.includes(c)), tirados: [...(roteiro.tirados || [])].sort(),
+      trocas: [...(roteiro.trocas || [])].map((x) => `${x.de}>${x.para}`).sort() };
   const mesmaEscolha = (a, b) => JSON.stringify({ ...a, nome: 0, em: 0 }) === JSON.stringify({ ...b, nome: 0, em: 0 });
 
   const formatarTempo = (min) => (min < 60 ? `${min} min` : `${Math.floor(min / 60)}h${min % 60 ? String(min % 60).padStart(2, "0") : ""}`);
@@ -433,11 +457,12 @@
   // `limiteEstrada`: fração máxima do tempo gasta em estrada (0.25 = 25%); null, sem limite.
   // `podeTirarObrig`: no "Do meu jeito", o limite tira pelo maior desvio, sem olhar a prioridade.
   // No automático, sai primeiro o recomendado; o obrigatório só sai se ainda passar do limite.
-  function montarRoteiro(cidades, dias, { so = null, sem = null, limiteEstrada = null, podeTirarObrig = false } = {}) {
+  // `forcar`: lugares que a pessoa escolheu numa troca; entram na frente, como os obrigatórios.
+  function montarRoteiro(cidades, dias, { so = null, sem = null, forcar = null, limiteEstrada = null, podeTirarObrig = false } = {}) {
     let grupos = pais.lugares.filter((c) => cidades.includes(c.cidade)).map((c) => ({
       cidade: c.cidade,
       itens: c.itens.filter((l) => (!so || so.has(l.nome)) && !(sem && sem.has(l.nome))).map((l) => ({
-        l, cidade: c.cidade, obrig: l.prioridade === "obrigatorio", noite: l.turno === "noite",
+        l, cidade: c.cidade, obrig: l.prioridade === "obrigatorio" || Boolean(forcar && forcar.has(l.nome)), noite: l.turno === "noite",
         min: l.minutos || MIN_PADRAO, coords: coordsDoLugar(l),
       })),
     })).filter((g) => g.itens.length);
@@ -1107,6 +1132,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <div class="frase-acoes"><button class="btn" data-acao="narrar" data-guia="${esc(g.id)}"><span aria-hidden="true">🔊</span> Ouvir a história</button></div>
           ${botoesLugar(g.lugar)}
           <div class="historia">${g.historia.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+          ${chamadaGuia(`Quer saber mais? Pergunte ao Gu<span class="ia">IA</span>`, `O que tem perto, quanto tempo ficar, curiosidades de ${g.lugar}.`, `Me conta mais sobre ${g.lugar}: o que não posso perder e o que tem perto?`)}
           <p class="frase-dica"><strong>O que reparar:</strong> ${esc(g.reparar)}</p>
           <p class="frase-dica"><strong>Dica:</strong> ${esc(l.dica)}</p>
           <h2>${semTraducao ? "Palavra do lugar" : "Frases para este lugar"}</h2>
@@ -1127,6 +1153,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const fuiEm = pais.lugares.reduce((s, c) => s + c.itens.filter((l) => jaFui[l.nome]).length, 0);
       return `<h1>Perto de você</h1>
         <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
+        ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
         <p class="gps-nota">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>
         <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
         <p class="gps-nota">${esc(estadoGps || "Sua localização fica só neste aparelho e é usada para ordenar a lista.")}</p>
@@ -1153,6 +1180,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ? pais.situacoes.map((s) => ({ s, frases: s.frases.filter((f) => (f.regioes || []).includes(filtroRegiao)) })).filter((x) => x.frases.length)
         : null;
       return `${rapidas()}
+        ${chamadaGuia(`Pergunte ao Gu<span class="ia">IA</span> Turístico`, "Onde comer, o que ver perto, como falar: é só perguntar.")}
         <div class="intro">${esc(pais.intro)}</div>
         <h1>${semTraducao ? "Palavras do dia a dia" : "O que você precisa agora?"}</h1>
         <p class="lead">${semTraducao ? "Toque no tema e veja o que você vai ouvir por lá." : "Toque na situação, ouça a frase ou mostre a tela."}</p>
@@ -1274,17 +1302,22 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     roteiro() {
       // Dois modos: "Montar pra mim" (o app escolhe nas cidades marcadas, sem os lugares onde a pessoa já foi)
       // e "Do meu jeito" (só os lugares marcados com Quero ir, em qualquer cidade).
-      const meu = roteiro.modo === "meu";
+      const meu = modoMeu();
+      const meuVazio = roteiro.modo === "meu" && !meu;
       const fui = new Set(Object.keys(jaFui));
       const meus = new Set(queroIr.filter((n) => lugarPorNome(n)));
       const cidades = pais.cidades.filter((c) => roteiro.cidades.includes(c));
       const det = Boolean(roteiro.detalhes);
-      const tirados = (roteiro.tirados || []).filter((n) => { const x = lugarPorNome(n); return x && cidades.includes(x.cidade); });
+      const daqui = (n) => { const x = lugarPorNome(n); return x && cidades.includes(x.cidade); };
+      const tirados = (roteiro.tirados || []).filter(daqui);
+      const trocas = (roteiro.trocas || []).filter((x) => daqui(x.para));
       // Estrada: no automático, no máximo 25% do tempo; no "Do meu jeito", o limite que a pessoa escolher.
       const limite = meu ? (roteiro.limite === undefined ? 0.25 : roteiro.limite) : 0.25;
       const r = meu
         ? (meus.size ? montarRoteiro(pais.cidades, roteiro.dias, { so: meus, limiteEstrada: limite, podeTirarObrig: true }) : null)
-        : (cidades.length ? montarRoteiro(cidades, roteiro.dias, { sem: new Set([...fui, ...tirados]), limiteEstrada: limite }) : null);
+        : (cidades.length ? montarRoteiro(cidades, roteiro.dias, {
+          sem: new Set([...fui, ...tirados, ...trocas.map((x) => x.de)]), forcar: new Set(trocas.map((x) => x.para)), limiteEstrada: limite,
+        }) : null);
       const visitados = meu ? 0 : pais.lugares.filter((c) => cidades.includes(c.cidade)).reduce((s, c) => s + c.itens.filter((l) => fui.has(l.nome)).length, 0);
       const naoCouberam = meu && r ? [...r.faltam, ...r.sobras] : [];
       let diasPrecisos = roteiro.dias;
@@ -1318,17 +1351,47 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         const g = pontos().find((p) => p.lugar === alt.l.nome);
         return `<p class="roteiro-b"><span aria-hidden="true">🔁</span> Plano B: ${g ? `<a href="#/guia/${g.id}">${esc(alt.l.nome)}</a>` : esc(alt.l.nome)}${alt.l.minutos ? ` · ${formatarTempo(alt.l.minutos)}` : ""}</p>`;
       };
+      const trocados = new Set(trocas.map((x) => x.para));
+      const opcoesTroca = (x) => {
+        const grupo = pais.lugares.find((c) => c.itens.includes(x.l));
+        if (!grupo) return [];
+        const aqui = coordsDoLugar(x.l);
+        const dist = (o) => { const c = coordsDoLugar(o); return aqui && c ? distanciaKm(aqui, c) : null; };
+        return grupo.itens
+          .filter((o) => o !== x.l && !noPlano.has(o.nome) && !fui.has(o.nome) && !tirados.includes(o.nome)
+            && (o.turno === "noite") === x.noite && (o.minutos || MIN_PADRAO) <= x.min + 60)
+          .map((o) => ({ o, km: dist(o) }))
+          .sort((a, b) => (a.km === null) - (b.km === null) || a.km - b.km)
+          .slice(0, 6);
+      };
+      const trocar = (x) => {
+        // Só para o que está no roteiro: nos que ficaram de fora não há o que trocar.
+        const ops = noPlano.has(x.l.nome) ? opcoesTroca(x) : [];
+        if (!ops.length) return "";
+        return `<details class="roteiro-trocar" data-chave="t:${esc(x.l.nome)}" ${aberto(`t:${x.l.nome}`)}>
+          <summary><span aria-hidden="true">⇄</span> Trocar por outro lugar</summary>
+          <p class="suave">Só o que cabe no tempo deste, ou passa no máximo 1h.</p>
+          <ul class="roteiro-opcoes">${ops.map(({ o, km }) => {
+            const dif = (o.minutos || MIN_PADRAO) - x.min;
+            return `<li><button class="roteiro-opcao" data-acao="roteiro-trocar" data-de="${esc(x.l.nome)}" data-para="${esc(o.nome)}">
+              <span><span aria-hidden="true">${o.icone}</span> <span lang="${LANG}">${esc(o.nome)}</span></span>
+              <small>${formatarTempo(o.minutos || MIN_PADRAO)}${dif > 0 ? ` · ${formatarTempo(dif)} a mais` : dif < 0 ? ` · ${formatarTempo(-dif)} a menos` : ""}${km !== null ? ` · ${formatarDist(km)}` : ""}</small>
+            </button></li>`;
+          }).join("")}</ul>
+        </details>`;
+      };
       const lugar = (x) => `
         <li class="roteiro-item roteiro-lugar">
-          <details ${det ? "open" : ""}>
+          <details data-chave="l:${esc(x.l.nome)}" ${det || abertos.has(`l:${x.l.nome}`) ? "open" : ""}>
             <summary>
-              <span class="roteiro-nome"><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span>${x.obrig ? ` <span class="estrela-obrig"><span aria-hidden="true">★</span><span class="sr">obrigatório</span></span>` : ""}</span>
+              <span class="roteiro-nome"><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span>${x.l.prioridade === "obrigatorio" ? ` <span class="estrela-obrig"><span aria-hidden="true">★</span><span class="sr">obrigatório</span></span>` : ""}${trocados.has(x.l.nome) ? ` <span class="etiqueta-troca">sua troca</span>` : ""}</span>
               <span class="roteiro-tempo">${x.min > DIA_INTEIRO ? "dia inteiro" : formatarTempo(x.min)}</span>
             </summary>
             <div class="roteiro-mais">
               <p class="suave">${esc(x.l.dica)}</p>
               ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
               ${planoB(x.l)}
+              ${trocar(x)}
               ${historia(x.l)}
               ${botoesLugar(x.l.nome)}
             </div>
@@ -1351,7 +1414,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         if (!corpo) corpo = `<li class="roteiro-item"><strong>Tempo livre</strong>${det ? `<p class="suave">Para descansar, comer bem ou voltar a um lugar de que gostou.</p>` : ""}</li>`;
         return `<div class="roteiro-turno"><h3>${rotulo}</h3><ol class="roteiro-lista">${corpo}</ol></div>`;
       };
-      const qtd = r ? [...r.escolhidos].filter((x) => x.obrig).length : 0;
+      const qtd = r ? [...r.escolhidos].filter((x) => x.l.prioridade === "obrigatorio").length : 0;
       const modo = (id, rotulo) => `<button class="btn ${(roteiro.modo || "auto") === id ? "on" : ""}" data-acao="roteiro-modo" data-modo="${id}" aria-pressed="${(roteiro.modo || "auto") === id}">${rotulo}</button>`;
       const dias = `${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}`;
       // Escolhas do roteiro: abertas enquanto não há roteiro; depois viram uma linha de resumo que abre ao tocar.
@@ -1373,7 +1436,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const salvos = roteiro.salvos || [];
       const atual = escolhaRoteiro();
       const salvo = salvos.some((s) => mesmaEscolha(s, atual));
-      const listaSalvos = salvos.length ? `<details class="item roteiro-salvos">
+      const listaSalvos = salvos.length ? `<details class="item roteiro-salvos" data-chave="salvos" ${aberto("salvos")}>
           <summary><span aria-hidden="true">📌</span> Meus roteiros (${salvos.length})</summary>
           <ul class="roteiro-salvos-lista">${salvos.map((s, i) => `
             <li>
@@ -1386,10 +1449,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <h1>Roteiro</h1>
         ${listaSalvos}
         <div class="filtros roteiro-modos" role="group" aria-label="Como montar o roteiro">${modo("auto", "Montar pra mim")}${modo("meu", `Do meu jeito${meus.size ? ` (${meus.size})` : ""}`)}</div>
-        ${!r ? `${ajustes}${meu
-          ? `<p class="vazio">Toque em ＋ Quero ir nos lugares de <a href="#/guia">Perto de você</a>, <a href="#/lugares">Lugares</a> ou do roteiro automático. Eles aparecem aqui, na melhor ordem.</p>`
-          : `<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>`}` : `
-          <details class="item roteiro-ajustes">
+        ${meuVazio ? `<p class="frase-dica roteiro-aviso"><span aria-hidden="true">💡</span> Você ainda não marcou nenhum lugar com ＋ Quero ir. Enquanto isso, ${r ? "este é o roteiro do <strong>Montar pra mim</strong>" : `o <strong>Montar pra mim</strong> monta um para você: escolha as ${nome} abaixo`}. Toque num lugar e em ＋ Quero ir (aqui, em <a href="#/guia">Perto de você</a> ou em <a href="#/lugares">Lugares</a>) para montar do seu jeito.</p>` : ""}
+        ${!r ? `${ajustes}<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>` : `
+          <details class="item roteiro-ajustes" data-chave="ajustes" ${aberto("ajustes")}>
             <summary><span class="roteiro-resumo">${esc(resumo)}</span><span class="roteiro-ajustar">Ajustar</span></summary>
             ${ajustes}
           </details>
@@ -1398,7 +1460,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
             <button class="btn" data-acao="roteiro-detalhes" aria-pressed="${det}">${det ? "Menos detalhes" : "Mais detalhes"}</button>
           </div>
           <p class="gps-nota">${r.escolhidos.size} ${r.escolhidos.size === 1 ? "lugar" : "lugares"}${meu && r.escolhidos.size < meus.size ? ` de ${meus.size}` : ""} · estrada ${Math.round(r.estrada.fracao * 100)}% do tempo${det ? `${limite !== null ? ` (limite de ${Math.round(limite * 100)}%)` : ""}. ${meu ? "" : `${qtd} ${qtd === 1 ? "obrigatório" : "obrigatórios"} (★). `}Tempos e estradas são estimativas.` : ""}</p>
-          ${tirados.length && !meu ? `<p class="gps-nota">${tirados.length === 1 ? "Você tirou 1 lugar" : `Você tirou ${tirados.length} lugares`}. <button class="link-btn" data-acao="roteiro-devolver">Devolver</button></p>` : ""}
+          ${(tirados.length || trocas.length) && !meu ? `<p class="gps-nota">Você ${[tirados.length ? `tirou ${tirados.length} ${tirados.length === 1 ? "lugar" : "lugares"}` : "", trocas.length ? `trocou ${trocas.length}` : ""].filter(Boolean).join(" e ")}. <button class="link-btn" data-acao="roteiro-devolver">Desfazer</button></p>` : ""}
           ${det && r.longe.length ? `<p class="gps-nota">Para a estrada não passar do limite, ${r.longe.length === 1 ? "ficou de fora" : "ficaram de fora"}: ${r.longe.map((x) => esc(x.l.nome)).join(", ")}.${meu ? " Aumente o limite de estrada para incluir." : " Para incluir, use o Do meu jeito e escolha um limite maior."}</p>` : ""}
           ${det && limite !== null && r.estrada.fracao > limite ? `<p class="gps-nota">Mesmo com poucos lugares, a estrada passa do limite: as regiões escolhidas são longe umas das outras.</p>` : ""}
           ${det && visitados ? `<p class="gps-nota">${visitados === 1 ? "Um lugar onde você já foi ficou" : `${visitados} lugares onde você já foi ficaram`} de fora. Para incluir de novo, desmarque Já fui.</p>` : ""}
@@ -1417,7 +1479,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
             <button class="btn btn-gps" data-acao="roteiro-dias" data-delta="1">Adicionar 1 dia</button>
             <ol class="roteiro-lista">${naoCouberam.map(lugar).join("")}</ol>
           </details>` : ""}
-          ${!meu && r.sobras.length ? `<details class="item roteiro-fora" ${det ? "open" : ""}><summary>Se sobrar tempo: mais ${r.sobras.length} ${r.sobras.length === 1 ? "lugar" : "lugares"}</summary><ol class="roteiro-lista">${r.sobras.map(lugar).join("")}</ol></details>` : ""}`}`;
+          ${!meu && r.sobras.length ? `<details class="item roteiro-fora" data-chave="sobras" ${det || abertos.has("sobras") ? "open" : ""}><summary>Se sobrar tempo: mais ${r.sobras.length} ${r.sobras.length === 1 ? "lugar" : "lugares"}</summary><ol class="roteiro-lista">${r.sobras.map(lugar).join("")}</ol></details>` : ""}`}`;
     },
     album(param) {
       const barra = (k, rotulo) => `<div class="album-barra">
@@ -1734,6 +1796,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       return;
     }
     if (b.dataset.acao === "ia-sugestao") return perguntarAoGuia(b.textContent.trim());
+    if (b.dataset.acao === "ia-atalho") {
+      location.hash = "#/ia";
+      return perguntarAoGuia(b.dataset.pergunta);
+    }
     if (b.dataset.acao === "ia-falar") return ouvirPergunta();
     if (b.dataset.acao === "ia-ouvir") return narrar([conversa[+b.dataset.i].texto.replace(/[*_#]/g, "")]);
     if (b.dataset.acao === "ia-limpar") {
@@ -1813,25 +1879,48 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (b.dataset.acao === "roteiro-tirar") {
       // No Do meu jeito, tirar é desmarcar o Quero ir; no automático, o lugar fica de fora até Devolver.
       const nome = b.dataset.lugar;
-      if (roteiro.modo === "meu") {
+      if (modoMeu()) {
         queroIr = queroIr.filter((x) => x !== nome);
         salvarMarcas();
       } else {
-        roteiro.tirados = [...new Set([...(roteiro.tirados || []), nome])];
+        // Tirar um lugar que veio de uma troca desfaz a troca, e o original continua de fora.
+        const t = (roteiro.trocas || []).find((x) => x.para === nome);
+        roteiro.trocas = (roteiro.trocas || []).filter((x) => x !== t);
+        roteiro.tirados = [...new Set([...(roteiro.tirados || []), t ? t.de : nome])];
         salvarRoteiro();
       }
       avisar(`${nome} saiu do roteiro`);
       return render();
     }
+    if (b.dataset.acao === "roteiro-trocar") {
+      const { de, para } = b.dataset;
+      if (modoMeu()) {
+        queroIr = [...queroIr.filter((x) => x !== de), para];
+        salvarMarcas();
+      } else {
+        // Trocar de novo um lugar que já veio de troca mantém o original; voltar ao original desfaz a troca.
+        const antiga = (roteiro.trocas || []).find((x) => x.para === de);
+        const original = antiga ? antiga.de : de;
+        roteiro.trocas = (roteiro.trocas || []).filter((x) => x !== antiga);
+        if (para !== original) roteiro.trocas.push({ de: original, para });
+        salvarRoteiro();
+      }
+      abertos.delete(`t:${de}`);
+      abertos.add(`l:${para}`);
+      avisar(`${de} trocado por ${para}`);
+      return render();
+    }
     if (b.dataset.acao === "roteiro-devolver") {
       const daqui = (n) => { const x = lugarPorNome(n); return x && roteiro.cidades.includes(x.cidade); };
       roteiro.tirados = (roteiro.tirados || []).filter((n) => !daqui(n));
+      roteiro.trocas = (roteiro.trocas || []).filter((x) => !daqui(x.para));
       salvarRoteiro();
-      avisar("Lugares de volta ao roteiro");
+      avisar("Roteiro como o app montou");
       return render();
     }
     if (b.dataset.acao === "roteiro-detalhes") {
       roteiro.detalhes = !roteiro.detalhes;
+      [...abertos].filter((k) => /^l:/.test(k)).forEach((k) => abertos.delete(k));
       salvarRoteiro();
       return render();
     }
@@ -1863,7 +1952,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       } else {
         // Os tirados de outras regiões continuam; os destas voltam a ser os do roteiro salvo.
         roteiro.cidades = s.cidades;
-        roteiro.tirados = [...(roteiro.tirados || []).filter((n) => { const x = lugarPorNome(n); return x && !s.cidades.includes(x.cidade); }), ...s.tirados];
+        const fora = (n) => { const x = lugarPorNome(n); return x && !s.cidades.includes(x.cidade); };
+        roteiro.tirados = [...(roteiro.tirados || []).filter(fora), ...s.tirados];
+        roteiro.trocas = [...(roteiro.trocas || []).filter((x) => fora(x.para)), ...(s.trocas || []).map((x) => { const [de, para] = x.split(">"); return { de, para }; })];
       }
       salvarRoteiro();
       avisar(`Aberto: ${s.nome}`);
