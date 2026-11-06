@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.35";
+  const VERSAO_APP = "1.36";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -360,7 +360,8 @@
   const MIN_PADRAO = 90;
   const DIA_INTEIRO = 270; // acima disso, o lugar ocupa manhã e tarde
   const BATE_VOLTA = 180; // estrada de até 3h cabe no mesmo dia de um passeio de dia inteiro
-  let roteiro = { cidades: [], dias: 3, modo: "auto" };
+  // `tirados`: lugares que a pessoa tirou do automático. `detalhes`: tudo aberto. `salvos`: Meus roteiros.
+  let roteiro = { cidades: [], dias: 3, modo: "auto", tirados: [], detalhes: false, salvos: [] };
   let nivelAlbum = "turista";
   // Três níveis do álbum, a partir da `prioridade` que o lugar já tem: nada de campo novo no dado.
   const NIVEIS_ALBUM = [
@@ -383,6 +384,11 @@
   let direcaoPagina = ""; // "frente" ou "tras", para virar a página
   try { roteiro = { ...roteiro, ...JSON.parse(localStorage.getItem(CHAVE_ROTEIRO)) }; } catch (e) {}
   const salvarRoteiro = () => { try { localStorage.setItem(CHAVE_ROTEIRO, JSON.stringify(roteiro)); } catch (e) {} };
+  // O que define um roteiro salvo: dois iguais nestes campos são o mesmo roteiro.
+  const escolhaRoteiro = () => roteiro.modo === "meu"
+    ? { modo: "meu", dias: roteiro.dias, limite: roteiro.limite === undefined ? 0.25 : roteiro.limite, lugares: [...queroIr].sort() }
+    : { modo: "auto", dias: roteiro.dias, cidades: pais.cidades.filter((c) => roteiro.cidades.includes(c)), tirados: [...(roteiro.tirados || [])].sort() };
+  const mesmaEscolha = (a, b) => JSON.stringify({ ...a, nome: 0, em: 0 }) === JSON.stringify({ ...b, nome: 0, em: 0 });
 
   const formatarTempo = (min) => (min < 60 ? `${min} min` : `${Math.floor(min / 60)}h${min % 60 ? String(min % 60).padStart(2, "0") : ""}`);
   // Estrada: distância em linha reta x 1,3 (curvas da estrada), a 70 km/h de média, arredondada a 10 min.
@@ -1203,11 +1209,13 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const fui = new Set(Object.keys(jaFui));
       const meus = new Set(queroIr.filter((n) => lugarPorNome(n)));
       const cidades = pais.cidades.filter((c) => roteiro.cidades.includes(c));
+      const det = Boolean(roteiro.detalhes);
+      const tirados = (roteiro.tirados || []).filter((n) => { const x = lugarPorNome(n); return x && cidades.includes(x.cidade); });
       // Estrada: no automático, no máximo 25% do tempo; no "Do meu jeito", o limite que a pessoa escolher.
       const limite = meu ? (roteiro.limite === undefined ? 0.25 : roteiro.limite) : 0.25;
       const r = meu
         ? (meus.size ? montarRoteiro(pais.cidades, roteiro.dias, { so: meus, limiteEstrada: limite, podeTirarObrig: true }) : null)
-        : (cidades.length ? montarRoteiro(cidades, roteiro.dias, { sem: fui, limiteEstrada: limite }) : null);
+        : (cidades.length ? montarRoteiro(cidades, roteiro.dias, { sem: new Set([...fui, ...tirados]), limiteEstrada: limite }) : null);
       const visitados = meu ? 0 : pais.lugares.filter((c) => cidades.includes(c.cidade)).reduce((s, c) => s + c.itens.filter((l) => fui.has(l.nome)).length, 0);
       const naoCouberam = meu && r ? [...r.faltam, ...r.sobras] : [];
       let diasPrecisos = roteiro.dias;
@@ -1242,15 +1250,21 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         return `<p class="roteiro-b"><span aria-hidden="true">🔁</span> Plano B: ${g ? `<a href="#/guia/${g.id}">${esc(alt.l.nome)}</a>` : esc(alt.l.nome)}${alt.l.minutos ? ` · ${formatarTempo(alt.l.minutos)}` : ""}</p>`;
       };
       const lugar = (x) => `
-        <li class="roteiro-item">
-          <strong><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span></strong>
-          <span class="etiqueta-roteiro ${x.obrig ? "obrig" : ""}">${x.obrig ? "Obrigatório" : "Recomendado"}</span>
-          <span class="etiqueta-roteiro"><span aria-hidden="true">⏱️</span> ${x.min > DIA_INTEIRO ? "Dia inteiro" : formatarTempo(x.min)}</span>
-          <p class="suave">${esc(x.l.dica)}</p>
-          ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
-          ${planoB(x.l)}
-          ${historia(x.l)}
-          ${botoesLugar(x.l.nome)}
+        <li class="roteiro-item roteiro-lugar">
+          <details ${det ? "open" : ""}>
+            <summary>
+              <span class="roteiro-nome"><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span>${x.obrig ? ` <span class="estrela-obrig"><span aria-hidden="true">★</span><span class="sr">obrigatório</span></span>` : ""}</span>
+              <span class="roteiro-tempo">${x.min > DIA_INTEIRO ? "dia inteiro" : formatarTempo(x.min)}</span>
+            </summary>
+            <div class="roteiro-mais">
+              <p class="suave">${esc(x.l.dica)}</p>
+              ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
+              ${planoB(x.l)}
+              ${historia(x.l)}
+              ${botoesLugar(x.l.nome)}
+            </div>
+          </details>
+          <button class="btn-tirar" data-acao="roteiro-tirar" data-lugar="${esc(x.l.nome)}" aria-label="Tirar ${esc(x.l.nome)} do roteiro"><span aria-hidden="true">✕</span></button>
         </li>`;
       const item = (y) => {
         if (y.continua) return `<li class="roteiro-item"><strong>Continua: ${esc(y.continua.l.nome)}</strong></li>`;
@@ -1263,19 +1277,18 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         if (!corpo && tu.id === "noite" && cidade) {
           const lista = comidas(cidade);
           const c = lista.length ? lista[jantares++ % lista.length] : null;
-          corpo = `<li class="roteiro-item"><strong><span aria-hidden="true">🍽️</span> Jantar${c ? `: ${esc(c.nome)}` : ""}</strong>${c ? `<p class="suave">${esc(c.desc)}</p>` : ""}</li>`;
+          corpo = `<li class="roteiro-item"><strong><span aria-hidden="true">🍽️</span> Jantar${c ? `: ${esc(c.nome)}` : ""}</strong>${c && det ? `<p class="suave">${esc(c.desc)}</p>` : ""}</li>`;
         }
-        if (!corpo) corpo = `<li class="roteiro-item"><strong>Tempo livre</strong><p class="suave">Para descansar, comer bem ou voltar a um lugar de que gostou.</p></li>`;
+        if (!corpo) corpo = `<li class="roteiro-item"><strong>Tempo livre</strong>${det ? `<p class="suave">Para descansar, comer bem ou voltar a um lugar de que gostou.</p>` : ""}</li>`;
         return `<div class="roteiro-turno"><h3>${rotulo}</h3><ol class="roteiro-lista">${corpo}</ol></div>`;
       };
       const qtd = r ? [...r.escolhidos].filter((x) => x.obrig).length : 0;
       const modo = (id, rotulo) => `<button class="btn ${(roteiro.modo || "auto") === id ? "on" : ""}" data-acao="roteiro-modo" data-modo="${id}" aria-pressed="${(roteiro.modo || "auto") === id}">${rotulo}</button>`;
-      return `<p class="kicker"><span aria-hidden="true">✨</span> Assistente de viagem</p>
-        <h1>Roteiro</h1>
-        <div class="filtros roteiro-modos" role="group" aria-label="Como montar o roteiro">${modo("auto", "Montar pra mim")}${modo("meu", `Do meu jeito${meus.size ? ` (${meus.size})` : ""}`)}</div>
-        <p class="lead">${meu
+      const dias = `${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}`;
+      // Escolhas do roteiro: abertas enquanto não há roteiro; depois viram uma linha de resumo que abre ao tocar.
+      const ajustes = `<p class="lead">${meu
           ? "Os lugares que você marcou com Quero ir, na melhor ordem, em manhã, tarde e noite, com o tempo de estrada."
-          : `Escolha as ${nome} e quantos dias vai ficar. O roteiro se monta sozinho, em manhã, tarde e noite: primeiro o obrigatório, depois o recomendado, na ordem do caminho e com o tempo de estrada.`}</p>
+          : `Escolha as ${nome} e quantos dias vai ficar. O roteiro se monta sozinho: primeiro o obrigatório, depois o recomendado, na ordem do caminho.`}</p>
         ${meu ? "" : `<div class="filtros" role="group" aria-label="${semTraducao ? "Regiões" : "Cidades"}">${pais.cidades.map((c) => `
           <button class="btn ${cidades.includes(c) ? "on" : ""}" data-acao="roteiro-cidade" data-cidade="${esc(c)}" aria-pressed="${cidades.includes(c)}">${esc(c)}</button>`).join("")}
         </div>`}
@@ -1284,18 +1297,42 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         </div>` : ""}
         <div class="roteiro-dias" role="group" aria-label="Dias de viagem">
           <button class="btn" data-acao="roteiro-dias" data-delta="-1" aria-label="Menos um dia" ${roteiro.dias <= 1 ? "disabled" : ""}>−</button>
-          <strong aria-live="polite">${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}</strong>
+          <strong aria-live="polite">${dias}</strong>
           <button class="btn" data-acao="roteiro-dias" data-delta="1" aria-label="Mais um dia" ${roteiro.dias >= 30 ? "disabled" : ""}>+</button>
-        </div>
-        ${!r ? (meu
+        </div>`;
+      const resumo = meu ? `${meus.size} ${meus.size === 1 ? "lugar" : "lugares"} · ${dias}` : `${cidades.join(", ")} · ${dias}`;
+      const salvos = roteiro.salvos || [];
+      const atual = escolhaRoteiro();
+      const salvo = salvos.some((s) => mesmaEscolha(s, atual));
+      const listaSalvos = salvos.length ? `<details class="item roteiro-salvos">
+          <summary><span aria-hidden="true">📌</span> Meus roteiros (${salvos.length})</summary>
+          <ul class="roteiro-salvos-lista">${salvos.map((s, i) => `
+            <li>
+              <button class="roteiro-abrir" data-acao="roteiro-abrir" data-i="${i}">${esc(s.nome)}<small>${s.modo === "meu" ? "Do meu jeito" : "Montar pra mim"}${mesmaEscolha(s, atual) ? " · aberto agora" : ""}</small></button>
+              <button class="btn-tirar" data-acao="roteiro-apagar" data-i="${i}" aria-label="Apagar o roteiro ${esc(s.nome)}"><span aria-hidden="true">🗑️</span></button>
+            </li>`).join("")}
+          </ul>
+        </details>` : "";
+      return `<p class="kicker"><span aria-hidden="true">✨</span> Assistente de viagem</p>
+        <h1>Roteiro</h1>
+        ${listaSalvos}
+        <div class="filtros roteiro-modos" role="group" aria-label="Como montar o roteiro">${modo("auto", "Montar pra mim")}${modo("meu", `Do meu jeito${meus.size ? ` (${meus.size})` : ""}`)}</div>
+        ${!r ? `${ajustes}${meu
           ? `<p class="vazio">Toque em ＋ Quero ir nos lugares de <a href="#/guia">Perto de você</a>, <a href="#/lugares">Lugares</a> ou do roteiro automático. Eles aparecem aqui, na melhor ordem.</p>`
-          : `<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>`) : `
-          <p class="lead">${meu
-            ? `Cabem ${r.escolhidos.size} de ${meus.size} ${meus.size === 1 ? "lugar" : "lugares"}.`
-            : `${qtd} ${qtd === 1 ? "lugar obrigatório" : "lugares obrigatórios"} e ${r.escolhidos.size - qtd} ${r.escolhidos.size - qtd === 1 ? "recomendado" : "recomendados"}.`} Estrada: ${Math.round(r.estrada.fracao * 100)}% do tempo${limite !== null ? ` (limite de ${Math.round(limite * 100)}%)` : ""}. Tempos e estradas são estimativas.</p>
-          ${r.longe.length ? `<p class="gps-nota">Para a estrada não passar do limite, ${r.longe.length === 1 ? "ficou de fora" : "ficaram de fora"}: ${r.longe.map((x) => esc(x.l.nome)).join(", ")}.${meu ? " Aumente o limite de estrada para incluir." : " Para incluir, use o Do meu jeito e escolha um limite maior."}</p>` : ""}
-          ${limite !== null && r.estrada.fracao > limite ? `<p class="gps-nota">Mesmo com poucos lugares, a estrada passa do limite: as regiões escolhidas são longe umas das outras.</p>` : ""}
-          ${visitados ? `<p class="gps-nota">${visitados === 1 ? "Um lugar onde você já foi ficou" : `${visitados} lugares onde você já foi ficaram`} de fora. Para incluir de novo, desmarque Já fui.</p>` : ""}
+          : `<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>`}` : `
+          <details class="item roteiro-ajustes">
+            <summary><span class="roteiro-resumo">${esc(resumo)}</span><span class="roteiro-ajustar">Ajustar</span></summary>
+            ${ajustes}
+          </details>
+          <div class="roteiro-barra">
+            <button class="btn ${salvo ? "on" : ""}" data-acao="roteiro-salvar" aria-pressed="${salvo}">${salvo ? "✓ Salvo" : `<span aria-hidden="true">📌</span> Salvar roteiro`}</button>
+            <button class="btn" data-acao="roteiro-detalhes" aria-pressed="${det}">${det ? "Menos detalhes" : "Mais detalhes"}</button>
+          </div>
+          <p class="gps-nota">${r.escolhidos.size} ${r.escolhidos.size === 1 ? "lugar" : "lugares"}${meu && r.escolhidos.size < meus.size ? ` de ${meus.size}` : ""} · estrada ${Math.round(r.estrada.fracao * 100)}% do tempo${det ? `${limite !== null ? ` (limite de ${Math.round(limite * 100)}%)` : ""}. ${meu ? "" : `${qtd} ${qtd === 1 ? "obrigatório" : "obrigatórios"} (★). `}Tempos e estradas são estimativas.` : ""}</p>
+          ${tirados.length && !meu ? `<p class="gps-nota">${tirados.length === 1 ? "Você tirou 1 lugar" : `Você tirou ${tirados.length} lugares`}. <button class="link-btn" data-acao="roteiro-devolver">Devolver</button></p>` : ""}
+          ${det && r.longe.length ? `<p class="gps-nota">Para a estrada não passar do limite, ${r.longe.length === 1 ? "ficou de fora" : "ficaram de fora"}: ${r.longe.map((x) => esc(x.l.nome)).join(", ")}.${meu ? " Aumente o limite de estrada para incluir." : " Para incluir, use o Do meu jeito e escolha um limite maior."}</p>` : ""}
+          ${det && limite !== null && r.estrada.fracao > limite ? `<p class="gps-nota">Mesmo com poucos lugares, a estrada passa do limite: as regiões escolhidas são longe umas das outras.</p>` : ""}
+          ${det && visitados ? `<p class="gps-nota">${visitados === 1 ? "Um lugar onde você já foi ficou" : `${visitados} lugares onde você já foi ficaram`} de fora. Para incluir de novo, desmarque Já fui.</p>` : ""}
           ${!meu && r.faltam.some((x) => !r.longe.includes(x)) ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.filter((x) => !r.longe.includes(x)).length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.filter((x) => !r.longe.includes(x)).map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</p>` : ""}
           ${r.agenda.map((dia, i) => {
             const onde = [...new Set(dia.flatMap((tu) => tu.itens.map((y) => y.cidade || (y.ate && y.ate.cidade) || (y.estradaSegue && y.estradaSegue.cidade) || (y.continua && y.continua.cidade))).filter(Boolean))];
@@ -1311,7 +1348,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
             <button class="btn btn-gps" data-acao="roteiro-dias" data-delta="1">Adicionar 1 dia</button>
             <ol class="roteiro-lista">${naoCouberam.map(lugar).join("")}</ol>
           </details>` : ""}
-          ${!meu && r.sobras.length ? `<h2>Se sobrar tempo</h2><ol class="roteiro-lista">${r.sobras.map(lugar).join("")}</ol>` : ""}`}`;
+          ${!meu && r.sobras.length ? `<details class="item roteiro-fora" ${det ? "open" : ""}><summary>Se sobrar tempo: mais ${r.sobras.length} ${r.sobras.length === 1 ? "lugar" : "lugares"}</summary><ol class="roteiro-lista">${r.sobras.map(lugar).join("")}</ol></details>` : ""}`}`;
     },
     album(param) {
       const barra = (k, rotulo) => `<div class="album-barra">
@@ -1704,6 +1741,72 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (b.dataset.acao === "roteiro-limite") {
       roteiro.limite = b.dataset.limite === "" ? null : Number(b.dataset.limite);
       salvarRoteiro();
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-tirar") {
+      // No Do meu jeito, tirar é desmarcar o Quero ir; no automático, o lugar fica de fora até Devolver.
+      const nome = b.dataset.lugar;
+      if (roteiro.modo === "meu") {
+        queroIr = queroIr.filter((x) => x !== nome);
+        salvarMarcas();
+      } else {
+        roteiro.tirados = [...new Set([...(roteiro.tirados || []), nome])];
+        salvarRoteiro();
+      }
+      avisar(`${nome} saiu do roteiro`);
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-devolver") {
+      const daqui = (n) => { const x = lugarPorNome(n); return x && roteiro.cidades.includes(x.cidade); };
+      roteiro.tirados = (roteiro.tirados || []).filter((n) => !daqui(n));
+      salvarRoteiro();
+      avisar("Lugares de volta ao roteiro");
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-detalhes") {
+      roteiro.detalhes = !roteiro.detalhes;
+      salvarRoteiro();
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-salvar") {
+      // Tocar de novo em "Salvo" tira de Meus roteiros.
+      const atual = escolhaRoteiro();
+      roteiro.salvos = roteiro.salvos || [];
+      const i = roteiro.salvos.findIndex((s) => mesmaEscolha(s, atual));
+      if (i >= 0) {
+        roteiro.salvos.splice(i, 1);
+        avisar("Tirado de Meus roteiros");
+      } else {
+        const dias = `${atual.dias} ${atual.dias === 1 ? "dia" : "dias"}`;
+        const nome = atual.modo === "meu" ? `Do meu jeito: ${atual.lugares.length} lugares, ${dias}` : `${atual.cidades.join(", ")}: ${dias}`;
+        roteiro.salvos.unshift({ ...atual, nome, em: new Date().toISOString().slice(0, 10) });
+        avisar("Roteiro salvo neste aparelho");
+      }
+      salvarRoteiro();
+      return render();
+    }
+    if (b.dataset.acao === "roteiro-abrir") {
+      const s = roteiro.salvos[+b.dataset.i];
+      roteiro.modo = s.modo;
+      roteiro.dias = s.dias;
+      if (s.modo === "meu") {
+        roteiro.limite = s.limite;
+        queroIr = s.lugares.filter((n) => lugarPorNome(n));
+        salvarMarcas();
+      } else {
+        // Os tirados de outras regiões continuam; os destas voltam a ser os do roteiro salvo.
+        roteiro.cidades = s.cidades;
+        roteiro.tirados = [...(roteiro.tirados || []).filter((n) => { const x = lugarPorNome(n); return x && !s.cidades.includes(x.cidade); }), ...s.tirados];
+      }
+      salvarRoteiro();
+      avisar(`Aberto: ${s.nome}`);
+      render();
+      return window.scrollTo(0, 0);
+    }
+    if (b.dataset.acao === "roteiro-apagar") {
+      const [s] = roteiro.salvos.splice(+b.dataset.i, 1);
+      salvarRoteiro();
+      avisar(`Apagado: ${s.nome}`);
       return render();
     }
     if (b.dataset.acao === "roteiro-modo") {

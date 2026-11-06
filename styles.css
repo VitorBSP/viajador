@@ -395,6 +395,51 @@ a.btn { text-decoration: none; }
 .roteiro-estrada { font-size: 14px; padding: 8px 10px; border-radius: 10px; background: var(--celeste-claro); }
 .roteiro-b { margin: 6px 0 0; font-size: 14px; }
 
+/* Roteiro enxuto: um lugar por linha; dica, plano B e botões abrem ao tocar. */
+.roteiro-ajustes, .roteiro-salvos { margin: 4px 0 12px; padding: 0 16px; }
+.roteiro-ajustes > summary, .roteiro-salvos > summary {
+  display: flex; align-items: center; gap: 12px; min-height: 48px; cursor: pointer; font-weight: 600; list-style: none;
+}
+.roteiro-ajustes > summary::-webkit-details-marker, .roteiro-salvos > summary::-webkit-details-marker,
+.roteiro-lugar summary::-webkit-details-marker { display: none; }
+.roteiro-resumo { flex: 1; min-width: 0; }
+.roteiro-ajustar { color: var(--celeste); font-size: 14px; flex: none; }
+.roteiro-ajustes[open] .roteiro-ajustar { visibility: hidden; }
+.roteiro-ajustes[open] { padding-bottom: 4px; }
+.roteiro-barra { display: flex; flex-wrap: wrap; gap: 8px; }
+.roteiro-barra .btn { min-height: 44px; }
+.roteiro-dia .roteiro-lista { gap: 0; margin-top: 0; }
+.roteiro-lugar { display: flex; align-items: flex-start; gap: 4px; border-bottom: 1px solid var(--linha); }
+.roteiro-lugar:last-child { border-bottom: 0; }
+.roteiro-lugar details { flex: 1; min-width: 0; }
+.roteiro-lugar summary { display: flex; align-items: center; gap: 8px; min-height: 48px; cursor: pointer; list-style: none; }
+.roteiro-nome { flex: 1; min-width: 0; font-weight: 600; }
+.roteiro-tempo { flex: none; font-size: 14px; color: var(--suave); }
+.roteiro-lugar summary::after {
+  content: ""; flex: none; width: 8px; height: 8px; margin: 0 4px 4px;
+  border-right: 2px solid var(--suave); border-bottom: 2px solid var(--suave); transform: rotate(45deg); transition: transform .15s;
+}
+.roteiro-lugar details[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+.estrela-obrig { color: #b07a00; }
+.roteiro-mais { padding: 0 0 12px; }
+.roteiro-mais .lugar-acoes { margin-top: 8px; }
+.roteiro-dia .roteiro-item:not(.roteiro-lugar) { padding: 10px 0; }
+.roteiro-dia .roteiro-estrada { margin: 6px 0; padding: 8px 10px; }
+.btn-tirar {
+  flex: none; width: 44px; height: 48px; border: 0; background: none; cursor: pointer;
+  color: var(--suave); font-size: 16px; border-radius: 10px;
+}
+.btn-tirar:hover { background: var(--celeste-claro); color: var(--texto); }
+.link-btn { border: 0; background: none; padding: 0 2px; min-height: 44px; font: inherit; font-weight: 600; color: var(--celeste); text-decoration: underline; cursor: pointer; }
+.roteiro-salvos-lista { list-style: none; margin: 0; padding: 0 0 8px; }
+.roteiro-salvos-lista li { display: flex; align-items: center; gap: 4px; border-top: 1px solid var(--linha); }
+.roteiro-abrir {
+  flex: 1; min-width: 0; min-height: 52px; padding: 6px 0; border: 0; background: none; cursor: pointer;
+  text-align: left; font-weight: 600; display: flex; flex-direction: column; justify-content: center;
+}
+.roteiro-abrir small { font-weight: 400; color: var(--suave); }
+@media (prefers-color-scheme: dark) { .estrela-obrig { color: var(--sol); } }
+
 /* Quero ir / Já fui */
 .lugar-acoes { margin-top: 8px; }
 .ponto-perto { margin: -4px 0 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
