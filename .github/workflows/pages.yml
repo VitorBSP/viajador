@@ -22,6 +22,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Validate data and PWA
+        run: python3 scripts/validar.py
       - name: Prepare site (only publishable files)
         run: |
           mkdir _site

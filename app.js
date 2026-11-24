@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.38";
+  const VERSAO_APP = "1.39";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -839,7 +839,7 @@
     const partes = [`País: ${pais.nome}. ${pais.intro}`];
     const descreve = (g) => {
       const l = lugarDo(g);
-      return `LUGAR: ${g.lugar} (${l.cidade})${posicao ? `, a ${formatarDist(distanciaKm(posicao, g.coords))} do viajante` : ""}\n${g.historia.join(" ")}\nO que reparar: ${g.reparar}\nDica: ${l.dica}\nFrases: ${l.frases.map((f) => `${f.es} (${f.pr}) = ${f.pt}`).join("; ")}`;
+      return `LUGAR: ${g.lugar} (${l.cidade})${posicao ? `, a ${formatarDist(distanciaKm(posicao, g.coords))} do viajante` : ""}\n${g.historia.join(" ")}\nO que reparar: ${g.reparar}\nDica: ${l.dica}\nFrases: ${l.frases.map((f) => `${f.es}${f.pr ? ` (${f.pr})` : ""} = ${f.pt}`).join("; ")}`;
     };
     const escolhidos = new Map();
     if (posicao) [...pontos()].sort((a, b) => distanciaKm(posicao, a.coords) - distanciaKm(posicao, b.coords)).slice(0, 3).forEach((g) => escolhidos.set(g.id, g));
@@ -871,9 +871,11 @@
   // O guia não percebe sozinho que a conversa continua e cumprimenta toda vez; a orientação vai junto do contexto.
   const orientacaoDaConversa = (continua) =>
     (continua
-      ? "ESTA CONVERSA JÁ ESTÁ EM ANDAMENTO: não cumprimente nem diga Hola, che ou Olá. Responda direto, continuando o assunto."
+      ? `ESTA CONVERSA JÁ ESTÁ EM ANDAMENTO: não cumprimente${semTraducao ? "" : " nem diga Hola, che ou Olá"}. Responda direto, continuando o assunto.`
       : "PRIMEIRA MENSAGEM DA CONVERSA: pode cumprimentar em poucas palavras.") +
-    " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.";
+    (semTraducao
+      ? " Só explique uma palavra ou costume local quando tiver a ver com a pergunta, sem repetir os que já explicou e sem traduzir para o espanhol."
+      : " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.");
   async function perguntarAoGuia(pergunta) {
     if (!supabaseOnline()) return avisar("O GuIA Turístico ainda não foi configurado");
     if (!navigator.onLine) return avisar("O GuIA Turístico precisa de internet");
@@ -1290,7 +1292,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     },
     dicas() {
       return `<h1>${semTraducao ? "Jeito de falar" : "Pronúncia sem sufoco"}</h1>
-        <p class="lead">${semTraducao ? "Curiosidades do sotaque e do jeito de falar daqui." : "As regras que mais fazem diferença para quem fala português."} A sílaba em MAIÚSCULA é a forte.</p>
+        <p class="lead">${semTraducao ? "Curiosidades do sotaque e do jeito de falar daqui." : "As regras que mais fazem diferença para quem fala português. A sílaba em MAIÚSCULA é a forte."}</p>
         <div class="tabela">${pais.pronuncia.map((p) => `
           <div class="item">
             <h3>${esc(p.regra)}</h3>

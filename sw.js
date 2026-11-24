@@ -1,6 +1,6 @@
 // Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-1.38"; // igual a VERSAO_APP, em app.js
+const VERSAO = "viajador-1.39"; // igual a VERSAO_APP, em app.js
 const NUCLEO = [
   "./",
   "styles.css",
@@ -37,8 +37,44 @@ const NUCLEO = [
   "img/arte/medalha-bronze.svg",
   "img/arte/mate-consolo.svg",
 ];
-// Fotos ficam offline também, mas sem travar a instalação se alguma falhar.
-const FOTOS = ["img/guia/teatro-solis.jpg", "img/guia/mercado-del-puerto.jpg", "img/guia/estadio-centenario.jpg", "img/guia/la-mano.jpg", "img/guia/casapueblo.jpg", "img/guia/ciudad-vieja.jpg", "img/guia/rambla.jpg", "img/guia/plaza-independencia.jpg", "img/guia/tristan-narvaja.jpg", "img/guia/pocitos.jpg", "img/guia/museo-carnaval.jpg", "img/guia/el-prado.jpg", "img/guia/tres-cruces.jpg", "img/guia/puerto-punta.jpg", "img/guia/isla-gorriti.jpg", "img/guia/mansa-brava.jpg", "img/guia/la-barra.jpg", "img/guia/gorlero.jpg", "img/guia/feria-artigas.jpg", "img/guia/arboretum-lussich.jpg", "img/guia/plaza-matriz.jpg", "img/guia/torres-garcia.jpg", "img/guia/mapi.jpg", "img/guia/cafe-brasilero.jpg", "img/guia/palacio-legislativo.jpg", "img/guia/la-carreta.jpg", "img/guia/parque-rodo.jpg", "img/guia/faro-punta-brava.jpg", "img/guia/fortaleza-cerro.jpg", "img/guia/barrio-sur.jpg", "img/guia/mnav.jpg", "img/guia/gurvich.jpg", "img/guia/hotel-carrasco.jpg", "img/guia/faro-punta.jpg", "img/guia/candelaria.jpg", "img/guia/isla-lobos.jpg", "img/guia/punta-ballena.jpg", "img/guia/faro-jose-ignacio.jpg", "img/guia/puente-garzon.jpg", "img/guia/maca.jpg", "img/guia/museo-mar.jpg", "img/guia/laguna-sauce.jpg", "img/guia/catedral-maldonado.jpg", "img/guia/pueblo-garzon.jpg", "img/guia/castillo-piria.jpg", "img/guia/argentino-hotel.jpg", "img/guia/rambla-piriapolis.jpg", "img/guia/pan-de-azucar.jpg", "img/guia/puerta-ciudadela.jpg", "img/guia/ralli.jpg", "img/pessoas/artigas.jpg", "img/pessoas/lavalleja.jpg", "img/pessoas/rivera.jpg", "img/pessoas/oribe.jpg", "img/pessoas/batlle.jpg", "img/pessoas/mujica.jpg", "img/pessoas/seregni.jpg", "img/pessoas/luisi.jpg", "img/pessoas/varela.jpg", "img/pessoas/ghiggia.jpg", "img/pessoas/nasazzi.jpg", "img/pessoas/andrade.jpg", "img/pessoas/francescoli.jpg", "img/pessoas/forlan.jpg", "img/pessoas/suarez.jpg", "img/pessoas/cavani.jpg", "img/pessoas/valverde.jpg", "img/pessoas/galeano.jpg", "img/pessoas/benedetti.jpg", "img/pessoas/onetti.jpg", "img/pessoas/agustini.jpg", "img/pessoas/ibarbourou.jpg", "img/pessoas/torres.jpg", "img/pessoas/figari.jpg", "img/pessoas/paez.jpg", "img/pessoas/gardel.jpg", "img/pessoas/drexler.jpg", "img/pessoas/rada.jpg", "img/pessoas/zorrilla.jpg", "img/pessoas/oreiro.jpg", "img/arte/origem.jpg"];
+// Fotos ficam offline também (UY + RS), baixadas em lotes curtos sem travar a instalação se alguma falhar.
+const FOTOS = [
+  "img/guia/aldeia-imigrante.jpg", "img/guia/ametista-do-sul.jpg", "img/guia/antonio-prado.jpg", "img/guia/apa-ibirapuita.jpg", "img/guia/arboretum-lussich.jpg",
+  "img/guia/arena-gremio.jpg", "img/guia/argentino-hotel.jpg", "img/guia/barrio-sur.jpg", "img/guia/beira-rio.jpg", "img/guia/cafe-brasilero.jpg",
+  "img/guia/caminhos-de-pedra.jpg", "img/guia/candelaria.jpg", "img/guia/canion-fortaleza.jpg", "img/guia/caracol.jpg", "img/guia/casa-de-cultura-mario-quintana.jpg",
+  "img/guia/casapueblo.jpg", "img/guia/cassino.jpg", "img/guia/castelinho-erechim.jpg", "img/guia/castillo-piria.jpg", "img/guia/catedral-angelopolitana.jpg",
+  "img/guia/catedral-de-pedra.jpg", "img/guia/catedral-maldonado.jpg", "img/guia/catedral-metropolitana-poa.jpg", "img/guia/catedral-pelotas.jpg", "img/guia/catedral-santa-cruz.jpg",
+  "img/guia/cerro-do-jarau.jpg", "img/guia/chale-praca-xv.jpg", "img/guia/chateau-deau.jpg", "img/guia/ciudad-vieja.jpg", "img/guia/delta-jacui.jpg",
+  "img/guia/el-prado.jpg", "img/guia/eolico-osorio.jpg", "img/guia/espigao-alto.jpg", "img/guia/espinilho.jpg", "img/guia/estadio-centenario.jpg",
+  "img/guia/faro-jose-ignacio.jpg", "img/guia/faro-punta-brava.jpg", "img/guia/faro-punta.jpg", "img/guia/farol-mostardas.jpg", "img/guia/farol-santander.jpg",
+  "img/guia/feria-artigas.jpg", "img/guia/ferrabraz.jpg", "img/guia/fortaleza-cerro.jpg", "img/guia/gorlero.jpg", "img/guia/guarita.jpg",
+  "img/guia/gurvich.jpg", "img/guia/hamburgo-velho.jpg", "img/guia/hotel-carrasco.jpg", "img/guia/igreja-das-dores.jpg", "img/guia/ilha-dos-lobos.jpg",
+  "img/guia/isla-gorriti.jpg", "img/guia/isla-lobos.jpg", "img/guia/itaimbezinho.jpg", "img/guia/itapeva.jpg", "img/guia/itapua.jpg",
+  "img/guia/jardim-botanico-poa.jpg", "img/guia/khadro-ling.jpg", "img/guia/la-barra.jpg", "img/guia/la-carreta.jpg", "img/guia/la-mano.jpg",
+  "img/guia/lago-joaquina-bier.jpg", "img/guia/lago-negro.jpg", "img/guia/lagoa-do-peixe.jpg", "img/guia/lagoa-dos-quadros.jpg", "img/guia/lagoa-mirim.jpg",
+  "img/guia/laguna-sauce.jpg", "img/guia/maca.jpg", "img/guia/mampituba.jpg", "img/guia/mansa-brava.jpg", "img/guia/mapi.jpg",
+  "img/guia/marcelino-ramos.jpg", "img/guia/margs.jpg", "img/guia/matriz-gramado.jpg", "img/guia/matriz-viamao.jpg", "img/guia/medianeira.jpg",
+  "img/guia/memorial-rs.jpg", "img/guia/mercado-del-puerto.jpg", "img/guia/mercado-publico-poa.jpg", "img/guia/mini-mundo.jpg", "img/guia/mnav.jpg",
+  "img/guia/monte-negro.jpg", "img/guia/monumento-acorianos.jpg", "img/guia/monumento-imigrante.jpg", "img/guia/morro-de-osorio.jpg", "img/guia/mundo-a-vapor.jpg",
+  "img/guia/museo-carnaval.jpg", "img/guia/museo-mar.jpg", "img/guia/museu-da-baronesa.jpg", "img/guia/museu-das-missoes.jpg", "img/guia/museu-dom-diogo.jpg",
+  "img/guia/museu-julio-castilhos.jpg", "img/guia/museu-oceanografico.jpg", "img/guia/museu-pucrs.jpg", "img/guia/museu-santo-angelo.jpg", "img/guia/museu-sao-leopoldo.jpg",
+  "img/guia/palacete-bage.jpg", "img/guia/palacio-dos-festivais.jpg", "img/guia/palacio-legislativo.jpg", "img/guia/palacio-piratini.jpg", "img/guia/paleobotanico-mata.jpg",
+  "img/guia/pan-de-azucar.jpg", "img/guia/parque-da-gare.jpg", "img/guia/parque-internacional.jpg", "img/guia/parque-rodo.jpg", "img/guia/plaza-independencia.jpg",
+  "img/guia/plaza-matriz.jpg", "img/guia/pocitos.jpg", "img/guia/ponte-barao-de-maua.jpg", "img/guia/ponte-do-fandango.jpg", "img/guia/praca-alfandega.jpg",
+  "img/guia/praca-pedro-osorio.jpg", "img/guia/praca-tamandare.jpg", "img/guia/pueblo-garzon.jpg", "img/guia/puente-garzon.jpg", "img/guia/puerta-ciudadela.jpg",
+  "img/guia/puerto-punta.jpg", "img/guia/punta-ballena.jpg", "img/guia/ralli.jpg", "img/guia/rambla-piriapolis.jpg", "img/guia/rambla.jpg",
+  "img/guia/redencao.jpg", "img/guia/salto-do-yucuma.jpg", "img/guia/salto-ventoso.jpg", "img/guia/santa-teresa.jpg", "img/guia/sao-domingos-torres.jpg",
+  "img/guia/sao-lourenco-martir.jpg", "img/guia/sao-miguel-arcanjo.jpg", "img/guia/sao-nicolau.jpg", "img/guia/sete-de-abril.jpg", "img/guia/taim.jpg",
+  "img/guia/tainhas.jpg", "img/guia/teatro-solis.jpg", "img/guia/theatro-sao-pedro.jpg", "img/guia/torres-garcia.jpg", "img/guia/tres-cruces.jpg",
+  "img/guia/tristan-narvaja.jpg", "img/guia/usina-gasometro.jpg", "img/guia/vale-dos-vinhedos.jpg", "img/guia/viaduto-13.jpg", "img/guia/vila-belga.jpg",
+  "img/pessoas/agustini.jpg", "img/pessoas/andrade.jpg", "img/pessoas/artigas.jpg", "img/pessoas/batlle.jpg", "img/pessoas/benedetti.jpg",
+  "img/pessoas/cavani.jpg", "img/pessoas/drexler.jpg", "img/pessoas/figari.jpg", "img/pessoas/forlan.jpg", "img/pessoas/francescoli.jpg",
+  "img/pessoas/galeano.jpg", "img/pessoas/gardel.jpg", "img/pessoas/ghiggia.jpg", "img/pessoas/ibarbourou.jpg", "img/pessoas/lavalleja.jpg",
+  "img/pessoas/luisi.jpg", "img/pessoas/mujica.jpg", "img/pessoas/nasazzi.jpg", "img/pessoas/onetti.jpg", "img/pessoas/oreiro.jpg",
+  "img/pessoas/oribe.jpg", "img/pessoas/paez.jpg", "img/pessoas/rada.jpg", "img/pessoas/rivera.jpg", "img/pessoas/seregni.jpg",
+  "img/pessoas/suarez.jpg", "img/pessoas/torres.jpg", "img/pessoas/valverde.jpg", "img/pessoas/varela.jpg", "img/pessoas/zorrilla.jpg",
+  "img/arte/origem.jpg",
+];
 // Mesma URL do <link> em index.html.
 const FONTES_CSS = "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap";
 const HOSTS_FONTES = ["fonts.googleapis.com", "fonts.gstatic.com"];
@@ -60,12 +96,19 @@ async function guardarFontes(cache) {
   } catch (e) {}
 }
 
+async function guardarFotos(cache) {
+  const LOTE = 10;
+  for (let i = 0; i < FOTOS.length; i += LOTE) {
+    await Promise.allSettled(FOTOS.slice(i, i + LOTE).map((u) => cache.add(u)));
+  }
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(VERSAO);
     await cache.addAll(NUCLEO.map((u) => new Request(u, { cache: "reload" })));
     await guardarFontes(cache);
-    await Promise.allSettled(FOTOS.map((u) => cache.add(u)));
+    await guardarFotos(cache);
     await self.skipWaiting();
   })());
 });

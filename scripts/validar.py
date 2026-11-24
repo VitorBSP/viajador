@@ -516,6 +516,82 @@ def checar_pais(r, chave, p, esperado):
         checar_campos(r, i, CHECK, f"checklist[{n}]", p.linha)
 
 
+    imagens = p.get("imagens")
+    if isinstance(imagens, Obj):
+        lugares_img = imagens.get("lugares")
+        if isinstance(lugares_img, Obj):
+            for img_id in lugares_img:
+                arq = RAIZ / "img" / "guia" / f"{img_id}.jpg"
+                if not arq.exists():
+                    r.erro(lugares_img.linha, f"imagens.lugares[{img_id}]", f"imagem não existe: img/guia/{img_id}.jpg")
+        pessoas_img = imagens.get("pessoas")
+        if isinstance(pessoas_img, Obj):
+            for nome_p, info in pessoas_img.items():
+                if isinstance(info, Obj) and isinstance(info.get("id"), str):
+                    arq = RAIZ / "img" / "pessoas" / f"{info['id']}.jpg"
+                    if not arq.exists():
+                        r.erro(info.linha, f"imagens.pessoas[{nome_p}]", f"imagem não existe: img/pessoas/{info['id']}.jpg")
+
+
+def extrair_lista_js(texto, nome):
+    m = re.search(rf"const\s+{nome}\s*=\s*\[(.*?)\];", texto, re.S)
+    return re.findall(r'"([^"]+)"', m.group(1)) if m else []
+
+
+def checar_pwa(arquivos):
+    """Confere sincronia entre app.js, sw.js, index.html, manifest.webmanifest e imagens."""
+    r = Relatorio("pwa")
+    app_txt = (RAIZ / "app.js").read_text(encoding="utf-8")
+    sw_txt = (RAIZ / "sw.js").read_text(encoding="utf-8")
+    html_txt = (RAIZ / "index.html").read_text(encoding="utf-8")
+
+    m_app = re.search(r'const\s+VERSAO_APP\s*=\s*"([^"]+)"', app_txt)
+    m_sw = re.search(r'const\s+VERSAO\s*=\s*"viajador-([^"]+)"', sw_txt)
+    if not m_app or not m_sw:
+        r.erro(0, "versao", "não foi possível ler VERSAO_APP em app.js ou VERSAO em sw.js")
+    elif m_app.group(1) != m_sw.group(1):
+        r.erro(0, "versao", f'VERSAO_APP ({m_app.group(1)}) difere de sw.js (viajador-{m_sw.group(1)})')
+
+    nucleo = extrair_lista_js(sw_txt, "NUCLEO")
+    fotos = extrair_lista_js(sw_txt, "FOTOS")
+    em_cache = set(nucleo) | set(fotos)
+
+    for lista_nome, itens in (("NUCLEO", nucleo), ("FOTOS", fotos)):
+        vistos = set()
+        for item in itens:
+            if item in vistos:
+                r.aviso(0, f"sw.js.{lista_nome}", f'caminho repetido: "{item}"')
+            vistos.add(item)
+            if item != "./" and not (RAIZ / item).exists():
+                r.erro(0, f"sw.js.{lista_nome}", f'arquivo no cache não existe no disco: "{item}"')
+
+    for arq in arquivos:
+        rel = arq.resolve().relative_to(RAIZ).as_posix()
+        if f'src="{rel}"' not in html_txt:
+            r.erro(0, "index.html", f'script de país ausente em index.html: "{rel}"')
+        if rel not in nucleo:
+            r.erro(0, "sw.js", f'arquivo de país ausente em NUCLEO: "{rel}"')
+
+    for pasta in ("img/arte", "img/guia", "img/pessoas"):
+        for arq in sorted((RAIZ / pasta).glob("*")):
+            if arq.is_file():
+                rel = arq.relative_to(RAIZ).as_posix()
+                if rel not in em_cache:
+                    r.erro(0, "sw.js", f'imagem fora do cache offline (NUCLEO/FOTOS): "{rel}"')
+
+    manifest_path = RAIZ / "manifest.webmanifest"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for icon in manifest.get("icons") or []:
+            src = icon.get("src")
+            if src and not (RAIZ / src).exists():
+                r.erro(0, "manifest", f'ícone não existe: "{src}"')
+    except (OSError, json.JSONDecodeError) as e:
+        r.erro(0, "manifest", f"manifest.webmanifest inválido: {e}")
+
+    return r
+
+
 def validar(caminho):
     try:
         nome = caminho.resolve().relative_to(RAIZ).as_posix()
@@ -549,6 +625,11 @@ def main(args):
         r.imprimir()
         print(f"{r.nome}: {len(r.erros)} erro(s), {len(r.avisos)} aviso(s)")
         total_erros += len(r.erros)
+    if not args:
+        rp = checar_pwa(arquivos)
+        rp.imprimir()
+        print(f"{rp.nome}: {len(rp.erros)} erro(s), {len(rp.avisos)} aviso(s)")
+        total_erros += len(rp.erros)
     return 1 if total_erros else 0
 
 
