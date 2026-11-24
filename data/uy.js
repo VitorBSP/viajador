@@ -10,6 +10,15 @@ window.VIAJADOR.paises.uy = {
   bandeira: "🇺🇾",
   voz: ["es-UY", "es-AR", "es-419", "es-ES", "es"],
   cidades: ["Montevidéu", "Punta del Este", "Arredores de Punta", "Piriápolis", "Colonia del Sacramento", "Costa de Rocha"],
+  // Conversor offline: taxaPadrao é só referência inicial (1 R$ em moeda local); o viajante ajusta pela taxa da viagem.
+  moeda: {
+    codigo: "UYU",
+    simbolo: "$U",
+    nome: "Peso uruguaio",
+    taxaPadrao: 7.4,
+    atalhos: [100, 300, 500, 1000, 2000],
+    gorjeta: 10,
+  },
   // Comemoração ao completar um nível do álbum.
   parabens: ["¡Bárbaro!", "¡Pa!", "¡Bien ahí!", "¡De más!"],
   // Mapa esquemático do álbum: [coluna, linha, largura, altura] de cada cidade ou região.

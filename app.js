@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.39";
+  const VERSAO_APP = "1.40";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -342,12 +342,92 @@
     futebol: Boolean(pais.futebol),
     quiz: (pais.quiz || []).length > 0,
     conversas: (pais.conversas || []).length > 0,
-    preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0,
+    preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0 || Boolean(pais.moeda),
     dicas: pais.pronuncia.length > 0,
     roteiro: pais.lugares.some((c) => c.itens.some((l) => l.prioridade)),
     // O GuIA (supabase/functions/guia) escolhe a persona pelo código do país; só aparece onde o país tem `ia: true` (ou no Uruguai).
     ia: pais.codigo === "uy" || pais.ia === true,
   };
+
+  // Conversor de moeda offline: taxa editável salva no aparelho + cálculo rápido de gorjeta.
+  const CHAVE_MOEDA = doPais("viajador:moeda");
+  const moedaCfg = pais.moeda || null;
+  let moedaEst = moedaCfg ? { taxa: moedaCfg.taxaPadrao, valor: String(moedaCfg.atalhos[2] || moedaCfg.atalhos[0] || 100), direcao: "local-brl", gorjeta: false } : null;
+  if (moedaEst) {
+    try {
+      const salvo = JSON.parse(localStorage.getItem(CHAVE_MOEDA));
+      if (salvo && typeof salvo.taxa === "number" && salvo.taxa > 0) moedaEst.taxa = salvo.taxa;
+      if (salvo && (salvo.direcao === "local-brl" || salvo.direcao === "brl-local")) moedaEst.direcao = salvo.direcao;
+    } catch (e) {}
+  }
+  const salvarMoeda = () => {
+    if (!moedaEst) return;
+    try { localStorage.setItem(CHAVE_MOEDA, JSON.stringify({ taxa: moedaEst.taxa, direcao: moedaEst.direcao })); } catch (e) {}
+  };
+  const lerNumero = (txt) => {
+    const limpo = String(txt || "").trim().replace(/\s+/g, "").replace(",", ".");
+    const n = Number(limpo);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  };
+  const fmtBrl = (n) => `R$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fmtLocal = (n) => `${moedaCfg.simbolo} ${n.toLocaleString("pt-BR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
+  function calcularMoeda() {
+    if (!moedaCfg || !moedaEst) return { principal: "", detalhe: "" };
+    const taxa = moedaEst.taxa > 0 ? moedaEst.taxa : moedaCfg.taxaPadrao;
+    const base = lerNumero(moedaEst.valor);
+    const pct = moedaEst.gorjeta && moedaCfg.gorjeta ? moedaCfg.gorjeta / 100 : 0;
+    const localBase = moedaEst.direcao === "local-brl" ? base : base * taxa;
+    const brlBase = moedaEst.direcao === "local-brl" ? base / taxa : base;
+    const localTotal = localBase * (1 + pct);
+    const brlTotal = brlBase * (1 + pct);
+    const principal = moedaEst.direcao === "local-brl" ? fmtBrl(brlTotal) : fmtLocal(localTotal);
+    const detalhe = pct
+      ? `Conta: ${fmtLocal(localBase)} (${fmtBrl(brlBase)}) + ${moedaCfg.gorjeta}% propina: ${fmtLocal(localBase * pct)} (${fmtBrl(brlBase * pct)})`
+      : `1 R$ = ${taxa.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${moedaCfg.codigo}`;
+    return { principal, detalhe };
+  }
+  function atualizarConversorDom() {
+    const p = $("#moeda-principal");
+    const d = $("#moeda-detalhe");
+    if (!p || !d) return;
+    const res = calcularMoeda();
+    p.textContent = res.principal;
+    d.textContent = res.detalhe;
+  }
+  function conversorHtml() {
+    if (!moedaCfg || !moedaEst) return "";
+    const localParaBrl = moedaEst.direcao === "local-brl";
+    const atalhos = localParaBrl ? moedaCfg.atalhos : [20, 50, 100, 200, 500];
+    const res = calcularMoeda();
+    return `<section class="conversor" aria-labelledby="moeda-titulo">
+      <div class="conversor-topo">
+        <strong id="moeda-titulo">💱 Conversor ${esc(moedaCfg.codigo)} ↔ BRL (offline)</strong>
+        <button class="btn" type="button" data-acao="moeda-inverter">⇄ ${localParaBrl ? `${esc(moedaCfg.codigo)} → R$` : `R$ → ${esc(moedaCfg.codigo)}`}</button>
+      </div>
+      <label class="conversor-entrada">
+        <span class="conversor-prefixo">${esc(localParaBrl ? moedaCfg.simbolo : "R$")}</span>
+        <span class="sr">Valor em ${esc(localParaBrl ? moedaCfg.nome : "Real")}</span>
+        <input id="moeda-valor" type="text" inputmode="decimal" value="${esc(moedaEst.valor)}" placeholder="0" autocomplete="off">
+      </label>
+      <div class="conversor-atalhos">${atalhos.map((v) => `
+        <button class="btn" type="button" data-acao="moeda-atalho" data-valor="${v}">${esc(localParaBrl ? moedaCfg.simbolo : "R$")} ${v.toLocaleString("pt-BR")}</button>`).join("")}
+      </div>
+      <div class="conversor-resultado" aria-live="polite">
+        <p class="conversor-principal" id="moeda-principal">${esc(res.principal)}</p>
+        <p class="conversor-detalhe" id="moeda-detalhe">${esc(res.detalhe)}</p>
+      </div>
+      <div class="conversor-opcoes">
+        ${moedaCfg.gorjeta ? `<label class="conversor-check"><input type="checkbox" id="moeda-gorjeta" ${moedaEst.gorjeta ? "checked" : ""}> Somar +${moedaCfg.gorjeta}% propina (gorjeta)</label>` : ""}
+        <div class="conversor-taxa">
+          <label for="moeda-taxa">1 R$ =</label>
+          <input id="moeda-taxa" type="text" inputmode="decimal" value="${esc(String(moedaEst.taxa).replace(".", ","))}" aria-label="Taxa de câmbio em ${esc(moedaCfg.codigo)} por real">
+          <span>${esc(moedaCfg.codigo)}</span>
+          <button class="btn" type="button" data-acao="moeda-reset">Padrão</button>
+        </div>
+      </div>
+      <p class="conversor-nota">Funciona sem internet. Ajuste a taxa pela cotação da sua casa de câmbio ou cartão — valores aproximados.</p>
+    </section>`;
+  }
   let posicao = null;
   let estadoGps = "";
   let filtroCidade = "";
@@ -1182,6 +1262,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ? pais.situacoes.map((s) => ({ s, frases: s.frases.filter((f) => (f.regioes || []).includes(filtroRegiao)) })).filter((x) => x.frases.length)
         : null;
       return `${rapidas()}
+        ${moedaCfg ? `<a class="atalho-moeda" href="#/preparar">
+          <span class="emoji" aria-hidden="true">💱</span>
+          <span><strong>Conversor ${esc(moedaCfg.codigo)} ↔ R$ + ${moedaCfg.gorjeta ? `${moedaCfg.gorjeta}% propina` : "câmbio"}</strong><small>Funciona sem internet · 1 R$ = ${moedaEst.taxa.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${esc(moedaCfg.codigo)}</small></span>
+          <span class="atalho-seta" aria-hidden="true">→</span>
+        </a>` : ""}
         ${chamadaGuia(`Pergunte ao Gu<span class="ia">IA</span> Turístico`, "Onde comer, o que ver perto, como falar: é só perguntar.")}
         <div class="intro">${esc(pais.intro)}</div>
         <h1>${semTraducao ? "Palavras do dia a dia" : "O que você precisa agora?"}</h1>
@@ -1229,6 +1314,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     preparar() {
       return `<h1>Preparar a viagem</h1>
         <p class="lead">O que resolver antes de sair e como se comportar por lá.</p>
+        ${conversorHtml()}
         <h2>Checklist</h2>
         <div class="tabela">${(pais.checklist || []).map((c) => `
           <label class="item check">
@@ -1978,6 +2064,25 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       nivelAlbum = b.dataset.nivel;
       return render();
     }
+    if (b.dataset.acao === "moeda-inverter" && moedaEst) {
+      moedaEst.direcao = moedaEst.direcao === "local-brl" ? "brl-local" : "local-brl";
+      salvarMoeda();
+      return render();
+    }
+    if (b.dataset.acao === "moeda-atalho" && moedaEst) {
+      moedaEst.valor = b.dataset.valor || "0";
+      const inp = $("#moeda-valor");
+      if (inp) inp.value = moedaEst.valor;
+      return atualizarConversorDom();
+    }
+    if (b.dataset.acao === "moeda-reset" && moedaEst && moedaCfg) {
+      moedaEst.taxa = moedaCfg.taxaPadrao;
+      salvarMoeda();
+      const inp = $("#moeda-taxa");
+      if (inp) inp.value = String(moedaEst.taxa).replace(".", ",");
+      atualizarConversorDom();
+      return avisar("Taxa restaurada");
+    }
     const f = vistas[+b.dataset.i];
     if (b.dataset.acao === "falar") falar(f.es);
     if (b.dataset.acao === "mostrar") mostrar(f, b);
@@ -1992,6 +2097,21 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     }
   });
 
+  main.addEventListener("input", (e) => {
+    if (!moedaEst) return;
+    if (e.target.id === "moeda-valor") {
+      moedaEst.valor = e.target.value;
+      atualizarConversorDom();
+    } else if (e.target.id === "moeda-taxa") {
+      const nova = lerNumero(e.target.value);
+      if (nova > 0) {
+        moedaEst.taxa = nova;
+        salvarMoeda();
+      }
+      atualizarConversorDom();
+    }
+  });
+
   main.addEventListener("keydown", (e) => {
     if (e.target.id === "pergunta-ia" && e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -2001,6 +2121,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   });
 
   main.addEventListener("change", (e) => {
+    if (e.target.id === "moeda-gorjeta" && moedaEst) {
+      moedaEst.gorjeta = e.target.checked;
+      return atualizarConversorDom();
+    }
     const id = e.target.dataset.check;
     if (!id) return;
     marcados = e.target.checked ? [...marcados, id] : marcados.filter((x) => x !== id);

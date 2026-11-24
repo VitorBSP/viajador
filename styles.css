@@ -792,3 +792,48 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
   .pais select { max-width: 150px; height: 36px; padding: 0 6px; }
 }
 .filtros-rotulo { align-self: center; font-size: 14px; font-weight: 600; margin-right: 4px; }
+
+/* Conversor de moeda offline (Uruguai e futuros destinos estrangeiros) */
+.atalho-moeda {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 18px; padding: 12px 14px;
+  background: var(--cartao); border: 1px solid var(--linha); border-radius: var(--raio);
+  box-shadow: var(--sombra); text-decoration: none;
+}
+.atalho-moeda strong { display: block; font-size: 15px; }
+.atalho-moeda small { display: block; color: var(--suave); font-size: 13px; }
+.atalho-moeda .atalho-seta { margin-left: auto; color: var(--celeste); font-weight: 700; }
+.conversor {
+  background: var(--cartao); border: 1px solid var(--linha); border-radius: var(--raio);
+  padding: 16px; margin: 0 0 24px; box-shadow: var(--sombra);
+}
+.conversor-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.conversor-topo strong { font-size: 16px; }
+.conversor-entrada { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.conversor-prefixo { font-weight: 700; font-size: 18px; color: var(--celeste); min-width: 34px; }
+.conversor-entrada input {
+  flex: 1; min-width: 0; min-height: 46px; padding: 10px 12px;
+  border: 1.5px solid var(--linha); border-radius: 12px;
+  background: var(--fundo); color: var(--texto); font: 600 20px Inter, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.conversor-atalhos { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.conversor-atalhos .btn { min-height: 36px; padding: 6px 10px; font-size: 13px; }
+.conversor-resultado {
+  padding: 14px; border-radius: 12px; background: var(--celeste-claro); margin-bottom: 12px;
+}
+.conversor-principal {
+  margin: 0; font: 700 26px/1.2 Fraunces, Georgia, serif; color: var(--celeste);
+  font-variant-numeric: tabular-nums;
+}
+.conversor-detalhe { margin: 6px 0 0; font-size: 14px; color: var(--texto); font-variant-numeric: tabular-nums; }
+.conversor-opcoes { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--linha); }
+.conversor-check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+.conversor-check input { width: 18px; height: 18px; accent-color: var(--celeste); }
+.conversor-taxa { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--suave); flex-wrap: wrap; }
+.conversor-taxa input {
+  width: 74px; min-height: 34px; padding: 4px 8px; border: 1px solid var(--linha); border-radius: 8px;
+  background: var(--fundo); color: var(--texto); font: 600 14px Inter, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.conversor-nota { margin: 10px 0 0; font-size: 12px; color: var(--suave); }
+

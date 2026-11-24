@@ -30,8 +30,9 @@ PAIS = {
     "pronuncia": True, "comidas": True, "lugares": True,
     "conversas": False, "etiqueta": False, "checklist": False, "guia": False,
     "historias": False, "quiz": False, "futebol": False, "imagens": False,
-    "artigo": False, "ia": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False, "mapa": False, "parabens": False,
+    "artigo": False, "ia": False, "origem": False, "sugestoesIA": False, "rapidas": False, "capas": False, "mapa": False, "parabens": False, "moeda": False,
 }
+MOEDA = {"codigo": True, "simbolo": True, "nome": True, "taxaPadrao": True, "atalhos": True, "gorjeta": False}
 RAPIDA = {"rotulo": True, "icone": True, "es": True}
 CAPAS = {"inicio", "guia", "historia", "futebol", "quiz", "conversas", "lugares", "girias", "ditados", "dicas", "preparar", "favoritos", "ia"}
 ORIGEM = {"lead": True, "imagem": True, "alt": True, "legenda": True, "quiz": False}
@@ -516,6 +517,17 @@ def checar_pais(r, chave, p, esperado):
         checar_campos(r, i, CHECK, f"checklist[{n}]", p.linha)
 
 
+    moeda = p.get("moeda")
+    if moeda is not None and checar_campos(r, moeda, MOEDA, "moeda", p.linha):
+        taxa = moeda.get("taxaPadrao")
+        if not isinstance(taxa, (int, float)) or isinstance(taxa, bool) or taxa <= 0:
+            r.erro(moeda.linha, "moeda.taxaPadrao", "deveria ser um número maior que zero")
+        atalhos = lista_de(r, moeda, "atalhos", "moeda", minimo=1)
+        if any(not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0 for v in atalhos):
+            r.erro(moeda.linha, "moeda.atalhos", "deveria conter apenas números positivos")
+        gorj = moeda.get("gorjeta")
+        if gorj is not None and (not isinstance(gorj, (int, float)) or isinstance(gorj, bool) or not 0 <= gorj <= 50):
+            r.erro(moeda.linha, "moeda.gorjeta", "deveria ser um número entre 0 e 50")
     imagens = p.get("imagens")
     if isinstance(imagens, Obj):
         lugares_img = imagens.get("lugares")
