@@ -710,6 +710,36 @@
     const sobras = grupos.flatMap((g) => g.itens.filter((x) => !x.obrig && !escolhidos.has(x)));
     return { agenda: r.agenda, faltam, sobras, escolhidos, longe, estrada: conta };
   }
+  // Para o aviso "Não cabe todo o obrigatório" do automático: refaz o roteiro com as mesmas escolhas e mais dias,
+  // até o máximo, e diz com quantos dias os lugares avisados entram. Um roteiro só com os obrigatórios errava para
+  // os dois lados (sem a folga para andar na cidade nem o limite de estrada, e com os dias arrumados de outro jeito).
+  // Mais dias nem sempre ajudam: com mais lugares longe no roteiro, a estrada passa do limite e um lugar sai.
+  // `dias`: o menor número de dias em que entra tudo o que pode entrar e nenhum outro obrigatório fica de fora por tempo.
+  // `nunca`: os lugares (do dado) que não entram com nenhum número de dias; `pelaEstrada`: e, no máximo, saem pela estrada.
+  // A tela se redesenha sem mudar a escolha (Salvar, Mais detalhes), então a última resposta fica guardada.
+  let ultimoAviso = { chave: null, valor: null };
+  function diasParaIncluir(cidades, dias, opcoes, avisados) {
+    const chave = JSON.stringify([pais.codigo, cidades, dias, [...opcoes.sem].sort(), [...opcoes.forcar].sort(), opcoes.limiteEstrada]);
+    if (ultimoAviso.chave === chave) return ultimoAviso.valor;
+    const tentativas = [];
+    let valor = null;
+    for (let d = dias + 1; d <= DIAS_MAX && !valor; d++) {
+      const t = montarRoteiro(cidades, d, opcoes);
+      const fora = new Set(t.faltam.map((y) => y.l));
+      const semTempo = t.faltam.filter((y) => !t.longe.includes(y)).map((y) => y.l);
+      tentativas.push({ d, fora, semTempo, longe: new Set(t.longe.map((y) => y.l)) });
+      if (!avisados.some((x) => fora.has(x.l)) && !semTempo.length) valor = { dias: d, nunca: [], pelaEstrada: false };
+    }
+    if (!valor) {
+      const nunca = avisados.map((x) => x.l).filter((l) => tentativas.every((k) => k.fora.has(l)));
+      const resto = avisados.map((x) => x.l).filter((l) => !nunca.includes(l));
+      const ok = resto.length && tentativas.find((k) => !resto.some((l) => k.fora.has(l)) && k.semTempo.every((l) => nunca.includes(l)));
+      const ultima = tentativas[tentativas.length - 1];
+      valor = { dias: ok ? ok.d : null, nunca, pelaEstrada: Boolean(ultima && nunca.length) && nunca.every((l) => ultima.longe.has(l)) };
+    }
+    ultimoAviso = { chave, valor };
+    return valor;
+  }
   function pedirPosicao() {
     if (!("geolocation" in navigator)) {
       estadoGps = "Este aparelho não informa a localização. Escolha um ponto na lista.";
@@ -1412,30 +1442,17 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         while (diasPrecisos < 30 && (() => { const t = montarRoteiro(pais.cidades, diasPrecisos, { so: meus, limiteEstrada: limite, podeTirarObrig: true }); return t.faltam.length + t.sobras.length - t.longe.length; })());
       }
       // No automático, obrigatório que ficou de fora por falta de tempo (o que sai pela estrada tem aviso próprio).
-      // A resposta vem do próprio roteiro, com as mesmas escolhas. Um roteiro só com os obrigatórios errava para os
-      // dois lados: não tem a folga para andar dentro da cidade nem o limite de estrada, e arruma os dias de outro jeito.
-      // Se com o máximo de dias o lugar sai pela estrada, mais dias não resolvem. Para o resto, vale o menor número
-      // de dias em que ele entra e nenhum outro obrigatório fica de fora por tempo.
       const semTempo = !meu && r ? r.faltam.filter((x) => !r.longe.includes(x)) : [];
-      let soPelaEstrada = [];
-      let diasParaTudo = null;
-      if (semTempo.length && roteiro.dias < DIAS_MAX) {
-        const noMaximo = montarRoteiro(cidades, DIAS_MAX, opcoesAuto);
-        soPelaEstrada = semTempo.filter((x) => noMaximo.longe.some((y) => y.l === x.l));
-        const estrada = new Set(soPelaEstrada.map((x) => x.l));
-        const alvo = new Set(semTempo.filter((x) => !estrada.has(x.l)).map((x) => x.l));
-        const cabe = (t) => !t.faltam.some((y) => alvo.has(y.l) || (!t.longe.includes(y) && !estrada.has(y.l)));
-        for (let d = roteiro.dias + 1; alvo.size && d <= DIAS_MAX && diasParaTudo === null; d++) {
-          if (cabe(d === DIAS_MAX ? noMaximo : montarRoteiro(cidades, d, opcoesAuto))) diasParaTudo = d;
-        }
-      }
-      const cabemComDias = semTempo.filter((x) => !soPelaEstrada.includes(x));
+      const aviso = semTempo.length ? diasParaIncluir(cidades, roteiro.dias, opcoesAuto, semTempo) : null;
       const nomesDe = (lista) => lista.map((x) => esc(x.l.nome)).join(", ");
-      const comoIncluir = !soPelaEstrada.length
-        ? (diasParaTudo ? `Para ver tudo, são uns ${diasParaTudo} dias.` : `Nem com ${DIAS_MAX} dias cabe tudo.`)
-        : !cabemComDias.length
-          ? "Mais dias não resolvem: a estrada até lá passaria do limite. Para incluir, use o Do meu jeito e escolha um limite maior."
-          : `${diasParaTudo ? `Com uns ${diasParaTudo} dias,` : `Nem com ${DIAS_MAX} dias`} ${cabemComDias.length === 1 ? "entra" : "entram"} ${nomesDe(cabemComDias)}. ${nomesDe(soPelaEstrada)}, nem com mais dias: a estrada até lá passaria do limite.`;
+      const nuncaEntram = aviso ? semTempo.filter((x) => aviso.nunca.includes(x.l)) : [];
+      const entramComDias = semTempo.filter((x) => !nuncaEntram.includes(x));
+      const comoIncluir = !aviso ? ""
+        : !entramComDias.length
+          ? (aviso.pelaEstrada ? "Mais dias não resolvem: a estrada até lá passaria do limite. Para incluir, use o Do meu jeito e escolha um limite maior." : `Nem com ${DIAS_MAX} dias cabe tudo.`)
+          : !aviso.dias ? `Nem com ${DIAS_MAX} dias cabe tudo.`
+            : !nuncaEntram.length ? `Para ver tudo, são uns ${aviso.dias} dias.`
+              : `Com uns ${aviso.dias} dias, ${entramComDias.length === 1 ? "entra" : "entram"} ${nomesDe(entramComDias)}. ${nomesDe(nuncaEntram)}, nem com mais dias${aviso.pelaEstrada ? ": a estrada até lá passaria do limite" : ""}.`;
       const nome = semTraducao ? "regiões" : "cidades";
       const historia = (l) => pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("");
       // Para o jantar, uma comida da região (ou do país), sem repetir entre as noites.
