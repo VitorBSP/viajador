@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Viajador v2.0 · Protótipo Visual de Marca e UI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f4f2ec;
+      --card: #ffffff;
+      --foreground: #162032;
+      --muted-foreground: #5b6678;
+      --border: #e2ddd0;
+      --primary: #0f356b;
+    }
+    .font-editorial { font-family: Georgia, "Times New Roman", serif; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    .phone-scroll::-webkit-scrollbar { width: 4px; }
+    .phone-scroll::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.28); border-radius: 999px; }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-4 md:p-6">
+  <div class="max-w-5xl mx-auto space-y-5">
+    <!-- Cabeçalho do estúdio -->
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-3 pb-4 border-b border-[var(--border)]">
+      <div>
+        <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mb-1">
+          <span>Viajador v2.0</span>
+          <span>·</span>
+          <span>APP_SPEC Preview</span>
+          <span>·</span>
+          <span>Duck AI Labs</span>
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold tracking-tight">Protótipo Interativo · Marca + 5 Pilares + 3 UI Kits</h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          Troque o símbolo (A / B / C), o território (UY / RS) e o tema para validar o visual antes de aplicar na v2.0.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="px-2.5 py-1 rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">Zero emoji na barra</span>
+        <span class="px-2.5 py-1 rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">Offline-first</span>
+        <span class="px-2.5 py-1 rounded-full bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">5 abas fixas</span>
+      </div>
+    </header>
+
+    <!-- Layout principal: Controles à esquerda + Simulador à direita -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Painel de controles -->
+      <aside class="lg:col-span-5 space-y-4">
+        <!-- Seletor de Símbolo -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold">1. Escolha o símbolo da marca</h2>
+            <span id="badge-simbolo" class="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--background)] border border-[var(--border)]">Opção B</span>
+          </div>
+          <div id="simbolo-grid" class="grid grid-cols-1 gap-2"></div>
+        </section>
+
+        <!-- Seletor de Território e Tema -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-3">
+          <h2 class="text-sm font-semibold">2. Território &amp; Aparência</h2>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" data-terr="uy" class="terr-btn px-3 py-2.5 rounded-xl border text-left text-xs font-medium transition">
+              <div class="font-semibold text-sm">Uruguai</div>
+              <div class="text-[var(--muted-foreground)] mt-0.5">Espanhol + $U ↔ R$</div>
+            </button>
+            <button type="button" data-terr="rs" class="terr-btn px-3 py-2.5 rounded-xl border text-left text-xs font-medium transition">
+              <div class="font-semibold text-sm">Rio Grande do Sul</div>
+              <div class="text-[var(--muted-foreground)] mt-0.5">8 regiões + Vocabulário</div>
+            </button>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-[var(--border)]">
+            <span class="text-xs text-[var(--muted-foreground)]">Tema interno do app</span>
+            <div class="inline-flex rounded-lg bg-[var(--background)] border border-[var(--border)] p-0.5 text-xs">
+              <button type="button" data-tema="claro" class="tema-btn px-3 py-1 rounded-md font-medium">Claro (Papel)</button>
+              <button type="button" data-tema="escuro" class="tema-btn px-3 py-1 rounded-md font-medium">Escuro</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mapa de origem dos 3 UI kits -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-2.5 text-xs">
+          <h2 class="text-sm font-semibold">3. O que veio de cada UI kit</h2>
+          <div class="space-y-2 text-[var(--muted-foreground)]">
+            <p><strong class="text-[var(--foreground)]">Tour &amp; Travel:</strong> Timeline vertical na aba <em>Roteiro</em> (com km e turno), busca em pílula + atalhos SVG em círculo e <em>bottom sheet</em> ao tocar em qualquer lugar.</p>
+            <p><strong class="text-[var(--foreground)]">Woosh:</strong> Barra inferior de 5 ícones SVG com o <em>GuIA</em> elevado no centro, cards fotográficos com selo/ação no canto e mosaico no <em>Álbum</em>.</p>
+            <p><strong class="text-[var(--foreground)]">GoTravel:</strong> Listas limpas de seleção e ritmo arejado sem excesso de bordas.</p>
+            <p><strong class="text-[var(--foreground)]">Originalidade Viajador:</strong> Paleta papel creme <code>#F7F5EF</code>, serif editorial, pronúncia à brasileira, zero login e selo discreto <em>Duck AI PRO</em>.</p>
+          </div>
+        </section>
+
+        <!-- Preview de ícone instalado -->
+        <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 flex items-center gap-4">
+          <div id="app-icon-preview" class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md shrink-0"></div>
+          <div class="min-w-0">
+            <div class="text-sm font-semibold">Ícone na tela inicial do celular</div>
+            <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Atualiza ao vivo conforme o símbolo escolhido acima.</p>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Simulador Mobile Interativo -->
+      <main class="lg:col-span-7 flex flex-col items-center">
+        <div id="phone-shell" class="w-full max-w-[392px] rounded-[36px] border-4 border-[var(--border)] shadow-2xl overflow-hidden flex flex-col relative" style="height: 760px;">
+          <!-- Barra de status + cabeçalho compacto -->
+          <div id="app-header" class="px-4 pt-3 pb-3 shrink-0 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div id="header-logo" class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"></div>
+                <div class="leading-tight">
+                  <div class="font-editorial font-bold text-lg tracking-tight">Viajador</div>
+                  <div class="text-[11px] opacity-75">por Duck AI</div>
+                </div>
+              </div>
+              <button id="pill-territorio" type="button" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer"></button>
+            </div>
+            <!-- Busca em pílula (Tour & Travel) -->
+            <div class="mt-3 relative">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 opacity-55 pointer-events-none" id="search-icon"></span>
+              <input id="app-search" type="search" readonly class="w-full pl-9 pr-3 py-2 rounded-full text-xs outline-none cursor-default" />
+            </div>
+          </div>
+
+          <!-- Área rolável da tela ativa -->
+          <div id="app-body" class="flex-1 overflow-y-auto phone-scroll px-4 py-3 space-y-4"></div>
+
+          <!-- Bottom Sheet de detalhe do lugar (Tour & Travel) -->
+          <div id="place-sheet" class="hidden absolute inset-0 z-30 flex flex-col justify-end bg-black/50 backdrop-blur-[2px]">
+            <div id="place-sheet-card" class="rounded-t-3xl overflow-hidden shadow-2xl max-h-[82%] flex flex-col"></div>
+          </div>
+
+          <!-- Modal Mostrar em tela cheia -->
+          <div id="mostrar-modal" class="hidden absolute inset-0 z-40 flex flex-col justify-between p-6 text-white" style="background:#0B2A63;">
+            <div class="flex items-center justify-between">
+              <span class="text-xs uppercase tracking-wider opacity-75 font-semibold">Modo Mostrar · Tela cheia</span>
+              <button type="button" id="fechar-mostrar" class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-base font-bold cursor-pointer">×</button>
+            </div>
+            <div class="text-center space-y-4 my-auto">
+              <p id="mostrar-es" class="font-editorial text-3xl font-bold leading-snug"></p>
+              <p id="mostrar-pr" class="inline-block px-3 py-1 rounded-full text-sm font-semibold tracking-wide" style="background:rgba(255,196,69,0.2);color:#FFC445;"></p>
+              <p id="mostrar-pt" class="text-base opacity-85"></p>
+            </div>
+            <div class="text-center text-xs opacity-70">Tela mantida acesa · Funciona 100% offline</div>
+          </div>
+
+          <!-- Bottom Navigation Bar: 5 pilares SVG com botão central elevado (Woosh) -->
+          <nav id="app-nav" class="shrink-0 px-2 pt-2 pb-3 border-t grid grid-cols-5 items-end relative z-20"></nav>
+        </div>
+        <p class="text-xs text-[var(--muted-foreground)] mt-3 text-center">
+          Dica: clique nas 5 abas embaixo, toque nos cards de lugar para abrir o <em>sheet</em>, teste o conversor ou carimbe figurinhas no Álbum.
+        </p>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      simbolo: "B",
+      territorio: "uy",
+      tema: "claro",
+      aba: "explorar",
+      convValor: 500,
+      convTaxa: 7.4,
+      convPropina: true,
+      visitados: { uy: new Set(["Teatro Solís", "Mercado del Puerto", "La Mano"]), rs: new Set(["Usina do Gasômetro", "Lago Negro", "Cânion Itaimbezinho"]) },
+      roteiroTrocado: false,
+      chatMsgs: {
+        uy: [
+          { quem: "eu", txt: "Vou almoçar no Mercado del Puerto. O que peço e como falo sem pagar mico?" },
+          { quem: "guia", txt: "Pede uma parrillada pra dividir e um medio y medio (vinho branco seco + espumante). Na hora da conta, lembra que a propina (~10%) não vem automática.\n\nFala assim: \"¿Me traés la cuenta, por favor?\" (me tra-ÊS la KUEN-ta, por fa-BOR)." }
+        ],
+        rs: [
+          { quem: "eu", txt: "Estou em Porto Alegre no fim da tarde. Onde vale ir perto do Centro?" },
+          { quem: "guia", txt: "Desce pra Orla do Guaíba junto da Usina do Gasômetro uns 40 minutos antes do pôr do sol. Dá pra ir a pé da Casa de Cultura Mario Quintana.\n\nCostume local: se alguém te oferecer mate, só diga \"obrigado\" quando não quiser mais, senão encerra a roda." }
+        ]
+      }
+    };
+
+    const SIMBOLOS = [
+      {
+        id: "A",
+        nome: "A · Carimbo / Bússola",
+        desc: "Passaporte editorial clássico, neutro para qualquer país ou região.",
+        svg: (cor, acento) => `
+          <svg viewBox="0 0 32 32" class="w-full h-full" fill="none">
+            <circle cx="16" cy="16" r="12.5" stroke="${cor}" stroke-width="1.9" stroke-dasharray="2.5 2"/>
+            <circle cx="16" cy="16" r="9" stroke="${cor}" stroke-width="1.6"/>
+            <path d="M20.8 11.2L17.9 17.9L11.2 20.8L14.1 14.1L20.8 11.2Z" fill="${acento}" stroke="${cor}" stroke-width="1.3" stroke-linejoin="round"/>
+            <circle cx="16" cy="16" r="1.4" fill="${cor}"/>
+          </svg>`
+      },
+      {
+        id: "B",
+        nome: "B · Pato Viajante Editorial",
+        desc: "Traço minimalista e sóbrio — elo direto com o ecossistema Duck AI.",
+        svg: (cor, acento) => `
+          <svg viewBox="0 0 32 32" class="w-full h-full" fill="none">
+            <circle cx="16" cy="16" r="13" stroke="${cor}" stroke-width="1.5" stroke-opacity="0.35"/>
+            <path d="M9.5 21.5C9.5 17.5 12.3 15.5 16.5 15.5H19.5C21.8 15.5 23.5 17 23.5 19.2C23.5 21.4 21.5 22.8 18.2 22.8H11.5C10.2 22.8 9.5 22.2 9.5 21.5Z" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round"/>
+            <circle cx="13.8" cy="12" r="3.4" stroke="${cor}" stroke-width="1.8"/>
+            <path d="M10.4 12.2L6.8 13.1L10.3 14.2" fill="${acento}" stroke="${cor}" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M10.8 8.9C12.3 7.7 15.3 7.7 16.8 8.9" stroke="${acento}" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="13.2" cy="11.6" r="0.8" fill="${cor}"/>
+          </svg>`
+      },
+      {
+        id: "C",
+        nome: "C · Horizonte & Estrada",
+        desc: "Evolução limpa do sol atual com linha de estrada — máxima continuidade.",
+        svg: (cor, acento) => `
+          <svg viewBox="0 0 32 32" class="w-full h-full" fill="none">
+            <circle cx="16" cy="16" r="12.5" stroke="${cor}" stroke-width="1.8"/>
+            <circle cx="16" cy="12.5" r="4" fill="${acento}"/>
+            <path d="M5.5 19.5H26.5" stroke="${cor}" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M13 19.5L9.5 27.5M19 19.5L22.5 27.5M16 21.5V26" stroke="${cor}" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>`
+      }
+    ];
+
+    const DATA = {
+      uy: {
+        nome: "Uruguai",
+        sigla: "UY",
+        acento: "#0B5ED7",
+        bandeira: `<svg viewBox="0 0 24 16" class="w-5 h-3.5 rounded-[3px] shrink-0"><rect width="24" height="16" fill="#fff"/><rect y="2" width="24" height="2" fill="#0B5ED7"/><rect y="6" width="24" height="2" fill="#0B5ED7"/><rect y="10" width="24" height="2" fill="#0B5ED7"/><rect y="14" width="24" height="2" fill="#0B5ED7"/><rect width="9" height="8" fill="#fff"/><circle cx="4.5" cy="4" r="2.3" fill="#F2A900"/></svg>`,
+        busca: "Buscar: banheiro, conta, Mercado del Puerto…",
+        abaFalar: "Falar",
+        lugares: [
+          { nome: "Teatro Solís", cidade: "Montevidéu", dist: "450 m", tempo: "1h", obrig: true, grad: "linear-gradient(135deg,#123A72,#2F6DB5)", historia: "Inaugurado em 1856, é o teatro mais antigo do Uruguai e fica na porta da Ciudad Vieja.", reparar: "Repare na fachada neoclássica inspirada no Carlo Felice de Gênova.", frase: { es: "¿Hay visita guiada en portugués?", pr: "AI bi-SI-ta gi-A-da en por-tu-GÉS?", pt: "Tem visita guiada em português?" } },
+          { nome: "Mercado del Puerto", cidade: "Montevidéu", dist: "1,1 km", tempo: "1h30", obrig: true, grad: "linear-gradient(135deg,#6E3A1E,#C47B2B)", historia: "Estrutura metálica de 1868 que virou o templo da parrilla uruguaia.", reparar: "Peça um medio y medio no balcão enquanto espera a carne na brasa.", frase: { es: "¿Me traés la cuenta, por favor?", pr: "me tra-ÊS la KUEN-ta, por fa-BOR?", pt: "Me traz a conta, por favor?" } },
+          { nome: "La Mano (Playa Brava)", cidade: "Punta del Este", dist: "132 km", tempo: "40 min", obrig: true, grad: "linear-gradient(135deg,#0E5A70,#47A0B5)", historia: "Escultura de Mario Irarrázabal feita em 1982 como alerta para banhistas.", reparar: "Vá cedo para conseguir foto sem fila — e leve casaco pelo vento.", frase: { es: "¿Me sacás una foto, por favor?", pr: "me sa-KÁS u-na FO-to, por fa-BOR?", pt: "Você tira uma foto minha?" } },
+          { nome: "Casapueblo", cidade: "Punta Ballena", dist: "118 km", tempo: "2h", obrig: false, grad: "linear-gradient(135deg,#9E5B24,#E59A00)", historia: "Ateliê-escultura erguido à mão por Carlos Páez Vilaró olhando o Rio da Prata.", reparar: "Fique para a Ceremonia del Sol no entardecer (confirme o horário na entrada).", frase: { es: "¿Cuánto sale la entrada?", pr: "KUAN-to SA-le la en-TRA-da?", pt: "Quanto custa a entrada?" } }
+        ],
+        frases: [
+          { es: "¿Dónde está el baño?", pr: "DON-de es-TÁ el BA-nho?", pt: "Onde fica o banheiro?", dica: "Curto e universal em qualquer café ou posto." },
+          { es: "¿Me traés la cuenta, por favor?", pr: "me tra-ÊS la KUEN-ta, por fa-BOR?", pt: "Me traz a conta, por favor?", dica: "No Uruguai a gorjeta (propina, ~10%) não costuma vir incluída." },
+          { es: "Ta, bárbaro, gracias", pr: "TA, BAR-ba-ro, GRA-sias", pt: "Beleza, show, obrigado", dica: "O 'ta' resolve metade das conversas no dia a dia." }
+        ],
+        roteiro: [
+          { turno: "Manhã", hora: "09:30", nome: "Plaza Independencia & Ciudad Vieja", tempo: "1h30", km: "Início", obrig: true, grad: "linear-gradient(135deg,#123A72,#3B78C2)" },
+          { turno: "Manhã", hora: "11:00", nome: "Teatro Solís", tempo: "1h", km: "350 m", obrig: true, grad: "linear-gradient(135deg,#204E8A,#538CD4)" },
+          { turno: "Tarde", hora: "12:30", nome: "Mercado del Puerto", tempo: "1h30", km: "1,1 km", obrig: true, grad: "linear-gradient(135deg,#6E3A1E,#C47B2B)" },
+          { turno: "Tarde", hora: "16:30", nome: "Rambla de Pocitos (pôr do sol)", tempo: "1h30", km: "5,4 km", obrig: false, grad: "linear-gradient(135deg,#B86B14,#F2A900)" }
+        ],
+        trocaAlt: { turno: "Tarde", hora: "16:30", nome: "Parque Rodó & Museu MNAV", tempo: "1h30", km: "3,2 km", obrig: false, grad: "linear-gradient(135deg,#1B6E57,#4AA88B)" },
+        album: ["Teatro Solís", "Mercado del Puerto", "La Mano", "Casapueblo", "Rambla", "Estádio Centenario"],
+        guiaIntro: "Amigo uruguaio ancorado nos 63 pontos e 293 frases do guia."
+      },
+      rs: {
+        nome: "Rio Grande do Sul",
+        sigla: "RS",
+        acento: "#1B7A4A",
+        bandeira: `<svg viewBox="0 0 24 16" class="w-5 h-3.5 rounded-[3px] shrink-0"><polygon points="0,0 16,0 0,16" fill="#1B7A4A"/><polygon points="24,0 24,16 8,16" fill="#F2A900"/><polygon points="16,0 24,0 8,16 0,16" fill="#C81E2B"/></svg>`,
+        busca: "Buscar: cacetinho, bah, Serra, Gasômetro…",
+        abaFalar: "Vocabulário",
+        lugares: [
+          { nome: "Usina do Gasômetro", cidade: "Metropolitana", dist: "600 m", tempo: "1h", obrig: true, grad: "linear-gradient(135deg,#8F3A1E,#E07A3D)", historia: "Antiga termelétrica de 1928 às margens do Guaíba, cartão-postal de Porto Alegre.", reparar: "A chaminé de 117 metros e o pôr do sol refletindo na Orla.", frase: { es: "Baita pôr do sol no Guaíba, tchê", pr: "", pt: "Pôr do sol incrível no Guaíba" } },
+          { nome: "Lago Negro", cidade: "Serra Gaúcha", dist: "115 km", tempo: "1h30", obrig: true, grad: "linear-gradient(135deg,#164E37,#37936B)", historia: "Lago artificial reflorestado com árvores vindas da Floresta Negra alemã.", reparar: "A volta completa a pé leva cerca de 25 minutos na sombra.", frase: { es: "Tri bonito esse lugar", pr: "", pt: "Muito bonito esse lugar" } },
+          { nome: "Cânion Itaimbezinho", cidade: "Litoral Norte / Campos", dist: "192 km", tempo: "2h30", obrig: true, grad: "linear-gradient(135deg,#1A4B5C,#3B869E)", historia: "Um dos maiores cânions da América do Sul, com paredões de até 720 metros.", reparar: "Vá de manhã cedo antes da viração (neblina) fechar o vale.", frase: { es: "Cuidado com a viração", pr: "", pt: "Neblina que sobe rápido e fecha a vista" } },
+          { nome: "São Miguel das Missões", cidade: "Missões", dist: "480 km", tempo: "2h", obrig: false, grad: "linear-gradient(135deg,#7A3B23,#C26A3E)", historia: "Ruínas jesuítico-guarani do século XVIII, Patrimônio Mundial da UNESCO.", reparar: "Se puder, fique para o espetáculo de Som e Luz à noite.", frase: { es: "Capaz!", pr: "", pt: "Sério? / Imagina, não precisa!" } }
+        ],
+        frases: [
+          { es: "Cacetinho", pr: "", pt: "Pão francês na padaria", dica: "Peça sem estranhar — é o nome padrão no RS inteiro." },
+          { es: "Capaz!", pr: "", pt: "Imagina! / Sério? / De jeito nenhum", dica: "Muda totalmente de sentido conforme a entonação." },
+          { es: "Tri legal / Baita", pr: "", pt: "Muito legal / Enorme, excelente", dica: "Usado de Porto Alegre à Serra para elogiar comida ou passeio." }
+        ],
+        roteiro: [
+          { turno: "Manhã", hora: "09:30", nome: "Mercado Público & Praça da Alfândega", tempo: "1h30", km: "Início", obrig: true, grad: "linear-gradient(135deg,#8F3A1E,#C76B35)" },
+          { turno: "Manhã", hora: "11:15", nome: "Casa de Cultura Mario Quintana", tempo: "1h", km: "450 m", obrig: true, grad: "linear-gradient(135deg,#7B2D4A,#B85478)" },
+          { turno: "Tarde", hora: "14:30", nome: "Parque da Redenção (Farroupilha)", tempo: "1h30", km: "2,1 km", obrig: false, grad: "linear-gradient(135deg,#1B6E4A,#4BA37B)" },
+          { turno: "Tarde", hora: "17:15", nome: "Usina do Gasômetro & Orla", tempo: "1h30", km: "2,6 km", obrig: true, grad: "linear-gradient(135deg,#B85D14,#F2A900)" }
+        ],
+        trocaAlt: { turno: "Tarde", hora: "14:30", nome: "Fundação Iberê Camargo", tempo: "1h30", km: "4,8 km", obrig: false, grad: "linear-gradient(135deg,#2C3E50,#5D7690)" },
+        album: ["Usina do Gasômetro", "Lago Negro", "Cânion Itaimbezinho", "São Miguel", "Vale dos Vinhedos", "Beira-Rio"],
+        guiaIntro: "Amigo gaúcho ancorado nas 8 regiões e 146 lugares do RS."
+      }
+    };
+
+    const ICONS = {
+      search: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>`,
+      explorar: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.8 8.2l-2.3 5.3-5.3 2.3 2.3-5.3 5.3-2.3z"/></svg>`,
+      falar: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H6l-3 2 1-4a8 8 0 1 1 17-6z"/></svg>`,
+      guia: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10.2l-5.1 1.9L12 17.5l-1.9-5.4L5 10.2l5.1-1.9L12 3z"/><path d="M18.5 16l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2z"/></svg>`,
+      roteiro: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H14a3 3 0 0 1 0 6h-4a3 3 0 0 0 0 6h5.5"/></svg>`,
+      album: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 3.5v17"/><circle cx="14" cy="11" r="2.5"/><path d="M11 16.5c1-1.5 5-1.5 6 0"/></svg>`,
+      pin: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg>`,
+      swap: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>`,
+      coins: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9.5" cy="9.5" r="5.5"/><path d="M15.2 8.2A5.5 5.5 0 1 1 8.2 15.2"/></svg>`,
+      book: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5v-12z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/></svg>`,
+      trophy: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0V4z"/><path d="M6 6H4a2 2 0 0 0 2 4M18 6h2a2 2 0 0 1-2 4"/></svg>`,
+      check: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>`
+    };
+
+    function palette() {
+      const dark = state.tema === "escuro";
+      const d = DATA[state.territorio];
+      return {
+        dark,
+        papel: dark ? "#0E131E" : "#F7F5EF",
+        card: dark ? "#161E2E" : "#FFFFFF",
+        tinta: dark ? "#EEF2F8" : "#162032",
+        suave: dark ? "#99A5B8" : "#5B6678",
+        borda: dark ? "#263147" : "#E6E1D5",
+        primaria: dark ? "#122647" : "#0F356B",
+        primariaTxt: dark ? "#8BB4FF" : "#0F356B",
+        claro: dark ? "#1C2A44" : "#E8EFFB",
+        ouro: dark ? "#FFC445" : "#E59A00",
+        acento: d.acento
+      };
+    }
+
+    function renderControles() {
+      const grid = document.getElementById("simbolo-grid");
+      document.getElementById("badge-simbolo").textContent = "Opção " + state.simbolo;
+      grid.innerHTML = SIMBOLOS.map((s) => {
+        const ativo = s.id === state.simbolo;
+        return `<button type="button" data-simbolo="${s.id}" class="w-full flex items-center gap-3 p-2.5 rounded-xl border text-left transition cursor-pointer ${ativo ? "border-[var(--primary)] bg-[var(--background)]" : "border-[var(--border)] hover:bg-[var(--background)]"}">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 p-1.5" style="background:#0F356B;">
+            ${s.svg("#FFFFFF", "#FFC445")}
+          </div>
+          <div class="min-w-0">
+            <div class="text-xs font-semibold">${s.nome}</div>
+            <div class="text-[11px] text-[var(--muted-foreground)] leading-snug mt-0.5">${s.desc}</div>
+          </div>
+        </button>`;
+      }).join("");
+
+      document.querySelectorAll(".terr-btn").forEach((b) => {
+        const on = b.dataset.terr === state.territorio;
+        b.style.borderColor = on ? "var(--primary)" : "var(--border)";
+        b.style.background = on ? "var(--background)" : "transparent";
+      });
+      document.querySelectorAll(".tema-btn").forEach((b) => {
+        const on = b.dataset.tema === state.tema;
+        b.style.background = on ? "var(--card)" : "transparent";
+        b.style.color = on ? "var(--foreground)" : "var(--muted-foreground)";
+      });
+
+      const simObj = SIMBOLOS.find((s) => s.id === state.simbolo);
+      const iconBox = document.getElementById("app-icon-preview");
+      iconBox.style.background = "linear-gradient(135deg,#0F356B,#1C4F96)";
+      iconBox.innerHTML = `<div class="w-10 h-10">${simObj.svg("#FFFFFF", "#FFC445")}</div>`;
+    }
+
+    function renderPhone() {
+      const p = palette();
+      const d = DATA[state.territorio];
+      const simObj = SIMBOLOS.find((s) => s.id === state.simbolo);
+
+      const shell = document.getElementById("phone-shell");
+      shell.style.background = p.papel;
+      shell.style.color = p.tinta;
+
+      const header = document.getElementById("app-header");
+      header.style.background = p.primaria;
+      header.style.color = "#FFFFFF";
+
+      const logo = document.getElementById("header-logo");
+      logo.style.background = "rgba(255,255,255,0.12)";
+      logo.innerHTML = `<div class="w-6 h-6">${simObj.svg("#FFFFFF", "#FFC445")}</div>`;
+
+      const pill = document.getElementById("pill-territorio");
+      pill.style.background = "rgba(255,255,255,0.14)";
+      pill.style.borderColor = "rgba(255,255,255,0.28)";
+      pill.style.color = "#FFFFFF";
+      pill.innerHTML = `${d.bandeira}<span>${d.sigla}</span><span class="opacity-70">▾</span>`;
+
+      document.getElementById("search-icon").innerHTML = ICONS.search;
+      const inp = document.getElementById("app-search");
+      inp.placeholder = d.busca;
+      inp.style.background = p.dark ? "rgba(255,255,255,0.12)" : "#FFFFFF";
+      inp.style.color = p.dark ? "#FFFFFF" : "#162032";
+
+      const body = document.getElementById("app-body");
+      if (state.aba === "explorar") body.innerHTML = viewExplorar(p, d);
+      else if (state.aba === "falar") body.innerHTML = viewFalar(p, d);
+      else if (state.aba === "guia") body.innerHTML = viewGuia(p, d);
+      else if (state.aba === "roteiro") body.innerHTML = viewRoteiro(p, d);
+      else if (state.aba === "album") body.innerHTML = viewAlbum(p, d);
+
+      // Bottom Nav (5 ícones SVG, GuIA central elevado estilo Woosh)
+      const nav = document.getElementById("app-nav");
+      nav.style.background = p.card;
+      nav.style.borderColor = p.borda;
+      const tabs = [
+        { id: "explorar", label: "Explorar", icon: ICONS.explorar },
+        { id: "falar", label: d.abaFalar, icon: ICONS.falar },
+        { id: "guia", label: "GuIA", icon: ICONS.guia, central: true },
+        { id: "roteiro", label: "Roteiro", icon: ICONS.roteiro },
+        { id: "album", label: "Álbum", icon: ICONS.album }
+      ];
+      nav.innerHTML = tabs.map((t) => {
+        const active = state.aba === t.id;
+        if (t.central) {
+          return `<button type="button" data-aba="${t.id}" class="flex flex-col items-center gap-0.5 -mt-5 cursor-pointer">
+            <span class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform active:scale-95" style="background:linear-gradient(135deg,#0F356B,#255AA8);color:#FFC445;box-shadow:0 6px 16px rgba(15,53,107,0.35);outline:${active ? "2.5px solid " + p.ouro : "none"};outline-offset:2px;">
+              ${t.icon}
+            </span>
+            <span class="text-[11px] font-bold" style="color:${active ? p.primariaTxt : p.suave};">${t.label}</span>
+          </button>`;
+        }
+        return `<button type="button" data-aba="${t.id}" class="flex flex-col items-center gap-1 py-0.5 cursor-pointer" style="color:${active ? p.primariaTxt : p.suave};">
+          ${t.icon}
+          <span class="text-[11px] ${active ? "font-bold" : "font-medium"}">${t.label}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function viewExplorar(p, d) {
+      const vis = state.visitados[state.territorio];
+      const brl = (state.convValor / state.convTaxa).toFixed(2).replace(".", ",");
+      return `
+        <!-- 3 atalhos rápidos estilo Tour & Travel -->
+        <div class="grid grid-cols-3 gap-2.5">
+          ${[
+            { ico: ICONS.pin, txt: "Perto de você", sub: "GPS offline", aba: "explorar" },
+            { ico: ICONS.book, txt: "História", sub: d.sigla === "UY" ? "5 capítulos" : "8 regiões", aba: "guia" },
+            { ico: ICONS.trophy, txt: "Quiz", sub: d.sigla === "UY" ? "569 perg." : "58 perg.", aba: "album" }
+          ].map((c) => `
+            <button type="button" data-jump="${c.aba}" class="p-3 rounded-2xl border text-center flex flex-col items-center gap-1.5 cursor-pointer transition" style="background:${p.card};border-color:${p.borda};">
+              <span class="w-9 h-9 rounded-full flex items-center justify-center" style="background:${p.claro};color:${p.primariaTxt};">${c.ico}</span>
+              <span class="text-xs font-semibold leading-tight">${c.txt}</span>
+              <span class="text-[10px]" style="color:${p.suave};">${c.sub}</span>
+            </button>`).join("")}
+        </div>
+
+        ${state.territorio === "uy" ? `
+          <button type="button" data-jump="falar" class="w-full p-3 rounded-2xl border flex items-center justify-between text-left cursor-pointer" style="background:${p.card};border-color:${p.borda};">
+            <div class="flex items-center gap-2.5">
+              <span class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:${p.claro};color:${p.primariaTxt};">${ICONS.coins}</span>
+              <div>
+                <div class="text-xs font-semibold">Conversor $U ↔ R$ (offline)</div>
+                <div class="text-[11px] tabular" style="color:${p.suave};">$U ${state.convValor} ≈ R$ ${brl} · +10% propina</div>
+              </div>
+            </div>
+            <span class="text-xs font-bold" style="color:${p.primariaTxt};">Abrir →</span>
+          </button>` : ""}
+
+        <!-- Cards fotográficos estilo Woosh -->
+        <div class="space-y-2.5">
+          <div class="flex items-baseline justify-between">
+            <h2 class="font-editorial font-bold text-base">Perto de você · ${d.nome}</h2>
+            <span class="text-[11px]" style="color:${p.suave};">Toque p/ abrir</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            ${d.lugares.map((l, idx) => {
+              const ja = vis.has(l.nome);
+              return `<button type="button" data-place="${idx}" class="rounded-2xl overflow-hidden border text-left flex flex-col cursor-pointer transition active:scale-[0.98]" style="background:${p.card};border-color:${p.borda};">
+                <div class="h-24 p-2.5 flex flex-col justify-between relative text-white" style="background:${l.grad};">
+                  <div class="flex items-center justify-between gap-1">
+                    ${l.obrig ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(0,0,0,0.45);color:#FFC445;">★ Obrigatório</span>` : `<span></span>`}
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-[10px]" style="background:${ja ? "#1B7A4A" : "rgba(0,0,0,0.35)"};">${ja ? ICONS.check : "+"}</span>
+                  </div>
+                  <div class="text-[11px] font-medium opacity-95 flex items-center gap-1">${ICONS.pin}<span>${l.dist}</span></div>
+                </div>
+                <div class="p-2.5">
+                  <div class="text-xs font-bold leading-snug line-clamp-1">${l.nome}</div>
+                  <div class="text-[11px] mt-0.5" style="color:${p.suave};">${l.cidade} · ${l.tempo}</div>
+                </div>
+              </button>`;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function viewFalar(p, d) {
+      const baseBrl = state.convValor / state.convTaxa;
+      const mult = state.convPropina ? 1.1 : 1;
+      const totalBrl = (baseBrl * mult).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totalUyu = Math.round(state.convValor * mult).toLocaleString("pt-BR");
+
+      return `
+        ${state.territorio === "uy" ? `
+          <section class="rounded-2xl border p-3.5 space-y-3" style="background:${p.card};border-color:${p.borda};">
+            <div class="flex items-center justify-between">
+              <div class="text-xs font-bold flex items-center gap-1.5" style="color:${p.primariaTxt};">${ICONS.coins}<span>Conversor UYU → R$ offline</span></div>
+              <span class="text-[11px] tabular" style="color:${p.suave};">1 R$ = 7,40 UYU</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${[100, 300, 500, 1000, 2000].map((v) => `
+                <button type="button" data-conv="${v}" class="px-2.5 py-1 rounded-full text-xs font-semibold tabular cursor-pointer border" style="background:${state.convValor === v ? p.primaria : p.papel};color:${state.convValor === v ? "#FFF" : p.tinta};border-color:${p.borda};">$U ${v}</button>`).join("")}
+            </div>
+            <div class="rounded-xl p-3 flex items-center justify-between" style="background:${p.claro};">
+              <div>
+                <div class="font-editorial text-2xl font-bold tabular" style="color:${p.primariaTxt};">R$ ${totalBrl}</div>
+                <div class="text-[11px] tabular" style="color:${p.suave};">${state.convPropina ? `Total com +10% propina: $U ${totalUyu}` : `Valor sem propina: $U ${totalUyu}`}</div>
+              </div>
+              <button type="button" id="toggle-propina" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer border" style="background:${state.convPropina ? p.primaria : p.card};color:${state.convPropina ? "#FFF" : p.tinta};border-color:${p.borda};">+10% propina</button>
+            </div>
+          </section>` : ""}
+
+        <div class="space-y-2.5">
+          <h2 class="font-editorial font-bold text-base">${state.territorio === "uy" ? "Frases de rua · 1 toque" : "Vocabulário local · RS"}</h2>
+          ${d.frases.map((f, idx) => `
+            <div class="rounded-2xl border p-3.5 space-y-1.5" style="background:${p.card};border-color:${p.borda};">
+              <div class="font-editorial font-bold text-base leading-snug">${f.es}</div>
+              ${f.pr ? `<div class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md tracking-wide" style="background:${p.claro};color:${p.primariaTxt};">${f.pr}</div>` : ""}
+              <div class="text-xs font-medium">${f.pt}</div>
+              <div class="text-[11px]" style="color:${p.suave};">${f.dica}</div>
+              ${state.territorio === "uy" ? `
+                <div class="pt-1.5 flex gap-2">
+                  <button type="button" data-mostrar="${idx}" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer" style="background:${p.primaria};color:#FFF;">Mostrar em tela cheia</button>
+                </div>` : ""}
+            </div>`).join("")}
+        </div>
+      `;
+    }
+
+    function viewRoteiro(p, d) {
+      const lista = d.roteiro.map((item, i) => (i === 3 && state.roteiroTrocado ? d.trocaAlt : item));
+      const pct = state.roteiroTrocado ? 15 : 18;
+      return `
+        <div class="rounded-2xl border p-3.5 space-y-2.5" style="background:${p.card};border-color:${p.borda};">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-editorial font-bold text-base">Dia 1 · ${d.nome}</div>
+              <div class="text-[11px]" style="color:${p.suave};">4 paradas · 100% offline</div>
+            </div>
+            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full tabular" style="background:${p.claro};color:${p.primariaTxt};">${pct}% estrada ≤ 25%</span>
+          </div>
+          <div class="h-1.5 rounded-full overflow-hidden" style="background:${p.borda};">
+            <div class="h-full rounded-full" style="width:${pct * 3}%;background:${d.acento};"></div>
+          </div>
+        </div>
+
+        <!-- Timeline vertical inspirada no Tour & Travel -->
+        <div class="relative pl-5 space-y-3">
+          <div class="absolute left-[7px] top-3 bottom-3 w-[2px]" style="background:${p.borda};"></div>
+          ${lista.map((r, i) => `
+            <div class="relative rounded-2xl border p-3 flex gap-3 items-start" style="background:${p.card};border-color:${p.borda};">
+              <span class="absolute -left-[19px] top-4 w-3.5 h-3.5 rounded-full border-2" style="background:${r.obrig ? p.ouro : d.acento};border-color:${p.papel};"></span>
+              <div class="w-12 h-12 rounded-xl shrink-0 flex items-end p-1 text-[9px] font-bold text-white" style="background:${r.grad};">${r.hora}</div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider" style="color:${p.suave};">${r.turno} · ${r.tempo}</span>
+                  <span class="text-[11px] font-semibold tabular" style="color:${p.primariaTxt};">${r.km}</span>
+                </div>
+                <div class="text-xs font-bold mt-0.5 leading-snug">${r.nome}</div>
+                <div class="flex items-center justify-between mt-2">
+                  <span class="text-[10px] font-semibold" style="color:${r.obrig ? p.ouro : p.suave};">${r.obrig ? "★ Obrigatório" : "Recomendado"}</span>
+                  ${i === 3 ? `<button type="button" id="btn-trocar-parada" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-lg border cursor-pointer" style="border-color:${p.borda};color:${p.primariaTxt};">${ICONS.swap}<span>Trocar</span></button>` : ""}
+                </div>
+              </div>
+            </div>`).join("")}
+        </div>
+      `;
+    }
+
+    function viewAlbum(p, d) {
+      const vis = state.visitados[state.territorio];
+      const total = d.album.length;
+      const done = d.album.filter((n) => vis.has(n)).length;
+      const pct = Math.round((done / total) * 100);
+      return `
+        <!-- Capa mosaico estilo passaporte / Woosh -->
+        <div class="rounded-2xl p-4 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#0F356B,${d.acento});">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-widest opacity-80">Passaporte · Por onde andei</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:rgba(14,19,30,0.65);color:#FFC445;">SYNC · DUCK AI PRO</span>
+          </div>
+          <div class="font-editorial text-xl font-bold mt-1">${d.nome}</div>
+          <div class="mt-3 flex items-center justify-between text-xs tabular">
+            <span>${done} de ${total} figurinhas coladas</span>
+            <strong>${pct}%</strong>
+          </div>
+          <div class="h-1.5 rounded-full bg-white/25 mt-1.5 overflow-hidden">
+            <div class="h-full rounded-full" style="width:${pct}%;background:#FFC445;"></div>
+          </div>
+        </div>
+
+        <p class="text-[11px]" style="color:${p.suave};">Toque em qualquer figurinha abaixo para colar ou descolar no álbum:</p>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          ${d.album.map((nome, i) => {
+            const colada = vis.has(nome);
+            const grads = [
+              "linear-gradient(135deg,#123A72,#3B78C2)",
+              "linear-gradient(135deg,#6E3A1E,#C47B2B)",
+              "linear-gradient(135deg,#0E5A70,#47A0B5)",
+              "linear-gradient(135deg,#9E5B24,#E59A00)",
+              "linear-gradient(135deg,#1B6E57,#4AA88B)",
+              "linear-gradient(135deg,#5A2E6E,#9A57B5)"
+            ];
+            return `<button type="button" data-sticker="${nome}" class="rounded-2xl p-3 text-left border transition cursor-pointer flex flex-col justify-between h-24" style="background:${colada ? grads[i % grads.length] : p.card};color:${colada ? "#FFF" : p.tinta};border-color:${colada ? "transparent" : p.borda};border-style:${colada ? "solid" : "dashed"};">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider opacity-80">#0${i + 1}</span>
+                <span class="w-5 h-5 rounded-full flex items-center justify-center" style="background:${colada ? "rgba(255,255,255,0.22)" : p.claro};color:${colada ? "#FFC445" : p.suave};">${colada ? ICONS.check : "+"}</span>
+              </div>
+              <div class="text-xs font-bold leading-snug">${nome}</div>
+            </button>`;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function viewGuia(p, d) {
+      const msgs = state.chatMsgs[state.territorio];
+      return `
+        <div class="rounded-2xl border p-3 flex items-center justify-between gap-2" style="background:${p.card};border-color:${p.borda};">
+          <div>
+            <div class="text-xs font-bold">Gu<span style="color:${p.ouro};">IA</span> Turístico · ${d.nome}</div>
+            <div class="text-[11px]" style="color:${p.suave};">${d.guiaIntro}</div>
+          </div>
+          <span class="shrink-0 text-[10px] font-bold px-2 py-1 rounded-full" style="background:#0E131E;color:#FFC445;">PRO · ∞</span>
+        </div>
+
+        <div class="space-y-2.5">
+          ${msgs.map((m) => `
+            <div class="flex ${m.quem === "eu" ? "justify-end" : "justify-start"}">
+              <div class="max-w-[88%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-line ${m.quem === "eu" ? "rounded-br-sm" : "rounded-bl-sm border"}" style="background:${m.quem === "eu" ? p.primaria : p.card};color:${m.quem === "eu" ? "#FFF" : p.tinta};border-color:${p.borda};">${m.txt}</div>
+            </div>`).join("")}
+        </div>
+
+        <div class="rounded-2xl border p-3 space-y-2" style="background:${p.card};border-color:${p.borda};">
+          <div class="flex items-center justify-between text-[11px]" style="color:${p.suave};">
+            <span>Cota gratuita hoje: 28/30 perguntas</span>
+            <span class="font-semibold" style="color:${p.ouro};">Ilimitado no Duck AI PRO</span>
+          </div>
+          <div class="flex gap-2">
+            <input type="text" readonly value="Onde ver o pôr do sol perto daqui?" class="flex-1 px-3 py-2 rounded-xl text-xs border outline-none" style="background:${p.papel};border-color:${p.borda};color:${p.tinta};" />
+            <button type="button" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white" style="background:${p.primaria};">Enviar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function openPlaceSheet(idx) {
+      const p = palette();
+      const d = DATA[state.territorio];
+      const l = d.lugares[idx];
+      const vis = state.visitados[state.territorio];
+      const ja = vis.has(l.nome);
+      const sheet = document.getElementById("place-sheet");
+      const card = document.getElementById("place-sheet-card");
+      card.style.background = p.card;
+      card.style.color = p.tinta;
+      card.innerHTML = `
+        <div class="h-36 p-4 flex flex-col justify-between text-white shrink-0" style="background:${l.grad};">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-black/35">${l.cidade} · ${l.dist}</span>
+            <button type="button" id="close-sheet" class="w-8 h-8 rounded-full bg-black/40 flex items-center justify-center text-base font-bold cursor-pointer">×</button>
+          </div>
+          <div>
+            <div class="font-editorial text-xl font-bold">${l.nome}</div>
+            <div class="text-xs opacity-90">Tempo sugerido: ${l.tempo}</div>
+          </div>
+        </div>
+        <div class="p-4 space-y-3 overflow-y-auto text-xs">
+          <p class="leading-relaxed">${l.historia}</p>
+          <div class="p-3 rounded-xl" style="background:${p.claro};">
+            <strong class="block text-[11px] uppercase tracking-wider mb-0.5" style="color:${p.primariaTxt};">O que reparar ao vivo</strong>
+            <span>${l.reparar}</span>
+          </div>
+          <div class="p-3 rounded-xl border" style="border-color:${p.borda};">
+            <div class="font-editorial font-bold text-sm">${l.frase.es}</div>
+            ${l.frase.pr ? `<div class="text-[11px] font-semibold mt-0.5" style="color:${p.primariaTxt};">${l.frase.pr}</div>` : ""}
+            <div class="text-[11px] mt-0.5" style="color:${p.suave};">${l.frase.pt}</div>
+          </div>
+          <button type="button" id="sheet-toggle-ja" data-nome="${l.nome}" class="w-full py-2.5 rounded-xl font-bold text-xs text-white cursor-pointer" style="background:${ja ? "#1B7A4A" : p.primaria};">
+            ${ja ? "✓ Carimbado no Álbum (tocar para remover)" : "Marcar como Já fui (colar no Álbum)"}
+          </button>
+        </div>
+      `;
+      sheet.classList.remove("hidden");
+    }
+
+    function renderAll() {
+      renderControles();
+      renderPhone();
+    }
+
+    document.addEventListener("click", (e) => {
+      const sim = e.target.closest("[data-simbolo]");
+      if (sim) { state.simbolo = sim.dataset.simbolo; return renderAll(); }
+
+      const terr = e.target.closest("[data-terr]");
+      if (terr) { state.territorio = terr.dataset.terr; state.roteiroTrocado = false; return renderAll(); }
+
+      if (e.target.closest("#pill-territorio")) {
+        state.territorio = state.territorio === "uy" ? "rs" : "uy";
+        state.roteiroTrocado = false;
+        return renderAll();
+      }
+
+      const tema = e.target.closest("[data-tema]");
+      if (tema) { state.tema = tema.dataset.tema; return renderAll(); }
+
+      const aba = e.target.closest("[data-aba]");
+      if (aba) { state.aba = aba.dataset.aba; return renderPhone(); }
+
+      const jump = e.target.closest("[data-jump]");
+      if (jump) { state.aba = jump.dataset.jump; return renderPhone(); }
+
+      const conv = e.target.closest("[data-conv]");
+      if (conv) { state.convValor = Number(conv.dataset.conv); return renderPhone(); }
+
+      if (e.target.closest("#toggle-propina")) {
+        state.convPropina = !state.convPropina;
+        return renderPhone();
+      }
+
+      const pl = e.target.closest("[data-place]");
+      if (pl) { return openPlaceSheet(Number(pl.dataset.place)); }
+
+      if (e.target.closest("#close-sheet") || e.target.id === "place-sheet") {
+        document.getElementById("place-sheet").classList.add("hidden");
+        return;
+      }
+
+      const toggleJa = e.target.closest("#sheet-toggle-ja");
+      if (toggleJa) {
+        const nome = toggleJa.dataset.nome;
+        const vis = state.visitados[state.territorio];
+        if (vis.has(nome)) vis.delete(nome); else vis.add(nome);
+        document.getElementById("place-sheet").classList.add("hidden");
+        return renderPhone();
+      }
+
+      const sticker = e.target.closest("[data-sticker]");
+      if (sticker) {
+        const nome = sticker.dataset.sticker;
+        const vis = state.visitados[state.territorio];
+        if (vis.has(nome)) vis.delete(nome); else vis.add(nome);
+        return renderPhone();
+      }
+
+      if (e.target.closest("#btn-trocar-parada")) {
+        state.roteiroTrocado = !state.roteiroTrocado;
+        return renderPhone();
+      }
+
+      const mos = e.target.closest("[data-mostrar]");
+      if (mos) {
+        const f = DATA[state.territorio].frases[Number(mos.dataset.mostrar)];
+        document.getElementById("mostrar-es").textContent = f.es;
+        document.getElementById("mostrar-pr").textContent = f.pr;
+        document.getElementById("mostrar-pt").textContent = f.pt;
+        document.getElementById("mostrar-modal").classList.remove("hidden");
+        return;
+      }
+
+      if (e.target.closest("#fechar-mostrar")) {
+        document.getElementById("mostrar-modal").classList.add("hidden");
+      }
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
