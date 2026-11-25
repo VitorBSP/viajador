@@ -8,7 +8,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0b3d91",
+  "background_color": "#0F356B",
   "theme_color": "#0b3d91",
   "categories": ["travel", "education"],
   "icons": [

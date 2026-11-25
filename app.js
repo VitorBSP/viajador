@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.40";
+  const VERSAO_APP = "1.42";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -279,8 +279,8 @@
     const quero = queroIr.includes(nome);
     const fui = Boolean(jaFui[nome]);
     return `<div class="frase-acoes lugar-acoes">
-      <button class="btn ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(nome)}" aria-pressed="${quero}">${quero ? "✓" : "＋"} Quero ir</button>
-      <button class="btn ${fui ? "on" : ""}" data-acao="fui" data-lugar="${esc(nome)}" aria-pressed="${fui}">${fui ? "✓ Já fui" : "Já fui"}</button>
+      <button class="btn ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(nome)}" aria-pressed="${quero}">${ico(quero ? "marcado" : "quero")}Quero ir</button>
+      <button class="btn ${fui ? "on-verde" : ""}" data-acao="fui" data-lugar="${esc(nome)}" aria-pressed="${fui}">${ico(fui ? "check" : "marcado")}Já fui</button>
     </div>`;
   }
 
@@ -298,7 +298,7 @@
   // Chamada para o GuIA. Com `pergunta`, abre o GuIA já perguntando sobre aquilo.
   function chamadaGuia(titulo, texto, pergunta) {
     if (!temSecao.ia) return "";
-    const conteudo = `<span class="chamada-icone" aria-hidden="true">✨</span>
+    const conteudo = `<span class="chamada-icone" aria-hidden="true">${ico("guia")}</span>
       <span><strong>${titulo}</strong><small>${esc(texto)}</small></span>
       <span class="chamada-seta" aria-hidden="true">→</span>`;
     return pergunta
@@ -432,8 +432,19 @@
   let estadoGps = "";
   let filtroCidade = "";
   let filtroRegiao = "";
-  let verTodos = false;
-  const LIMITE_PERTO = 10;
+  // Explorar: cada seção mostra 4 lugares e cresce 8 a cada "Mostrar mais". Trocar a cidade volta tudo a 4.
+  let secoesAbertas = {};
+  // Ficha do lugar: aba aberta (História, Repare, Frases ou Fontes). Volta a História ao mudar de tela.
+  let abaFicha = "historia";
+  // Primeiro ano citado no resumo ou na história: aparece como data na ficha.
+  const anoDe = (g) => (`${g.resumo} ${g.historia.join(" ")}`.match(/\b(1[5-9]\d\d|20[0-2]\d)\b/) || [])[1] || "";
+  const POR_SECAO = 4;
+  const MAIS_POR_TOQUE = 8;
+  const A_PE_KM = 2;
+  const BATE_VOLTA_KM = 50;
+  // Mais longe que isso do lugar mais perto, a pessoa ainda não chegou: sem "a pé" nem "bate-volta".
+  const LONGE_DO_DESTINO_KM = 150;
+  const minutosAPe = (km) => `${Math.max(1, Math.round((km * 1000) / 80))} min a pé`;
   function distanciaKm(a, b) {
     const rad = (g) => (g * Math.PI) / 180;
     const dLat = rad(b[0] - a[0]);
@@ -466,6 +477,10 @@
   // "Do meu jeito" sem nenhum Quero ir mostra o automático; para tudo o mais, vale como "Montar pra mim".
   const modoMeu = () => roteiro.modo === "meu" && queroIr.some((n) => lugarPorNome(n));
   let nivelAlbum = "turista";
+  // Capa do álbum: "mapa" (padrão) ou "fotos" (mosaico das figurinhas coladas). Preferência só deste aparelho.
+  const CHAVE_CAPA_ALBUM = "viajador:album-capa";
+  let capaAlbum = "mapa";
+  try { capaAlbum = localStorage.getItem(CHAVE_CAPA_ALBUM) === "fotos" ? "fotos" : "mapa"; } catch (e) {}
   // Três níveis do álbum, a partir da `prioridade` que o lugar já tem: nada de campo novo no dado.
   const NIVEIS_ALBUM = [
     ["turista", "Turista", "os obrigatórios", (l) => l.prioridade === "obrigatorio"],
@@ -885,12 +900,51 @@
   // Imagens: cada foto traz crédito na tela de Créditos, e sem internet o texto continua lá.
   const imgs = pais.imagens || { lugares: {}, pessoas: {} };
   const fotoLugar = (id) => (imgs.lugares[id] ? `img/guia/${id}.jpg` : null);
+  // Ícones de traço (1,75, pontas redondas) no lugar dos emojis estruturais; pintados com a cor do texto.
+  const ICONES = {
+    quero: '<circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/>',
+    marcado: '<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.2 2.4 2.4 4.6-4.8"/>',
+    check: '<path d="m5.5 12.5 4 4 9-9.5"/>',
+    estrela: '<path d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z"/>',
+    ouvir: '<path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+    localizar: '<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/>',
+    seta: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    abrir: '<path d="m6.5 9.5 5.5 5 5.5-5"/>',
+    fechar: '<path d="m6.5 14.5 5.5-5 5.5 5"/>',
+    livro: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/>',
+    bola: '<circle cx="12" cy="12" r="8.5"/><path d="m12 7.5 3.6 2.6-1.4 4.2H9.8l-1.4-4.2z"/><path d="M12 3.5v4M20.2 9.4l-4.6.7M17.2 19l-3-4.7M6.8 19l3-4.7M3.8 9.4l4.6.7"/>',
+    trofeu: '<path d="M8 20.5h8M12 16.5v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.5M17 6h2.5a2.5 2.5 0 0 1-3 3.5"/>',
+    voltar: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+    tirar: '<path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/>',
+    trocar: '<path d="M7 4v14m0 0-3-3m3 3 3-3"/><path d="M17 20V6m0 0-3 3m3-3 3 3"/>',
+    carro: '<path d="M3.5 16v-3.2l2-5A1.5 1.5 0 0 1 6.9 7h10.2a1.5 1.5 0 0 1 1.4.8l2 5V16a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><path d="M3.5 12.5h17"/><path d="M7 17v2M17 17v2"/>',
+    relogio: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    talheres: '<path d="M7 3.5v17M4.5 3.5v4.5a2.5 2.5 0 0 0 5 0V3.5"/><path d="M17 20.5v-17c-2 1-3.5 3.5-3.5 7v3h3.5"/>',
+    manha: '<circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1"/>',
+    tarde: '<path d="M4 17h16"/><path d="M7 17a5 5 0 0 1 10 0"/><path d="M12 6v2.5M5.6 9.6l1.6 1.6M18.4 9.6l-1.6 1.6M3 13.5h1.5M19.5 13.5H21"/><path d="M8 20.5h8"/>',
+    noite: '<path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/>',
+    lista: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
+    trilha: '<circle cx="6" cy="6" r="2.25"/><circle cx="18" cy="18" r="2.25"/><path d="M8.25 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.75"/>',
+    marcador: '<path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-4-6 4V4.5a1 1 0 0 1 1-1z"/>',
+    lixo: '<path d="M4.5 6.5h15M9.5 6.5V4.5h5v2M6.5 6.5l1 13a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-13"/>',
+    aviso: '<path d="M12 4.2 21 19.5H3z"/><path d="M12 10v4.2M12 17.2v.1"/>',
+    dica: '<path d="M9.5 18h5M10.5 21h3"/><path d="M12 3a6 6 0 0 0-3.4 10.9c.5.4.9 1 .9 1.7v.4h5v-.4c0-.7.4-1.3.9-1.7A6 6 0 0 0 12 3z"/>',
+    calendario: '<rect x="4" y="5.5" width="16" height="15" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
+    alfinete: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+    guia: '<path d="M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9L11 17.5l-1.9-5.1L4 10.5l5.1-1.9z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+    balao: '<path d="M5 4.5h14A1.5 1.5 0 0 1 20.5 6v9a1.5 1.5 0 0 1-1.5 1.5h-7.5L7 20v-3.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5z"/>',
+    mate: '<path d="M7 8h10l-1.2 10.5a2 2 0 0 1-2 1.5h-3.6a2 2 0 0 1-2-1.5z"/><path d="M14 8l3-5"/>',
+    microfone: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"/>',
+    enviar: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  };
+  const ico = (nome) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES[nome]}</svg>`;
   const fotoPessoa = (nome) => (imgs.pessoas[nome] ? `img/pessoas/${imgs.pessoas[nome].id}.jpg` : null);
   const creditoFoto = (c) => (c ? `<p class="credito">Foto: ${esc(c.autor || "Wikimedia Commons")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></p>` : "");
   const heroi = (src, alt, credito) => (src ? `<figure class="heroi"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${creditoFoto(credito)}</figure>` : "");
   const miniatura = (src, icone) => (src ? `<img class="mini" src="${esc(src)}" alt="" loading="lazy">` : `<span class="emoji" aria-hidden="true">${icone}</span>`);
   const corDoIndice = (i) => `hsl(${Math.round((i * 137.5) % 360)} 68% 42%)`;
-  const CAPAS = { "": "inicio", guia: "guia", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos", ia: "ia" };
+  // Perto de você abre com a foto do destaque e o GuIA com o próprio cabeçalho: nenhum dos dois leva ilustração de capa.
+  const CAPAS = { "": "inicio", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos" };
   const capa = (nome) => `<img class="capa" src="img/arte/${nome}.svg" alt="" aria-hidden="true">`;
   const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
     <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
@@ -909,6 +963,32 @@
   }
   let conversa = [];
   let pensando = false;
+  // Perguntas feitas hoje neste aparelho (o servidor conta em UTC, até 30 por dia).
+  const CHAVE_IA_HOJE = "viajador:ia-hoje";
+  const LIMITE_IA = 30;
+  const hojeUTC = () => new Date().toISOString().slice(0, 10);
+  const perguntasHoje = () => {
+    try { const x = JSON.parse(localStorage.getItem(CHAVE_IA_HOJE)); return x && x.dia === hojeUTC() ? Math.min(LIMITE_IA, x.n) : 0; } catch (e) { return 0; }
+  };
+  const contarPerguntas = (n) => { try { localStorage.setItem(CHAVE_IA_HOJE, JSON.stringify({ dia: hojeUTC(), n })); } catch (e) {} };
+  // Lugares do guia citados num texto, na ordem em que aparecem (no máximo 3), para virar cartões com foto.
+  // Vale o nome inteiro ou a parte antes de "(", "&" ou "—", e "Mercado Público" por "Mercado Público de Porto Alegre".
+  const soLetras = (t) => ` ${normal(t).replace(/[^a-z0-9ñ]+/g, " ").trim()} `;
+  const apelidos = (nome) => {
+    const lista = [nome, nome.split(" (")[0], nome.split(" & ")[0], nome.split(" — ")[0]];
+    const antesDoDe = nome.split(" de ")[0];
+    if (antesDoDe !== nome && antesDoDe.split(" ").filter((p) => p.length >= 3).length >= 2) lista.push(antesDoDe);
+    return [...new Set(lista.map(soLetras))].filter((x) => x.trim().length >= 5);
+  };
+  function lugaresCitados(texto) {
+    const t = soLetras(texto);
+    return pontos()
+      .map((g) => ({ id: g.id, pos: Math.min(...apelidos(g.lugar).map((a) => { const i = t.indexOf(a); return i < 0 ? Infinity : i; })) }))
+      .filter((x) => x.pos < Infinity)
+      .sort((a, b) => a.pos - b.pos)
+      .slice(0, 3)
+      .map((x) => x.id);
+  }
   let lerEmVoz = false;
   const TAM_CONTEXTO = 12000;
   const palavras = (s) => normal(s).split(/[^a-z0-9ñ]+/).filter((p) => p.length >= 4);
@@ -975,7 +1055,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       });
       const j = await r.json().catch(() => ({}));
       texto = j.resposta || j.erro || (r.status === 404 ? "O GuIA Turístico ainda não está ligado no servidor." : "Não consegui responder agora.");
-      conversa.push({ quem: j.resposta ? "guia" : "erro", texto });
+      // A cota de verdade é do servidor; aqui só a contagem deste aparelho, para o anel ao lado do botão de perguntar.
+      if (r.status === 429) contarPerguntas(LIMITE_IA);
+      else if (j.resposta) contarPerguntas(perguntasHoje() + 1);
+      conversa.push(j.resposta ? { quem: "guia", texto, lugares: lugaresCitados(texto) } : { quem: "erro", texto });
     } catch (e) {
       texto = e && e.name === "TimeoutError" ? "O guia demorou demais para responder. Tente de novo." : "Sem conexão com o guia. Tente de novo.";
       conversa.push({ quem: "erro", texto });
@@ -983,7 +1066,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     pensando = false;
     if (location.hash.startsWith("#/ia")) {
       render();
-      const ultima = main.querySelector(".chat-msg:last-of-type");
+      const mensagens = main.querySelectorAll(".chat-msg");
+      const ultima = mensagens[mensagens.length - 1];
       if (ultima) ultima.scrollIntoView({ block: "start" });
       if (lerEmVoz && conversa[conversa.length - 1].quem === "guia") narrar([texto.replace(/[*_#]/g, "")]);
     }
@@ -1013,30 +1097,87 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   const telas = {
     ia() {
       const sugestoes = pais.sugestoesIA || ["O que tem de interessante perto de mim?", "Como peço a conta?", "Que gírias eu preciso saber?", `Me conta como nasceu ${comArtigo}`];
-      return `<h1>GuIA Turístico</h1>
-        <p class="lead">Pergunte sobre os lugares, a história e como falar. As respostas usam o conteúdo do Viajador.</p>
+      const feitas = new Set(conversa.filter((m) => m.quem === "eu").map((m) => m.texto));
+      const restantes = sugestoes.filter((x) => !feitas.has(x));
+      const livres = Math.max(0, LIMITE_IA - perguntasHoje());
+      // Ícone de cada sugestão pelo assunto; se ela cita um lugar do guia, vai a foto dele.
+      const iconeDe = (t) => {
+        const n = normal(t);
+        if (/perto|onde|aonde|fazer/.test(n)) return "alfinete";
+        if (/chimarrao|mate|erva/.test(n)) return "mate";
+        if (/chivito|comer|comida|peco|pedir|conta\b|restaurante/.test(n)) return "talheres";
+        if (/significa|giria|falar|palavra|bah|capaz|diferenca/.test(n)) return "balao";
+        if (/historia|nasceu|revolucao|oriental|conta a/.test(n)) return "livro";
+        return "guia";
+      };
+      const fotoDe = (t) => { const id = lugaresCitados(t)[0]; return id ? fotoLugar(id) : null; };
+      const cartaoLugar = (id) => {
+        const g = pontos().find((x) => x.id === id);
+        if (!g) return "";
+        const l = lugarDo(g);
+        const foto = fotoLugar(id);
+        const quero = queroIr.includes(g.lugar);
+        return `<article class="chat-lugar">
+            ${foto ? `<img src="${esc(foto)}" alt="" loading="lazy">` : `<span class="chat-lugar-emoji" aria-hidden="true">${l.icone}</span>`}
+            <div class="chat-lugar-texto">
+              <strong lang="${LANG}">${esc(g.lugar)}</strong>
+              <small>${esc(g.resumo)}</small>
+              <div class="chat-lugar-acoes">
+                <a class="btn" href="#/guia/${id}">${ico("livro")}Ver história</a>
+                ${jaFui[g.lugar] ? `<span class="chat-fui">${ico("check")}Já fui</span>` : `<button class="btn ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(g.lugar)}" aria-pressed="${quero}">${ico(quero ? "marcado" : "quero")}Quero ir</button>`}
+              </div>
+            </div>
+          </article>`;
+      };
+      const avatar = `<span class="chat-avatar" aria-hidden="true">${ico("guia")}</span>`;
+      const mensagem = (m, i) => m.quem === "eu"
+        ? `<div class="chat-msg chat-eu"><p>${esc(m.texto)}</p></div>`
+        : `<div class="chat-linha">${avatar}
+            <div class="chat-msg chat-${m.quem}">
+              <p>${m.quem === "guia" ? formatarResposta(m.texto) : esc(m.texto)}</p>
+              ${m.quem === "guia" ? `<button class="chat-ouvir" data-acao="ia-ouvir" data-i="${i}">${ico("ouvir")}Ouvir</button>` : ""}
+            </div>
+          </div>
+          ${(m.lugares || []).map(cartaoLugar).join("")}`;
+      const raio = 15;
+      const volta = 2 * Math.PI * raio;
+      const anel = `<span class="chat-cota" role="img" aria-label="${livres} de ${LIMITE_IA} perguntas livres hoje neste aparelho">
+          <svg viewBox="0 0 38 38" aria-hidden="true"><circle class="cota-fundo" cx="19" cy="19" r="${raio}"/><circle class="cota-valor" cx="19" cy="19" r="${raio}" stroke-dasharray="${((livres / LIMITE_IA) * volta).toFixed(1)} ${volta.toFixed(1)}"/></svg>
+          <b aria-hidden="true">${livres}</b>
+        </span>`;
+      return `<header class="chat-topo">
+          <span class="chat-avatar grande" aria-hidden="true">${ico("guia")}</span>
+          <span class="chat-titulo"><h1>Gu<span class="ia">IA</span> Turístico</h1><small>Responde com o conteúdo do Viajador</small></span>
+          <span class="selo-pro" title="Recursos extras no futuro, sem tirar nada do que já é gratuito">Duck AI PRO · em breve</span>
+        </header>
         ${supabaseOnline() ? "" : `<p class="frase-dica">O GuIA Turístico ainda não foi configurado.</p>`}
-        <div class="chat">${conversa.length ? conversa.map((m, i) => `
-          <div class="chat-msg chat-${m.quem}">
-            <p>${m.quem === "guia" ? formatarResposta(m.texto) : esc(m.texto)}</p>
-            ${m.quem === "guia" ? `<button class="btn" data-acao="ia-ouvir" data-i="${i}"><span aria-hidden="true">🔊</span> Ouvir</button>` : ""}
-          </div>`).join("") : `<div class="chat-sugestoes">${sugestoes.map((s) => `<button class="btn" data-acao="ia-sugestao">${esc(s)}</button>`).join("")}</div>`}
-          ${pensando ? `<div class="chat-msg chat-guia chat-pensando" role="status"><p>Pensando…</p></div>` : ""}
+        <div class="chat">${conversa.length ? conversa.map(mensagem).join("") : `
+          <p class="lead">Pergunte sobre os lugares, a história e ${semTraducao ? "o jeito de falar daqui" : "como falar"}. As respostas usam o conteúdo do Viajador.</p>
+          <div class="chat-sugestoes">${sugestoes.map((x) => { const f = fotoDe(x); return `
+            <button class="chat-sugestao" data-acao="ia-sugestao" data-pergunta="${esc(x)}" ${pensando ? "disabled" : ""}>
+              ${f ? `<img src="${esc(f)}" alt="" loading="lazy">` : `<span class="chat-sugestao-icone" aria-hidden="true">${ico(iconeDe(x))}</span>`}
+              <span>${esc(x)}</span>
+            </button>`; }).join("")}
+          </div>`}
+          ${pensando ? `<div class="chat-linha">${avatar}<div class="chat-msg chat-guia chat-pensando" role="status"><p>Pensando…</p></div></div>` : ""}
         </div>
+        ${conversa.length && restantes.length ? `<div class="chat-chips" role="group" aria-label="Outras perguntas">${restantes.map((x) => `
+          <button class="chip-sugestao" data-acao="ia-sugestao" data-pergunta="${esc(x)}" ${pensando ? "disabled" : ""}>${esc(x)}</button>`).join("")}</div>` : ""}
         <div class="chat-entrada">
           <label class="sr" for="pergunta-ia">Sua pergunta</label>
-          <textarea id="pergunta-ia" rows="2" maxlength="500" placeholder="Pergunte ao guia…" ${pensando ? "disabled" : ""}></textarea>
-          <div class="chat-botoes">
-            ${Reconhecimento ? `<button class="btn btn-gps" data-acao="ia-falar" ${pensando ? "disabled" : ""}><span aria-hidden="true">🎤</span> Falar</button>` : ""}
-            <button class="btn btn-gps on" data-acao="ia-enviar" ${pensando ? "disabled" : ""}>Perguntar</button>
+          <div class="chat-campo">
+            <textarea id="pergunta-ia" rows="1" maxlength="500" placeholder="Pergunte ao guia…" ${pensando ? "disabled" : ""}></textarea>
+            ${Reconhecimento ? `<button class="chat-icone" data-acao="ia-falar" aria-label="Falar a pergunta" ${pensando ? "disabled" : ""}>${ico("microfone")}</button>` : ""}
+            ${anel}
+            <button class="chat-enviar" data-acao="ia-enviar" aria-label="Perguntar" ${pensando || !livres ? "disabled" : ""}>${ico("enviar")}</button>
           </div>
-          <label class="chat-opcao"><input type="checkbox" data-acao="ia-voz" ${lerEmVoz ? "checked" : ""}> Ler as respostas em voz alta</label>
-          <div class="chat-botoes">
-            <button class="btn" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
-            ${conversa.length ? `<button class="btn" data-acao="ia-limpar">Nova conversa</button>` : ""}
+          <div class="chat-opcoes">
+            <label class="chat-opcao"><input type="checkbox" data-acao="ia-voz" ${lerEmVoz ? "checked" : ""}> Ler as respostas em voz alta</label>
+            <button class="link-btn" data-acao="gps">${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
+            ${conversa.length ? `<button class="link-btn" data-acao="ia-limpar">Nova conversa</button>` : ""}
           </div>
         </div>
-        <p class="gps-nota">O guia pode errar. Confirme horários e preços no local. Até 30 perguntas por dia neste aparelho, e as perguntas passam pelo Google Gemini.</p>`;
+        <p class="gps-nota">O guia pode errar. Confirme horários e preços no local. ${livres ? `Restam ${livres} de ${LIMITE_IA} perguntas hoje neste aparelho` : "Acabaram as perguntas de hoje neste aparelho; amanhã libera de novo"}, e elas passam pelo Google Gemini.</p>`;
     },
     creditos() {
       const linha = (nome, c) => `<li>${esc(nome)}: ${esc(c.autor || "autor não informado")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></li>`;
@@ -1206,54 +1347,184 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     guia(id) {
       const g = pontos().find((x) => x.id === id);
       if (g) {
+        // Ficha de bolso com tom de revista: foto em largura total com o título por cima, linha fina,
+        // abas (História, Repare, Frases, Fontes) e uma barra fixa com Ouvir, Quero ir e Já fui.
         const l = lugarDo(g);
-        return `<a class="voltar" href="#/guia">← Perto de você</a>
-          ${heroi(fotoLugar(g.id), g.lugar, imgs.lugares[g.id])}
-          <h1 lang="${LANG}">${l.icone} ${esc(g.lugar)}</h1>
-          <p class="lead">${esc(l.cidade)}${posicao ? ` · a ${formatarDist(distanciaKm(posicao, g.coords))} de você` : ""}</p>
-          <div class="frase-acoes"><button class="btn" data-acao="narrar" data-guia="${esc(g.id)}"><span aria-hidden="true">🔊</span> Ouvir a história</button></div>
-          ${botoesLugar(g.lugar)}
-          <div class="historia">${g.historia.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
-          ${chamadaGuia(`Quer saber mais? Pergunte ao Gu<span class="ia">IA</span>`, `O que tem perto, quanto tempo ficar, curiosidades de ${g.lugar}.`, `Me conta mais sobre ${g.lugar}: o que não posso perder e o que tem perto?`)}
-          <p class="frase-dica"><strong>O que reparar:</strong> ${esc(g.reparar)}</p>
-          <p class="frase-dica"><strong>Dica:</strong> ${esc(l.dica)}</p>
-          <h2>${semTraducao ? "Palavra do lugar" : "Frases para este lugar"}</h2>
-          ${lista(l.frases)}
-          <h2>Fontes</h2>
-          <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>
-          <ul class="fontes">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
+        const foto = fotoLugar(g.id);
+        const credito = imgs.lugares[g.id];
+        const ano = anoDe(g);
+        const obrig = l.prioridade === "obrigatorio";
+        const quero = queroIr.includes(g.lugar);
+        const fui = jaFui[g.lugar];
+        const abas = [["historia", "História"], ["repare", "Repare"], ["frases", semTraducao ? "Palavras" : "Frases"], ["fontes", "Fontes"]];
+        const aba = abas.some(([id]) => id === abaFicha) ? abaFicha : "historia";
+        const painel = {
+          historia: `<div class="historia ficha-historia">${g.historia.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+            ${chamadaGuia(`Quer saber mais? Pergunte ao Gu<span class="ia">IA</span>`, `O que tem perto, quanto tempo ficar, curiosidades de ${g.lugar}.`, `Me conta mais sobre ${g.lugar}: o que não posso perder e o que tem perto?`)}`,
+          repare: `<blockquote class="ficha-citacao"><p class="ficha-citacao-rot">Repare</p><p>${esc(g.reparar)}</p></blockquote>
+            <p class="ficha-dica">${ico("dica")}<span><strong>Dica:</strong> ${esc(l.dica)}</span></p>`,
+          frases: `<h2 class="sr">${semTraducao ? "Palavra do lugar" : "Frases para este lugar"}</h2>${lista(l.frases)}`,
+          fontes: `<ol class="ficha-notas">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ol>
+            <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>
+            ${creditoFoto(credito)}`,
+        }[aba];
+        return `<article class="ficha" aria-labelledby="ficha-titulo">
+            <header class="ficha-capa ${foto ? "" : "sem-foto"}" style="--cor:${corDoIndice(pontos().indexOf(g))}">
+              ${foto ? `<img class="ficha-foto" src="${esc(foto)}" alt="${esc(g.lugar)}">` : `<span class="ficha-emoji" aria-hidden="true">${l.icone}</span>`}
+              <a class="ficha-voltar" href="#/guia" aria-label="Voltar para Perto de você">${ico("voltar")}</a>
+              <div class="ficha-titulo">
+                <p class="ficha-olho">${esc(l.cidade)}${ano ? ` · ${ano}` : ""}</p>
+                <h1 id="ficha-titulo" lang="${LANG}">${esc(g.lugar)}</h1>
+              </div>
+            </header>
+            ${creditoFoto(credito)}
+            <p class="ficha-linha-fina">${esc(g.resumo)}</p>
+            <p class="ficha-meta">
+              ${obrig ? `<span class="ficha-obrig">${ico("estrela")}Obrigatório</span>` : ""}
+              ${l.minutos ? `<span>${ico("relogio")}${formatarTempo(l.minutos)} de visita</span>` : ""}
+              ${posicao ? `<span>${ico("alfinete")}a ${formatarDist(distanciaKm(posicao, g.coords))} de você</span>` : ""}
+              ${fui ? `<span class="ficha-fui">${ico("check")}Já fui em ${esc(fui.split("-").reverse().join("/"))}</span>` : ""}
+            </p>
+            <div class="ficha-abas" role="tablist" aria-label="Sobre ${esc(g.lugar)}">${abas.map(([id, rotulo]) => `
+              <button type="button" role="tab" id="aba-${id}" aria-controls="painel-ficha" aria-selected="${id === aba}" tabindex="${id === aba ? 0 : -1}" data-acao="ficha-aba" data-aba="${id}">${rotulo}</button>`).join("")}
+            </div>
+            <div class="ficha-painel" id="painel-ficha" role="tabpanel" aria-labelledby="aba-${aba}" tabindex="0">${painel}</div>
+            <div class="ficha-barra">
+              <button class="btn btn-ficha" data-acao="narrar" data-guia="${esc(g.id)}">${ico("ouvir")}Ouvir a história</button>
+              ${fui ? "" : `<button class="btn ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(g.lugar)}" aria-pressed="${quero}">${ico(quero ? "marcado" : "quero")}Quero ir</button>`}
+              <button class="btn ${fui ? "on-verde" : ""}" data-acao="fui" data-lugar="${esc(g.lugar)}" aria-pressed="${Boolean(fui)}">${ico(fui ? "check" : "marcado")}Já fui</button>
+            </div>
+          </article>`;
       }
-      const ordem = pontos()
-        .map((p) => ({ p, km: posicao ? distanciaKm(posicao, p.coords) : null, l: lugarDo(p) }))
+      // Explorar: um destaque (o melhor lugar para agora) e seções de 4 fotos, cada uma com "Mostrar mais".
+      const pertos = pontos()
+        .map((p, n) => ({ p, n, l: lugarDo(p), km: posicao ? distanciaKm(posicao, p.coords) : null }))
         .filter(({ l }) => !filtroCidade || l.cidade === filtroCidade);
-      if (posicao) ordem.sort((a, b) => a.km - b.km);
-      // Com GPS só o entorno importa; a lista completa fica a um toque.
-      const visiveis = posicao && !verTodos ? ordem.slice(0, LIMITE_PERTO) : ordem;
+      if (posicao) pertos.sort((a, b) => a.km - b.km);
       // Só cidades com algum ponto no guia: as outras dariam uma lista vazia.
       const filtros = [["", "Todas"], ...pais.lugares.filter((c) => pontos().some((p) => lugarDo(p).cidade === c.cidade)).map((c) => [c.cidade, c.cidade])];
       const totalLugares = pais.lugares.reduce((s, c) => s + c.itens.length, 0);
       const fuiEm = pais.lugares.reduce((s, c) => s + c.itens.filter((l) => jaFui[l.nome]).length, 0);
-      return `<h1>Perto de você</h1>
+      const nomeFiltro = semTraducao ? "região" : "cidade";
+      const topoTela = `<h1>Perto de você</h1>
         <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
-        ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
-        <p class="gps-nota">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>
-        <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
-        <p class="gps-nota">${esc(estadoGps || "Sua localização fica só neste aparelho e é usada para ordenar a lista.")}</p>
-        <div class="filtros" role="group" aria-label="Filtrar por cidade">${filtros.map(([v, r]) => `
+        <p class="gps-nota">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>`;
+      const filtrosHtml = `<div class="filtros rolar" role="group" aria-label="Filtrar por ${nomeFiltro}">${filtros.map(([v, r]) => `
           <button class="btn ${v === filtroCidade ? "on" : ""}" data-acao="filtro" data-cidade="${esc(v)}" aria-pressed="${v === filtroCidade}">${esc(r)}</button>`).join("")}
-        </div>
-        <div class="tabela">${visiveis.map(({ p, km, l }) => `
-          <a class="item ponto" href="#/guia/${p.id}">
-            ${miniatura(fotoLugar(p.id), l.icone)}
-            <span class="ponto-texto">
-              <strong lang="${LANG}">${esc(p.lugar)}</strong>
-              <small class="suave">${esc(p.resumo)}</small>
-              <small class="ponto-dist">${esc(l.cidade)}${km === null ? "" : ` · ${formatarDist(km)}`}${jaFui[p.lugar] ? " · ✓ Já fui" : ""}</small>
-            </span>
-          </a>
-          ${km !== null && km < 0.3 && !jaFui[p.lugar] ? `<p class="ponto-perto">Você está aqui? <button class="btn" data-acao="fui" data-lugar="${esc(p.lugar)}">Marcar como visitado</button></p>` : ""}`).join("")}
-        </div>
-        ${visiveis.length < ordem.length ? `<button class="btn btn-gps ver-todos" data-acao="ver-todos">Ver todos os ${ordem.length}</button>` : ""}`;
+        </div>`;
+      if (!pertos.length) return `${topoTela}${filtrosHtml}<p class="vazio">Nenhum lugar nesta ${nomeFiltro}.</p>`;
+
+      // Longe do destino (ainda em casa, por exemplo), as distâncias aparecem, mas sem "a pé" nem "bate-volta".
+      const maisPerto = posicao ? pertos[0] : null;
+      const chegou = Boolean(maisPerto && maisPerto.km <= LONGE_DO_DESTINO_KM);
+      const obrig = (x) => x.l.prioridade === "obrigatorio";
+      const aPe = (x) => chegou && x.km <= A_PE_KM;
+      // Destaque: um obrigatório que dá pra ir a pé; se não houver, o obrigatório mais perto (ou o primeiro do guia).
+      // Prefere lugares com foto e onde a pessoa ainda não foi.
+      const candidatos = pertos.filter((x) => !jaFui[x.p.lugar] && fotoLugar(x.p.id));
+      const destaque = candidatos.find((x) => aPe(x) && obrig(x)) || candidatos.find(aPe) || candidatos.find(obrig) || candidatos[0] || pertos[0];
+      const resto = pertos.filter((x) => x !== destaque);
+      const naRegiao = (x) => x.km > A_PE_KM && x.km <= BATE_VOLTA_KM;
+      const secoes = chegou
+        ? [
+            { id: "a-pe", titulo: "Dá pra ir a pé", sub: `até ${A_PE_KM} km`, itens: resto.filter(aPe) },
+            { id: "obrigatorios", titulo: "Obrigatórios na região", sub: `até ${BATE_VOLTA_KM} km`, itens: resto.filter((x) => naRegiao(x) && obrig(x)) },
+            { id: "regiao", titulo: "Também na região", sub: `até ${BATE_VOLTA_KM} km`, itens: resto.filter((x) => naRegiao(x) && !obrig(x)) },
+            // Bate-volta: obrigatórios primeiro, cada grupo do mais perto ao mais longe.
+            { id: "bate-volta", titulo: "Bate-volta", sub: `mais de ${BATE_VOLTA_KM} km`, itens: [...resto.filter((x) => x.km > BATE_VOLTA_KM && obrig(x)), ...resto.filter((x) => x.km > BATE_VOLTA_KM && !obrig(x))] },
+          ]
+        : [
+            { id: "obrigatorios", titulo: "Obrigatórios", sub: "", itens: resto.filter(obrig) },
+            { id: "outros", titulo: "Mais lugares", sub: "", itens: resto.filter((x) => !obrig(x)) },
+          ];
+
+      const detalhe = (x) => (aPe(x) ? minutosAPe(x.km) : x.l.minutos ? `${formatarTempo(x.l.minutos)} de visita` : "");
+      const cartao = (x) => {
+        const foto = fotoLugar(x.p.id);
+        const quero = queroIr.includes(x.p.lugar);
+        const marca = jaFui[x.p.lugar]
+          ? `<span class="vitrine-fui">${ico("check")}Já fui</span>`
+          : `<button class="vitrine-quero ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(x.p.lugar)}" aria-pressed="${quero}" aria-label="Quero ir: ${esc(x.p.lugar)}">${ico(quero ? "marcado" : "quero")}</button>`;
+        return `<article class="vitrine-item">
+            <a class="vitrine-link" href="#/guia/${x.p.id}">
+              <span class="vitrine-foto" style="--cor:${corDoIndice(x.n)}">
+                ${foto ? `<img src="${esc(foto)}" alt="" loading="lazy">` : `<span class="vitrine-emoji" aria-hidden="true">${x.l.icone}</span>`}
+                ${obrig(x) ? `<span class="selo-foto">${ico("estrela")}Obrigatório</span>` : ""}
+                ${x.km === null ? "" : `<span class="dist-foto">${formatarDist(x.km)}</span>`}
+              </span>
+              <span class="vitrine-txt">
+                <strong lang="${LANG}">${esc(x.p.lugar)}</strong>
+                <small>${esc(x.l.cidade)}</small>
+                ${detalhe(x) ? `<small>${detalhe(x)}</small>` : ""}
+              </span>
+            </a>
+            ${marca}
+          </article>`;
+      };
+      const secaoHtml = (s) => {
+        if (!s.itens.length) return "";
+        const n = Math.min(s.itens.length, secoesAbertas[s.id] || POR_SECAO);
+        const faltam = s.itens.length - n;
+        const botao = faltam > 0
+          ? `<button class="btn mostrar-mais" id="mais-${s.id}" data-acao="secao-mais" data-secao="${s.id}" aria-label="Mostrar mais em ${s.titulo}: faltam ${faltam}">Mostrar mais · faltam ${faltam}${ico("abrir")}</button>`
+          : s.itens.length > POR_SECAO ? `<button class="btn mostrar-mais" id="mais-${s.id}" data-acao="secao-menos" data-secao="${s.id}">Mostrar menos${ico("fechar")}</button>` : "";
+        return `<section class="secao-explorar" id="secao-${s.id}" aria-labelledby="secao-${s.id}-titulo">
+            <div class="secao-topo"><h2 id="secao-${s.id}-titulo">${s.titulo}</h2><small>${s.itens.length} ${s.itens.length === 1 ? "lugar" : "lugares"}${s.sub ? ` · ${s.sub}` : ""}</small></div>
+            <div class="vitrine">${s.itens.slice(0, n).map(cartao).join("")}</div>
+            ${botao}
+          </section>`;
+      };
+
+      const gps = posicao
+        ? `<div class="gps-barra"><span class="gps-ponto" aria-hidden="true"></span>
+            <p>${esc(estadoGps || (chegou ? "Ordenado pelo que está mais perto de você." : `Você está a ${formatarDist(maisPerto.km)} do lugar mais perto${filtroCidade ? ` em ${filtroCidade}` : ` ${doNome}`}. Quando chegar, aparece o que dá pra ir a pé.`))}</p>
+            <button class="btn" data-acao="gps">${ico("localizar")}Atualizar</button></div>`
+        : `<div class="gps-barra"><span class="gps-icone" aria-hidden="true">${ico("localizar")}</span>
+            <p><strong>Veja o que dá pra ir a pé</strong><small>${esc(estadoGps || "Sua localização fica só neste aparelho.")}</small></p>
+            <button class="btn btn-gps" data-acao="gps">Usar localização</button></div>`;
+      const aqui = chegou && maisPerto.km < 0.3 && !jaFui[maisPerto.p.lugar] ? maisPerto : null;
+      const d = destaque;
+      const fotoD = fotoLugar(d.p.id);
+      const queroD = queroIr.includes(d.p.lugar);
+      // Se o destaque é onde a pessoa está, ele mesmo oferece "Marcar como visitado".
+      const estaNoDestaque = aqui === d;
+      const olho = estaNoDestaque ? `Você está aqui · ${formatarDist(d.km)}`
+        : chegou ? `Você está a ${formatarDist(d.km)}${aPe(d) ? ` · ${minutosAPe(d.km)}` : ""}`
+        : posicao ? `A ${formatarDist(d.km)} de você`
+        : `${obrig(d) ? "Obrigatório" : "Comece por aqui"} · ${esc(d.l.cidade)}`;
+      const destaqueHtml = `<section class="destaque" aria-labelledby="destaque-titulo" style="--cor:${corDoIndice(d.n)}">
+          ${fotoD ? `<img class="destaque-foto" src="${esc(fotoD)}" alt="">` : ""}
+          <div class="destaque-texto">
+            <p class="destaque-olho">${olho}</p>
+            <h2 id="destaque-titulo" lang="${LANG}"><a href="#/guia/${d.p.id}">${esc(d.p.lugar)}</a></h2>
+            <p class="destaque-resumo">${esc(d.p.resumo)}</p>
+            <div class="destaque-acoes">
+              <a class="btn btn-claro" href="#/guia/${d.p.id}">Ver a história${ico("seta")}</a>
+              <button class="btn btn-vidro" data-acao="narrar" data-guia="${esc(d.p.id)}" aria-label="Ouvir a história de ${esc(d.p.lugar)}">${ico("ouvir")}</button>
+              ${estaNoDestaque ? `<button class="btn btn-vidro" data-acao="fui" data-lugar="${esc(d.p.lugar)}">${ico("marcado")}Marcar como visitado</button>`
+                : jaFui[d.p.lugar] ? "" : `<button class="btn btn-vidro ${queroD ? "on" : ""}" data-acao="quero" data-lugar="${esc(d.p.lugar)}" aria-pressed="${queroD}">${ico(queroD ? "marcado" : "quero")}Quero ir</button>`}
+            </div>
+          </div>
+        </section>`;
+      const atalhos = [["historia", "livro", "História", "datas e pessoas"], ["futebol", "bola", "Futebol", "clubes e estádios"], ["quiz", "trofeu", "Quiz", "teste o que aprendeu"]]
+        .filter(([rota]) => temSecao[rota]);
+      const atalhosHtml = atalhos.length ? `<section class="secao-explorar" aria-labelledby="entender-titulo">
+          <div class="secao-topo"><h2 id="entender-titulo">Para entender o lugar</h2></div>
+          <div class="atalhos-explorar">${atalhos.map(([rota, icone, titulo, sub]) => `
+            <a class="atalho-explorar" href="#/${rota}"><span class="atalho-circ" aria-hidden="true">${ico(icone)}</span><strong>${titulo}</strong><small>${sub}</small></a>`).join("")}
+          </div>
+        </section>` : "";
+      // O GuIA entra depois da primeira seção: perto o bastante para ser visto, sem tirar o lugar do destaque.
+      const [primeira, ...outras] = secoes.map(secaoHtml).filter(Boolean);
+      return `${topoTela}
+        ${gps}
+        ${filtrosHtml}
+        ${aqui && aqui !== d ? `<p class="ponto-perto"><span>Está agora em <strong lang="${LANG}">${esc(aqui.p.lugar)}</strong>?</span> <button class="btn" data-acao="fui" data-lugar="${esc(aqui.p.lugar)}">Marcar como visitado</button></p>` : ""}
+        ${destaqueHtml}
+        ${primeira || ""}
+        ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
+        ${outras.join("")}
+        ${atalhosHtml}`;
     },
     inicio() {
       // Com uma região escolhida, as palavras de todos os temas aparecem juntas, só as daquela região.
@@ -1335,15 +1606,33 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <p class="lead">${semTraducao ? "Dicas para cada lugar." : "Dicas e frases para cada ponto turístico."}</p>
         ${pais.lugares.map((c) => `
           <h2>${esc(c.cidade)}</h2>
-          ${c.itens.map((l) => `
+          ${c.itens.map((l) => {
+            // Com foto: selo de obrigatório, distância e Quero ir / Já fui sobre a foto. Sem foto, os botões ficam embaixo.
+            const g = pontos().find((p) => p.lugar === l.nome && fotoLugar(p.id)) || pontos().find((p) => p.lugar === l.nome);
+            const foto = g && fotoLugar(g.id);
+            const obrig = l.prioridade === "obrigatorio";
+            const quero = queroIr.includes(l.nome);
+            const fui = jaFui[l.nome];
+            const km = posicao && g ? distanciaKm(posicao, g.coords) : null;
+            return `
             <section class="item lugar">
-              ${pontos().filter((g) => g.lugar === l.nome).map((g) => (fotoLugar(g.id) ? `<img class="lugar-foto" src="${fotoLugar(g.id)}" alt="${esc(l.nome)}" loading="lazy">` : "")).join("")}
+              ${foto ? `<div class="lugar-capa">
+                  <img class="lugar-foto" src="${esc(foto)}" alt="${esc(l.nome)}" loading="lazy">
+                  ${obrig ? `<span class="selo-foto">${ico("estrela")}Obrigatório</span>` : ""}
+                  ${km !== null ? `<span class="dist-foto">${formatarDist(km)}</span>` : ""}
+                  <div class="lugar-capa-acoes">
+                    ${fui ? "" : `<button class="btn btn-foto ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(l.nome)}" aria-pressed="${quero}">${ico(quero ? "marcado" : "quero")}Quero ir</button>`}
+                    <button class="btn btn-foto ${fui ? "on-verde" : ""}" data-acao="fui" data-lugar="${esc(l.nome)}" aria-pressed="${Boolean(fui)}">${ico(fui ? "check" : "marcado")}Já fui</button>
+                  </div>
+                </div>` : ""}
               <div class="lugar-topo"><span aria-hidden="true">${l.icone}</span><h3 lang="${LANG}">${esc(l.nome)}</h3></div>
+              ${!foto && obrig ? `<p class="lugar-obrig">${ico("estrela")}Obrigatório</p>` : ""}
               <p class="suave">${esc(l.dica)}</p>
-              ${pontos().filter((g) => g.lugar === l.nome).map((g) => `<a class="voltar" href="#/guia/${g.id}">Conhecer a história →</a>`).join("")}
-              ${botoesLugar(l.nome)}
+              ${pontos().filter((p) => p.lugar === l.nome).map((p) => `<a class="voltar" href="#/guia/${p.id}">Conhecer a história →</a>`).join("")}
+              ${foto ? "" : botoesLugar(l.nome)}
               ${lista(l.frases)}
-            </section>`).join("")}`).join("")}
+            </section>`;
+          }).join("")}`).join("")}
         <h2>Comidas típicas</h2>
         <div class="tabela">${pais.comidas.filter((c) => !filtroCidade || !c.regioes || c.regioes.includes(filtroCidade)).map((c) => `
           <div class="item">
@@ -1437,7 +1726,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         if (!alt) return "";
         jaPlanoB.add(alt.l.nome);
         const g = pontos().find((p) => p.lugar === alt.l.nome);
-        return `<p class="roteiro-b"><span aria-hidden="true">🔁</span> Plano B: ${g ? `<a href="#/guia/${g.id}">${esc(alt.l.nome)}</a>` : esc(alt.l.nome)}${alt.l.minutos ? ` · ${formatarTempo(alt.l.minutos)}` : ""}</p>`;
+        return `<p class="roteiro-b">${ico("trocar")}<span>Plano B: ${g ? `<a href="#/guia/${g.id}">${esc(alt.l.nome)}</a>` : esc(alt.l.nome)}${alt.l.minutos ? ` · ${formatarTempo(alt.l.minutos)}` : ""}</span></p>`;
       };
       const trocados = new Set(trocas.map((x) => x.para));
       const opcoesTroca = (x) => {
@@ -1457,7 +1746,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         const ops = noPlano.has(x.l.nome) ? opcoesTroca(x) : [];
         if (!ops.length) return "";
         return `<details class="roteiro-trocar" data-chave="t:${esc(x.l.nome)}" ${aberto(`t:${x.l.nome}`)}>
-          <summary><span aria-hidden="true">⇄</span> Trocar por outro lugar</summary>
+          <summary>${ico("trocar")}Trocar por outro lugar</summary>
           <p class="suave">Só o que cabe no tempo deste, ou passa no máximo 1h.</p>
           <ul class="roteiro-opcoes">${ops.map(({ o, km }) => {
             const dif = (o.minutos || MIN_PADRAO) - x.min;
@@ -1468,28 +1757,41 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           }).join("")}</ul>
         </details>`;
       };
-      const lugar = (x) => `
-        <li class="roteiro-item roteiro-lugar">
+      // Distância da parada anterior (no mesmo dia, sem estrada no meio) e número na trilha: preenchidos ao desenhar cada dia.
+      const distAnterior = new Map();
+      const numeroNaTrilha = new Map();
+      const fotoDoLugar = (l) => { const g = pontos().find((p) => p.lugar === l.nome); return g ? fotoLugar(g.id) : null; };
+      const lugar = (x) => {
+        const foto = fotoDoLugar(x.l);
+        const km = distAnterior.get(x);
+        const n = numeroNaTrilha.get(x);
+        const obrig = x.l.prioridade === "obrigatorio";
+        return `
+        <li class="roteiro-item roteiro-lugar ${obrig ? "obrig" : ""}">
+          ${n ? `<span class="roteiro-num" aria-hidden="true">${n}</span>` : ""}
           <details data-chave="l:${esc(x.l.nome)}" ${det || abertos.has(`l:${x.l.nome}`) ? "open" : ""}>
             <summary>
-              <span class="roteiro-nome"><span aria-hidden="true">${x.l.icone}</span> <span lang="${LANG}">${esc(x.l.nome)}</span>${x.l.prioridade === "obrigatorio" ? ` <span class="estrela-obrig"><span aria-hidden="true">★</span><span class="sr">obrigatório</span></span>` : ""}${trocados.has(x.l.nome) ? ` <span class="etiqueta-troca">sua troca</span>` : ""}</span>
-              <span class="roteiro-tempo">${x.min > DIA_INTEIRO ? "dia inteiro" : formatarTempo(x.min)}</span>
+              ${foto ? `<img class="roteiro-foto" src="${esc(foto)}" alt="" loading="lazy">` : `<span class="roteiro-foto" aria-hidden="true">${x.l.icone}</span>`}
+              <span class="roteiro-nome"><span lang="${LANG}">${esc(x.l.nome)}</span>${trocados.has(x.l.nome) ? ` <span class="etiqueta-troca">sua troca</span>` : ""}
+                <small class="roteiro-meta"><span class="roteiro-tempo">${x.min > DIA_INTEIRO ? "dia inteiro" : formatarTempo(x.min)}</span>${km !== undefined ? ` · ${formatarDist(km)} da anterior` : ""}${obrig ? ` · <span class="estrela-obrig">${ico("estrela")}Obrigatório</span>` : ""}</small>
+              </span>
             </summary>
             <div class="roteiro-mais">
               <p class="suave">${esc(x.l.dica)}</p>
-              ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica"><span aria-hidden="true">📅</span> Encaixe este num domingo.</p>` : ""}
+              ${/domingo/i.test(x.l.dica) ? `<p class="frase-dica roteiro-nota">${ico("calendario")}Encaixe este num domingo.</p>` : ""}
               ${planoB(x.l)}
               ${trocar(x)}
               ${historia(x.l)}
               ${botoesLugar(x.l.nome)}
             </div>
           </details>
-          <button class="btn-tirar" data-acao="roteiro-tirar" data-lugar="${esc(x.l.nome)}" aria-label="Tirar ${esc(x.l.nome)} do roteiro"><span aria-hidden="true">✕</span></button>
+          <button class="btn-tirar" data-acao="roteiro-tirar" data-lugar="${esc(x.l.nome)}" aria-label="Tirar ${esc(x.l.nome)} do roteiro">${ico("tirar")}</button>
         </li>`;
+      };
       const item = (y) => {
-        if (y.continua) return `<li class="roteiro-item"><strong>Continua: ${esc(y.continua.l.nome)}</strong></li>`;
-        if (y.estradaSegue) return `<li class="roteiro-item roteiro-estrada"><span aria-hidden="true">🚗</span> Estrada até ${esc(y.estradaSegue.l.nome)} (continua)</li>`;
-        if (y.estrada) return `<li class="roteiro-item roteiro-estrada"><span aria-hidden="true">🚗</span> ${formatarTempo(y.estrada.min)} de estrada até ${esc(y.ate.l.nome)} <span class="suave">(cerca de ${y.estrada.km} km)</span></li>`;
+        if (y.continua) return `<li class="roteiro-item roteiro-outro">${ico("relogio")}<span>Continua: <strong lang="${LANG}">${esc(y.continua.l.nome)}</strong></span></li>`;
+        if (y.estradaSegue) return `<li class="roteiro-item roteiro-estrada">${ico("carro")}<span>Estrada até <strong lang="${LANG}">${esc(y.estradaSegue.l.nome)}</strong> (continua)</span></li>`;
+        if (y.estrada) return `<li class="roteiro-item roteiro-estrada">${ico("carro")}<span><strong>${formatarTempo(y.estrada.min)} de estrada</strong> até <span lang="${LANG}">${esc(y.ate.l.nome)}</span> <span class="suave">· cerca de ${y.estrada.km} km</span></span></li>`;
         return lugar(y);
       };
       const turno = (tu, rotulo, cidade) => {
@@ -1497,14 +1799,67 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         if (!corpo && tu.id === "noite" && cidade) {
           const lista = comidas(cidade);
           const c = lista.length ? lista[jantares++ % lista.length] : null;
-          corpo = `<li class="roteiro-item"><strong><span aria-hidden="true">🍽️</span> Jantar${c ? `: ${esc(c.nome)}` : ""}</strong>${c && det ? `<p class="suave">${esc(c.desc)}</p>` : ""}</li>`;
+          corpo = `<li class="roteiro-item roteiro-outro">${ico("talheres")}<span><strong>Jantar${c ? `: <span lang="${LANG}">${esc(c.nome)}</span>` : ""}</strong>${c && det ? `<span class="suave">${esc(c.desc)}</span>` : ""}</span></li>`;
         }
-        if (!corpo) corpo = `<li class="roteiro-item"><strong>Tempo livre</strong>${det ? `<p class="suave">Para descansar, comer bem ou voltar a um lugar de que gostou.</p>` : ""}</li>`;
-        return `<div class="roteiro-turno"><h3>${rotulo}</h3><ol class="roteiro-lista">${corpo}</ol></div>`;
+        if (!corpo) corpo = `<li class="roteiro-item roteiro-outro">${ico("relogio")}<span><strong>Tempo livre</strong>${det ? `<span class="suave">Para descansar, comer bem ou voltar a um lugar de que gostou.</span>` : ""}</span></li>`;
+        return `<div class="roteiro-turno turno-${tu.id}"><h3>${ico(tu.id)}${rotulo}</h3><ol class="roteiro-lista">${corpo}</ol></div>`;
+      };
+      // Trilha do dia: as paradas na ordem, desenhadas pelas coordenadas do guia (sem mapa externo, funciona offline).
+      // Trechos com estrada ficam tracejados; o número de cada ponto é o mesmo da parada na linha do tempo.
+      const trilhaDoDia = (dia, numero) => {
+        const paradas = [];
+        let depoisDeEstrada = false;
+        dia.forEach((tu) => tu.itens.forEach((y) => {
+          if (y.estrada || y.estradaSegue) { depoisDeEstrada = true; return; }
+          if (y.continua || !y.l) return;
+          const c = coordsDoLugar(y.l);
+          if (c) paradas.push({ y, c, turno: tu.id, estrada: depoisDeEstrada && paradas.length > 0 });
+          depoisDeEstrada = false;
+        }));
+        if (!paradas.length) return "";
+        const L = 340, A = 160, M = 20;
+        const lats = paradas.map((p) => p.c[0]);
+        const lons = paradas.map((p) => p.c[1]);
+        const k = Math.cos((Math.min(...lats) * Math.PI) / 180);
+        const larg = (Math.max(...lons) - Math.min(...lons)) * k;
+        const alt = Math.max(...lats) - Math.min(...lats);
+        const escala = Math.min((L - 2 * M) / (larg || 1e-6), (A - 2 * M) / (alt || 1e-6));
+        const x0 = (L - larg * escala) / 2;
+        const y0 = (A - alt * escala) / 2;
+        const ponto = ([la, lo]) => [x0 + (lo - Math.min(...lons)) * k * escala, y0 + (Math.max(...lats) - la) * escala].map((v) => v.toFixed(1));
+        const pts = paradas.map((p) => ponto(p.c));
+        const linhas = pts.slice(1).map((q, i) => `<path class="trilha-linha ${paradas[i + 1].estrada ? "estrada" : ""}" d="M${pts[i][0]} ${pts[i][1]}L${q[0]} ${q[1]}"/>`).join("");
+        const pinos = pts.map((q, i) => {
+          const p = paradas[i];
+          return `<g class="trilha-ponto turno-${p.turno} ${p.y.l.prioridade === "obrigatorio" ? "obrig" : ""}"><circle cx="${q[0]}" cy="${q[1]}" r="11"/><text x="${q[0]}" y="${q[1]}">${numero.get(p.y)}</text></g>`;
+        }).join("");
+        const nomes = paradas.map((p) => `${numero.get(p.y)}. ${p.y.l.nome}`).join(", ");
+        return `<figure class="trilha">
+            <svg viewBox="0 0 ${L} ${A}" role="img" aria-label="Caminho do dia: ${esc(nomes)}">${linhas}${pinos}</svg>
+            <figcaption class="trilha-legenda"><span class="t-manha">Manhã</span><span class="t-tarde">Tarde</span><span class="t-noite">Noite</span><span class="t-obrig">Obrigatório</span><span class="t-estrada">Estrada</span></figcaption>
+          </figure>`;
       };
       const qtd = r ? [...r.escolhidos].filter((x) => x.l.prioridade === "obrigatorio").length : 0;
       const modo = (id, rotulo) => `<button class="btn ${(roteiro.modo || "auto") === id ? "on" : ""}" data-acao="roteiro-modo" data-modo="${id}" aria-pressed="${(roteiro.modo || "auto") === id}">${rotulo}</button>`;
       const dias = `${roteiro.dias} ${roteiro.dias === 1 ? "dia" : "dias"}`;
+      // Linha do tempo (padrão) ou Trilha: a mesma lista, com o desenho do caminho de cada dia em cima.
+      const trilha = roteiro.vista === "trilha";
+      // Orçamento de estrada: quanto do tempo vai em estrada, com a marca do limite na barra.
+      let orcamento = "";
+      if (r) {
+        const pct = Math.round(r.estrada.fracao * 100);
+        const lim = limite === null ? null : Math.round(limite * 100);
+        const escala = Math.min(100, Math.max(50, (lim || 0) * 2, pct + 10));
+        const lugares = `${r.escolhidos.size}${meu && r.escolhidos.size < meus.size ? ` de ${meus.size}` : ""} ${r.escolhidos.size === 1 ? "lugar" : "lugares"}`;
+        orcamento = `<div class="roteiro-orcamento">
+            <p class="orc-topo"><strong>${lugares} · ${dias}</strong><span>estrada ${pct}% do tempo</span></p>
+            <div class="orc-trilho" role="img" aria-label="Estrada: ${pct}% do tempo${lim !== null ? `, limite de ${lim}%` : ", sem limite"}">
+              <span class="orc-uso ${lim !== null && pct > lim ? "passou" : ""}" style="width:${(Math.min(pct, escala) / escala) * 100}%"></span>
+              ${lim !== null ? `<span class="orc-limite" style="left:${(lim / escala) * 100}%"></span>` : ""}
+            </div>
+            <p class="orc-legenda"><span>${lim !== null ? `Limite de ${lim}% do tempo em estrada` : "Sem limite de estrada"}</span><span>${lim === null ? "" : pct <= lim ? `${lim - pct} pontos de folga` : "passou do limite"}</span></p>
+          </div>`;
+      }
       // Escolhas do roteiro: abertas enquanto não há roteiro; depois viram uma linha de resumo que abre ao tocar.
       const ajustes = `<p class="lead">${meu
           ? "Os lugares que você marcou com Quero ir, na melhor ordem, em manhã, tarde e noite, com o tempo de estrada."
@@ -1525,39 +1880,62 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const atual = escolhaRoteiro();
       const salvo = salvos.some((s) => mesmaEscolha(s, atual));
       const listaSalvos = salvos.length ? `<details class="item roteiro-salvos" data-chave="salvos" ${aberto("salvos")}>
-          <summary><span aria-hidden="true">📌</span> Meus roteiros (${salvos.length})</summary>
+          <summary>${ico("marcador")}Meus roteiros (${salvos.length})</summary>
           <ul class="roteiro-salvos-lista">${salvos.map((s, i) => `
             <li>
               <button class="roteiro-abrir" data-acao="roteiro-abrir" data-i="${i}">${esc(s.nome)}<small>${s.modo === "meu" ? "Do meu jeito" : "Montar pra mim"}${mesmaEscolha(s, atual) ? " · aberto agora" : ""}</small></button>
-              <button class="btn-tirar" data-acao="roteiro-apagar" data-i="${i}" aria-label="Apagar o roteiro ${esc(s.nome)}"><span aria-hidden="true">🗑️</span></button>
+              <button class="btn-tirar" data-acao="roteiro-apagar" data-i="${i}" aria-label="Apagar o roteiro ${esc(s.nome)}">${ico("lixo")}</button>
             </li>`).join("")}
           </ul>
         </details>` : "";
-      return `<p class="kicker"><span aria-hidden="true">✨</span> Assistente de viagem</p>
+      return `<p class="kicker">${ico("guia")}Assistente de viagem</p>
         <h1>Roteiro</h1>
         ${listaSalvos}
         <div class="filtros roteiro-modos" role="group" aria-label="Como montar o roteiro">${modo("auto", "Montar pra mim")}${modo("meu", `Do meu jeito${meus.size ? ` (${meus.size})` : ""}`)}</div>
-        ${meuVazio ? `<p class="frase-dica roteiro-aviso"><span aria-hidden="true">💡</span> Você ainda não marcou nenhum lugar com ＋ Quero ir. Enquanto isso, ${r ? "este é o roteiro do <strong>Montar pra mim</strong>" : `o <strong>Montar pra mim</strong> monta um para você: escolha as ${nome} abaixo`}. Toque num lugar e em ＋ Quero ir (aqui, em <a href="#/guia">Perto de você</a> ou em <a href="#/lugares">Lugares</a>) para montar do seu jeito.</p>` : ""}
+        ${meuVazio ? `<p class="frase-dica roteiro-aviso">${ico("dica")}<span>Você ainda não marcou nenhum lugar com Quero ir. Enquanto isso, ${r ? "este é o roteiro do <strong>Montar pra mim</strong>" : `o <strong>Montar pra mim</strong> monta um para você: escolha as ${nome} abaixo`}. Toque num lugar e em Quero ir (aqui, em <a href="#/guia">Perto de você</a> ou em <a href="#/lugares">Lugares</a>) para montar do seu jeito.</span></p>` : ""}
         ${!r ? `${ajustes}<p class="vazio">Toque em uma ou mais ${nome} para começar.</p>` : `
           <details class="item roteiro-ajustes" data-chave="ajustes" ${aberto("ajustes")}>
             <summary><span class="roteiro-resumo">${esc(resumo)}</span><span class="roteiro-ajustar">Ajustar</span></summary>
             ${ajustes}
           </details>
           <div class="roteiro-barra">
-            <button class="btn ${salvo ? "on" : ""}" data-acao="roteiro-salvar" aria-pressed="${salvo}">${salvo ? "✓ Salvo" : `<span aria-hidden="true">📌</span> Salvar roteiro`}</button>
+            <button class="btn ${salvo ? "on" : ""}" data-acao="roteiro-salvar" aria-pressed="${salvo}">${salvo ? `${ico("check")}Salvo` : `${ico("marcador")}Salvar roteiro`}</button>
             <button class="btn" data-acao="roteiro-detalhes" aria-pressed="${det}">${det ? "Menos detalhes" : "Mais detalhes"}</button>
           </div>
-          <p class="gps-nota">${r.escolhidos.size} ${r.escolhidos.size === 1 ? "lugar" : "lugares"}${meu && r.escolhidos.size < meus.size ? ` de ${meus.size}` : ""} · estrada ${Math.round(r.estrada.fracao * 100)}% do tempo${det ? `${limite !== null ? ` (limite de ${Math.round(limite * 100)}%)` : ""}. ${meu ? "" : `${qtd} ${qtd === 1 ? "obrigatório" : "obrigatórios"} (★). `}Tempos e estradas são estimativas.` : ""}</p>
+          ${orcamento}
+          ${det ? `<p class="gps-nota">${meu ? "" : `${qtd} ${qtd === 1 ? "obrigatório" : "obrigatórios"}. `}Tempos e estradas são estimativas.</p>` : ""}
+          <div class="filtros roteiro-vista" role="group" aria-label="Como ver o roteiro">
+            <button class="btn ${trilha ? "" : "on"}" data-acao="roteiro-vista" data-vista="linha" aria-pressed="${!trilha}">${ico("lista")}Linha do tempo</button>
+            <button class="btn ${trilha ? "on" : ""}" data-acao="roteiro-vista" data-vista="trilha" aria-pressed="${trilha}">${ico("trilha")}Trilha</button>
+          </div>
           ${(tirados.length || trocas.length) && !meu ? `<p class="gps-nota">Você ${[tirados.length ? `tirou ${tirados.length} ${tirados.length === 1 ? "lugar" : "lugares"}` : "", trocas.length ? `trocou ${trocas.length}` : ""].filter(Boolean).join(" e ")}. <button class="link-btn" data-acao="roteiro-devolver">Desfazer</button></p>` : ""}
           ${det && r.longe.length ? `<p class="gps-nota">Para a estrada não passar do limite, ${r.longe.length === 1 ? "ficou de fora" : "ficaram de fora"}: ${r.longe.map((x) => esc(x.l.nome)).join(", ")}.${meu ? " Aumente o limite de estrada para incluir." : " Para incluir, use o Do meu jeito e escolha um limite maior."}</p>` : ""}
           ${det && limite !== null && r.estrada.fracao > limite ? `<p class="gps-nota">Mesmo com poucos lugares, a estrada passa do limite: as regiões escolhidas são longe umas das outras.</p>` : ""}
           ${det && visitados ? `<p class="gps-nota">${visitados === 1 ? "Um lugar onde você já foi ficou" : `${visitados} lugares onde você já foi ficaram`} de fora. Para incluir de novo, desmarque Já fui.</p>` : ""}
-          ${!meu && r.faltam.some((x) => !r.longe.includes(x)) ? `<p class="frase-dica"><span aria-hidden="true">⚠️</span> Não cabe todo o obrigatório: ${r.faltam.filter((x) => !r.longe.includes(x)).length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.filter((x) => !r.longe.includes(x)).map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</p>` : ""}
+          ${!meu && r.faltam.some((x) => !r.longe.includes(x)) ? `<p class="frase-dica roteiro-nota">${ico("aviso")}<span>Não cabe todo o obrigatório: ${r.faltam.filter((x) => !r.longe.includes(x)).length === 1 ? "fica de fora" : "ficam de fora"} ${r.faltam.filter((x) => !r.longe.includes(x)).map((x) => esc(x.l.nome)).join(", ")}. Para ver tudo, são uns ${r.minimo} dias.</span></p>` : ""}
           ${r.agenda.map((dia, i) => {
             const onde = [...new Set(dia.flatMap((tu) => tu.itens.map((y) => y.cidade || (y.ate && y.ate.cidade) || (y.estradaSegue && y.estradaSegue.cidade) || (y.continua && y.continua.cidade))).filter(Boolean))];
             if (!onde.length && dia.every((tu) => !tu.itens.length)) return "";
-            return `<section class="item roteiro-dia">
-              <h2>Dia ${i + 1}${onde.length ? ` · ${onde.map(esc).join(" → ")}` : ""}</h2>
+            // Distância entre paradas seguidas (a estrada já aparece no trecho dela) e a numeração da trilha.
+            let anterior = null;
+            let paradas = 0;
+            let minEstrada = 0;
+            dia.forEach((tu) => tu.itens.forEach((y) => {
+              if (y.estrada) { minEstrada += y.estrada.min; anterior = null; return; }
+              if (y.estradaSegue) { anterior = null; return; }
+              if (y.continua || !y.l) return;
+              const c = coordsDoLugar(y.l);
+              if (anterior && c) distAnterior.set(y, distanciaKm(anterior, c));
+              anterior = c || null;
+              paradas++;
+              if (trilha) numeroNaTrilha.set(y, paradas);
+            }));
+            return `<section class="item roteiro-dia ${trilha ? "com-trilha" : ""}">
+              <div class="roteiro-dia-topo">
+                <h2>Dia ${i + 1}${onde.length ? ` · ${onde.map(esc).join(" → ")}` : ""}</h2>
+                <p class="roteiro-dia-resumo">${paradas} ${paradas === 1 ? "parada" : "paradas"} · ${minEstrada ? `${formatarTempo(minEstrada)} de estrada` : "sem estrada"}</p>
+              </div>
+              ${trilha ? trilhaDoDia(dia, numeroNaTrilha) : ""}
               ${dia.map((tu, j) => turno(tu, TURNOS[j][1], onde[onde.length - 1])).join("")}
             </section>`;
           }).join("")}
@@ -1596,7 +1974,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           return `<div class="figurinha vaga">
             <div class="fig-cartao">
               <span class="fig-num">${numero(l)}</span>
-              <span class="fig-silhueta" aria-hidden="true">${l.icone}</span>
+              ${foto ? `<span class="fig-foto-vaga" aria-hidden="true"><img src="${foto}" alt="" loading="lazy"></span>` : `<span class="fig-silhueta" aria-hidden="true">${l.icone}</span>`}
               <strong lang="${LANG}">${esc(l.nome)}</strong>
               <small>${especial ? "Especial" : "Comum"}</small>
             </div>
@@ -1616,7 +1994,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
               <span class="fig-brilho" aria-hidden="true"></span>
             </div>
             <div class="fig-acoes">
-              <button class="btn on" data-acao="fui" data-lugar="${esc(l.nome)}" aria-pressed="true">✓ Já fui</button>
+              <button class="btn on" data-acao="fui" data-lugar="${esc(l.nome)}" aria-pressed="true">${ico("check")}Já fui</button>
               ${historia}
             </div>
           </div>`;
@@ -1654,14 +2032,22 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const nivel = NIVEIS_ALBUM.find((n) => n[0] === nivelAlbum) || NIVEIS_ALBUM[0];
       const k = contaAlbum(todos, nivel[3]);
       const pctTotal = todos.length ? Math.round((coladas / todos.length) * 100) : 0;
-      return `<section class="album-capa ${CONTORNOS[pais.codigo] ? "com-mapa" : ""}">
-          ${mapaDoAlbum(pctTotal, nivel[3])}
+      // Capa: o mapa pintado com a bandeira. Com figurinhas coladas, dá para trocar por um mosaico das fotos mais recentes.
+      const fotosColadas = todos.filter((l) => jaFui[l.nome]).sort((a, b) => jaFui[b.nome].localeCompare(jaFui[a.nome]))
+        .map((l) => { const g = pontos().find((p) => p.lugar === l.nome); return g && fotoLugar(g.id); }).filter(Boolean).slice(0, 4);
+      const temMapa = Boolean(CONTORNOS[pais.codigo]);
+      const mosaico = fotosColadas.length > 0 && (capaAlbum === "fotos" || !temMapa);
+      return `<section class="album-capa ${temMapa || mosaico ? "com-mapa" : ""} ${mosaico ? "com-mosaico" : ""}">
+          ${mosaico ? `<div class="capa-mosaico" aria-hidden="true">${fotosColadas.map((f, i) => `<img src="${esc(f)}" alt="" style="--i:${i}">`).join("")}</div>` : mapaDoAlbum(pctTotal, nivel[3])}
           <div class="capa-texto">
             <p class="capa-kicker">Álbum de figurinhas</p>
             <h1>${NOME_ALBUM}</h1>
             <p class="capa-sub">${esc(pais.nome)} · ${pais.lugares.length} páginas</p>
             <p class="capa-pct"><strong>${pctTotal}%</strong> ${pctTotal === 100 ? "do álbum completo!" : "do mapa pintado com a bandeira"}</p>
-            <a class="btn capa-abrir" href="#/album/0" data-virar="frente">Abrir o álbum</a>
+            <div class="capa-botoes">
+              <a class="btn capa-abrir" href="#/album/0" data-virar="frente">Abrir o álbum</a>
+              ${fotosColadas.length && temMapa ? `<button class="btn capa-trocar" id="capa-trocar" data-acao="album-capa" aria-pressed="${mosaico}">${mosaico ? "Ver o mapa" : "Ver minhas fotos"}</button>` : ""}
+            </div>
           </div>
           <p class="capa-selo"><strong>${coladas}</strong><small>de ${todos.length}</small></p>
         </section>
@@ -1883,7 +2269,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       if (p && !pensando) perguntarAoGuia(p);
       return;
     }
-    if (b.dataset.acao === "ia-sugestao") return perguntarAoGuia(b.textContent.trim());
+    if (b.dataset.acao === "ia-sugestao") return perguntarAoGuia(b.dataset.pergunta || b.textContent.trim());
     if (b.dataset.acao === "ia-atalho") {
       location.hash = "#/ia";
       return perguntarAoGuia(b.dataset.pergunta);
@@ -1913,8 +2299,30 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (b.dataset.acao === "gps") return pedirPosicao();
     if (b.dataset.acao === "filtro") {
       filtroCidade = b.dataset.cidade;
-      verTodos = false;
+      secoesAbertas = {};
       return render();
+    }
+    // Mostrar mais: o foco vai para o primeiro lugar que apareceu. Mostrar menos: volta ao topo da seção.
+    if (b.dataset.acao === "secao-mais") {
+      const id = b.dataset.secao;
+      const antes = secoesAbertas[id] || POR_SECAO;
+      secoesAbertas[id] = antes + MAIS_POR_TOQUE;
+      render();
+      const novo = main.querySelector(`#secao-${id} .vitrine-item:nth-child(${antes + 1}) a`);
+      if (novo) novo.focus();
+      return;
+    }
+    if (b.dataset.acao === "secao-menos") {
+      const id = b.dataset.secao;
+      delete secoesAbertas[id];
+      render();
+      const secao = $(`#secao-${id}`);
+      if (secao) {
+        secao.scrollIntoView({ block: "start" });
+        const botao = $(`#mais-${id}`);
+        if (botao) botao.focus({ preventScroll: true });
+      }
+      return;
     }
     if (b.dataset.acao === "regiao") {
       filtroRegiao = b.dataset.regiao;
@@ -1931,10 +2339,6 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       salvarRoteiro();
       return render();
     }
-    if (b.dataset.acao === "ver-todos") {
-      verTodos = true;
-      return render();
-    }
     if (b.dataset.acao === "narrar") return narrar(pontos().find((g) => g.id === b.dataset.guia).historia);
     if (b.dataset.acao === "quero") {
       const nome = b.dataset.lugar;
@@ -1942,7 +2346,12 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       queroIr = on ? [...queroIr, nome] : queroIr.filter((x) => x !== nome);
       salvarMarcas();
       avisar(on ? `${nome} no roteiro Do meu jeito` : "Tirado do roteiro Do meu jeito");
-      return render();
+      // A tela é redesenhada: o foco volta ao mesmo botão para quem usa teclado não perder o lugar.
+      const tinhaFoco = document.activeElement === b;
+      render();
+      const mesmo = main.querySelector(`[data-acao="quero"][data-lugar="${CSS.escape(nome)}"]`);
+      if (tinhaFoco && mesmo) mesmo.focus({ preventScroll: true });
+      return;
     }
     if (b.dataset.acao === "fui") {
       // Já fui tira o lugar do "Quero ir": não faz sentido ir de novo no mesmo roteiro.
@@ -1958,6 +2367,29 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       }
       avisar(on ? `Figurinha colada em ${NOME_ALBUM}` : `Tirado de ${NOME_ALBUM}`);
       return render();
+    }
+    if (b.dataset.acao === "album-capa") {
+      capaAlbum = capaAlbum === "fotos" ? "mapa" : "fotos";
+      try { localStorage.setItem(CHAVE_CAPA_ALBUM, capaAlbum); } catch (err) {}
+      render();
+      const botao = $("#capa-trocar");
+      if (botao) botao.focus({ preventScroll: true });
+      return;
+    }
+    if (b.dataset.acao === "ficha-aba") {
+      abaFicha = b.dataset.aba;
+      render();
+      const aba = $(`#aba-${abaFicha}`);
+      if (aba) aba.focus({ preventScroll: true });
+      return;
+    }
+    if (b.dataset.acao === "roteiro-vista") {
+      roteiro.vista = b.dataset.vista === "trilha" ? "trilha" : "linha";
+      salvarRoteiro();
+      render();
+      const botao = main.querySelector(`[data-acao="roteiro-vista"][data-vista="${roteiro.vista}"]`);
+      if (botao) botao.focus({ preventScroll: true });
+      return;
     }
     if (b.dataset.acao === "roteiro-limite") {
       roteiro.limite = b.dataset.limite === "" ? null : Number(b.dataset.limite);
@@ -2146,10 +2578,23 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     }
   });
 
+  main.addEventListener("keydown", (e) => {
+    const aba = e.target.closest(".ficha-abas [role=tab]");
+    if (!aba || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    const todas = [...main.querySelectorAll(".ficha-abas [role=tab]")];
+    const i = todas.indexOf(aba);
+    const j = e.key === "Home" ? 0 : e.key === "End" ? todas.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + todas.length) % todas.length;
+    abaFicha = todas[j].dataset.aba;
+    render();
+    $(`#aba-${abaFicha}`).focus();
+  });
+
   $("#busca").addEventListener("input", render);
   window.addEventListener("hashchange", () => {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     quizAtual = null;
+    abaFicha = "historia";
     placarOnline = {};
     placarFalhou = {};
     $("#busca").value = "";
