@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.40";
+  const VERSAO_APP = "1.41";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -432,8 +432,15 @@
   let estadoGps = "";
   let filtroCidade = "";
   let filtroRegiao = "";
-  let verTodos = false;
-  const LIMITE_PERTO = 10;
+  // Explorar: cada seção mostra 4 lugares e cresce 8 a cada "Mostrar mais". Trocar a cidade volta tudo a 4.
+  let secoesAbertas = {};
+  const POR_SECAO = 4;
+  const MAIS_POR_TOQUE = 8;
+  const A_PE_KM = 2;
+  const BATE_VOLTA_KM = 50;
+  // Mais longe que isso do lugar mais perto, a pessoa ainda não chegou: sem "a pé" nem "bate-volta".
+  const LONGE_DO_DESTINO_KM = 150;
+  const minutosAPe = (km) => `${Math.max(1, Math.round((km * 1000) / 80))} min a pé`;
   function distanciaKm(a, b) {
     const rad = (g) => (g * Math.PI) / 180;
     const dLat = rad(b[0] - a[0]);
@@ -885,12 +892,29 @@
   // Imagens: cada foto traz crédito na tela de Créditos, e sem internet o texto continua lá.
   const imgs = pais.imagens || { lugares: {}, pessoas: {} };
   const fotoLugar = (id) => (imgs.lugares[id] ? `img/guia/${id}.jpg` : null);
+  // Ícones de traço (1,75, pontas redondas) no lugar dos emojis estruturais; pintados com a cor do texto.
+  const ICONES = {
+    quero: '<circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/>',
+    marcado: '<circle cx="12" cy="12" r="8.5"/><path d="m8.5 12.2 2.4 2.4 4.6-4.8"/>',
+    check: '<path d="m5.5 12.5 4 4 9-9.5"/>',
+    estrela: '<path d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8z"/>',
+    ouvir: '<path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+    localizar: '<circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/>',
+    seta: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    abrir: '<path d="m6.5 9.5 5.5 5 5.5-5"/>',
+    fechar: '<path d="m6.5 14.5 5.5-5 5.5 5"/>',
+    livro: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/>',
+    bola: '<circle cx="12" cy="12" r="8.5"/><path d="m12 7.5 3.6 2.6-1.4 4.2H9.8l-1.4-4.2z"/><path d="M12 3.5v4M20.2 9.4l-4.6.7M17.2 19l-3-4.7M6.8 19l3-4.7M3.8 9.4l4.6.7"/>',
+    trofeu: '<path d="M8 20.5h8M12 16.5v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 3 3.5M17 6h2.5a2.5 2.5 0 0 1-3 3.5"/>',
+  };
+  const ico = (nome) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES[nome]}</svg>`;
   const fotoPessoa = (nome) => (imgs.pessoas[nome] ? `img/pessoas/${imgs.pessoas[nome].id}.jpg` : null);
   const creditoFoto = (c) => (c ? `<p class="credito">Foto: ${esc(c.autor || "Wikimedia Commons")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></p>` : "");
   const heroi = (src, alt, credito) => (src ? `<figure class="heroi"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${creditoFoto(credito)}</figure>` : "");
   const miniatura = (src, icone) => (src ? `<img class="mini" src="${esc(src)}" alt="" loading="lazy">` : `<span class="emoji" aria-hidden="true">${icone}</span>`);
   const corDoIndice = (i) => `hsl(${Math.round((i * 137.5) % 360)} 68% 42%)`;
-  const CAPAS = { "": "inicio", guia: "guia", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos", ia: "ia" };
+  // Perto de você abre com a foto do destaque, então não leva ilustração de capa.
+  const CAPAS = { "": "inicio", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos", ia: "ia" };
   const capa = (nome) => `<img class="capa" src="img/arte/${nome}.svg" alt="" aria-hidden="true">`;
   const momentos = (itens) => `<ol class="linha-tempo">${itens.map((m) => `
     <li><span class="linha-data">${esc(m.data)}</span><strong>${esc(m.titulo)}</strong><p class="suave">${esc(m.texto)}</p></li>`).join("")}</ol>`;
@@ -1223,37 +1247,135 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>
           <ul class="fontes">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ul>`;
       }
-      const ordem = pontos()
-        .map((p) => ({ p, km: posicao ? distanciaKm(posicao, p.coords) : null, l: lugarDo(p) }))
+      // Explorar: um destaque (o melhor lugar para agora) e seções de 4 fotos, cada uma com "Mostrar mais".
+      const lista = pontos()
+        .map((p, n) => ({ p, n, l: lugarDo(p), km: posicao ? distanciaKm(posicao, p.coords) : null }))
         .filter(({ l }) => !filtroCidade || l.cidade === filtroCidade);
-      if (posicao) ordem.sort((a, b) => a.km - b.km);
-      // Com GPS só o entorno importa; a lista completa fica a um toque.
-      const visiveis = posicao && !verTodos ? ordem.slice(0, LIMITE_PERTO) : ordem;
+      if (posicao) lista.sort((a, b) => a.km - b.km);
       // Só cidades com algum ponto no guia: as outras dariam uma lista vazia.
       const filtros = [["", "Todas"], ...pais.lugares.filter((c) => pontos().some((p) => lugarDo(p).cidade === c.cidade)).map((c) => [c.cidade, c.cidade])];
       const totalLugares = pais.lugares.reduce((s, c) => s + c.itens.length, 0);
       const fuiEm = pais.lugares.reduce((s, c) => s + c.itens.filter((l) => jaFui[l.nome]).length, 0);
-      return `<h1>Perto de você</h1>
+      const nomeFiltro = semTraducao ? "região" : "cidade";
+      const topoTela = `<h1>Perto de você</h1>
         <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
-        ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
-        <p class="gps-nota">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>
-        <button class="btn btn-gps" data-acao="gps"><span aria-hidden="true">📍</span> ${posicao ? "Atualizar localização" : "Usar minha localização"}</button>
-        <p class="gps-nota">${esc(estadoGps || "Sua localização fica só neste aparelho e é usada para ordenar a lista.")}</p>
-        <div class="filtros" role="group" aria-label="Filtrar por cidade">${filtros.map(([v, r]) => `
+        <p class="gps-nota">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>`;
+      const filtrosHtml = `<div class="filtros rolar" role="group" aria-label="Filtrar por ${nomeFiltro}">${filtros.map(([v, r]) => `
           <button class="btn ${v === filtroCidade ? "on" : ""}" data-acao="filtro" data-cidade="${esc(v)}" aria-pressed="${v === filtroCidade}">${esc(r)}</button>`).join("")}
-        </div>
-        <div class="tabela">${visiveis.map(({ p, km, l }) => `
-          <a class="item ponto" href="#/guia/${p.id}">
-            ${miniatura(fotoLugar(p.id), l.icone)}
-            <span class="ponto-texto">
-              <strong lang="${LANG}">${esc(p.lugar)}</strong>
-              <small class="suave">${esc(p.resumo)}</small>
-              <small class="ponto-dist">${esc(l.cidade)}${km === null ? "" : ` · ${formatarDist(km)}`}${jaFui[p.lugar] ? " · ✓ Já fui" : ""}</small>
-            </span>
-          </a>
-          ${km !== null && km < 0.3 && !jaFui[p.lugar] ? `<p class="ponto-perto">Você está aqui? <button class="btn" data-acao="fui" data-lugar="${esc(p.lugar)}">Marcar como visitado</button></p>` : ""}`).join("")}
-        </div>
-        ${visiveis.length < ordem.length ? `<button class="btn btn-gps ver-todos" data-acao="ver-todos">Ver todos os ${ordem.length}</button>` : ""}`;
+        </div>`;
+      if (!lista.length) return `${topoTela}${filtrosHtml}<p class="vazio">Nenhum lugar nesta ${nomeFiltro}.</p>`;
+
+      // Longe do destino (ainda em casa, por exemplo), as distâncias aparecem, mas sem "a pé" nem "bate-volta".
+      const maisPerto = posicao ? lista[0] : null;
+      const chegou = Boolean(maisPerto && maisPerto.km <= LONGE_DO_DESTINO_KM);
+      const obrig = (x) => x.l.prioridade === "obrigatorio";
+      const aPe = (x) => chegou && x.km <= A_PE_KM;
+      // Destaque: um obrigatório que dá pra ir a pé; se não houver, o obrigatório mais perto (ou o primeiro do guia).
+      // Prefere lugares com foto e onde a pessoa ainda não foi.
+      const candidatos = lista.filter((x) => !jaFui[x.p.lugar] && fotoLugar(x.p.id));
+      const destaque = candidatos.find((x) => aPe(x) && obrig(x)) || candidatos.find(aPe) || candidatos.find(obrig) || candidatos[0] || lista[0];
+      const resto = lista.filter((x) => x !== destaque);
+      const naRegiao = (x) => x.km > A_PE_KM && x.km <= BATE_VOLTA_KM;
+      const secoes = chegou
+        ? [
+            { id: "a-pe", titulo: "Dá pra ir a pé", sub: `até ${A_PE_KM} km`, itens: resto.filter(aPe) },
+            { id: "obrigatorios", titulo: "Obrigatórios na região", sub: `até ${BATE_VOLTA_KM} km`, itens: resto.filter((x) => naRegiao(x) && obrig(x)) },
+            { id: "regiao", titulo: "Também na região", sub: `até ${BATE_VOLTA_KM} km`, itens: resto.filter((x) => naRegiao(x) && !obrig(x)) },
+            // Bate-volta: obrigatórios primeiro, cada grupo do mais perto ao mais longe.
+            { id: "bate-volta", titulo: "Bate-volta", sub: `mais de ${BATE_VOLTA_KM} km`, itens: [...resto.filter((x) => x.km > BATE_VOLTA_KM && obrig(x)), ...resto.filter((x) => x.km > BATE_VOLTA_KM && !obrig(x))] },
+          ]
+        : [
+            { id: "obrigatorios", titulo: "Obrigatórios", sub: "", itens: resto.filter(obrig) },
+            { id: "outros", titulo: "Mais lugares", sub: "", itens: resto.filter((x) => !obrig(x)) },
+          ];
+
+      const detalhe = (x) => (aPe(x) ? minutosAPe(x.km) : x.l.minutos ? `${formatarTempo(x.l.minutos)} de visita` : "");
+      const cartao = (x) => {
+        const foto = fotoLugar(x.p.id);
+        const quero = queroIr.includes(x.p.lugar);
+        const marca = jaFui[x.p.lugar]
+          ? `<span class="vitrine-fui">${ico("check")}Já fui</span>`
+          : `<button class="vitrine-quero ${quero ? "on" : ""}" data-acao="quero" data-lugar="${esc(x.p.lugar)}" aria-pressed="${quero}" aria-label="Quero ir: ${esc(x.p.lugar)}">${ico(quero ? "marcado" : "quero")}</button>`;
+        return `<article class="vitrine-item">
+            <a class="vitrine-link" href="#/guia/${x.p.id}">
+              <span class="vitrine-foto" style="--cor:${corDoIndice(x.n)}">
+                ${foto ? `<img src="${esc(foto)}" alt="" loading="lazy">` : `<span class="vitrine-emoji" aria-hidden="true">${x.l.icone}</span>`}
+                ${obrig(x) ? `<span class="selo-foto">${ico("estrela")}Obrigatório</span>` : ""}
+                ${x.km === null ? "" : `<span class="dist-foto">${formatarDist(x.km)}</span>`}
+              </span>
+              <span class="vitrine-txt">
+                <strong lang="${LANG}">${esc(x.p.lugar)}</strong>
+                <small>${esc(x.l.cidade)}</small>
+                ${detalhe(x) ? `<small>${detalhe(x)}</small>` : ""}
+              </span>
+            </a>
+            ${marca}
+          </article>`;
+      };
+      const secaoHtml = (s) => {
+        if (!s.itens.length) return "";
+        const n = Math.min(s.itens.length, secoesAbertas[s.id] || POR_SECAO);
+        const faltam = s.itens.length - n;
+        const botao = faltam > 0
+          ? `<button class="btn mostrar-mais" id="mais-${s.id}" data-acao="secao-mais" data-secao="${s.id}" aria-label="Mostrar mais em ${s.titulo}: faltam ${faltam}">Mostrar mais · faltam ${faltam}${ico("abrir")}</button>`
+          : s.itens.length > POR_SECAO ? `<button class="btn mostrar-mais" id="mais-${s.id}" data-acao="secao-menos" data-secao="${s.id}">Mostrar menos${ico("fechar")}</button>` : "";
+        return `<section class="secao-explorar" id="secao-${s.id}" aria-labelledby="secao-${s.id}-titulo">
+            <div class="secao-topo"><h2 id="secao-${s.id}-titulo">${s.titulo}</h2><small>${s.itens.length} ${s.itens.length === 1 ? "lugar" : "lugares"}${s.sub ? ` · ${s.sub}` : ""}</small></div>
+            <div class="vitrine">${s.itens.slice(0, n).map(cartao).join("")}</div>
+            ${botao}
+          </section>`;
+      };
+
+      const gps = posicao
+        ? `<div class="gps-barra"><span class="gps-ponto" aria-hidden="true"></span>
+            <p>${esc(estadoGps || (chegou ? "Ordenado pelo que está mais perto de você." : `Você está a ${formatarDist(maisPerto.km)} do lugar mais perto${filtroCidade ? ` em ${filtroCidade}` : ` ${doNome}`}. Quando chegar, aparece o que dá pra ir a pé.`))}</p>
+            <button class="btn" data-acao="gps">${ico("localizar")}Atualizar</button></div>`
+        : `<div class="gps-barra"><span class="gps-icone" aria-hidden="true">${ico("localizar")}</span>
+            <p><strong>Veja o que dá pra ir a pé</strong><small>${esc(estadoGps || "Sua localização fica só neste aparelho.")}</small></p>
+            <button class="btn btn-gps" data-acao="gps">Usar localização</button></div>`;
+      const aqui = chegou && maisPerto.km < 0.3 && !jaFui[maisPerto.p.lugar] ? maisPerto : null;
+      const d = destaque;
+      const fotoD = fotoLugar(d.p.id);
+      const queroD = queroIr.includes(d.p.lugar);
+      // Se o destaque é onde a pessoa está, ele mesmo oferece "Marcar como visitado".
+      const estaNoDestaque = aqui === d;
+      const olho = estaNoDestaque ? `Você está aqui · ${formatarDist(d.km)}`
+        : chegou ? `Você está a ${formatarDist(d.km)}${aPe(d) ? ` · ${minutosAPe(d.km)}` : ""}`
+        : posicao ? `A ${formatarDist(d.km)} de você`
+        : `${obrig(d) ? "Obrigatório" : "Comece por aqui"} · ${esc(d.l.cidade)}`;
+      const destaqueHtml = `<section class="destaque" aria-labelledby="destaque-titulo" style="--cor:${corDoIndice(d.n)}">
+          ${fotoD ? `<img class="destaque-foto" src="${esc(fotoD)}" alt="">` : ""}
+          <div class="destaque-texto">
+            <p class="destaque-olho">${olho}</p>
+            <h2 id="destaque-titulo" lang="${LANG}"><a href="#/guia/${d.p.id}">${esc(d.p.lugar)}</a></h2>
+            <p class="destaque-resumo">${esc(d.p.resumo)}</p>
+            <div class="destaque-acoes">
+              <a class="btn btn-claro" href="#/guia/${d.p.id}">Ver a história${ico("seta")}</a>
+              <button class="btn btn-vidro" data-acao="narrar" data-guia="${esc(d.p.id)}" aria-label="Ouvir a história de ${esc(d.p.lugar)}">${ico("ouvir")}</button>
+              ${estaNoDestaque ? `<button class="btn btn-vidro" data-acao="fui" data-lugar="${esc(d.p.lugar)}">${ico("marcado")}Marcar como visitado</button>`
+                : jaFui[d.p.lugar] ? "" : `<button class="btn btn-vidro ${queroD ? "on" : ""}" data-acao="quero" data-lugar="${esc(d.p.lugar)}" aria-pressed="${queroD}">${ico(queroD ? "marcado" : "quero")}Quero ir</button>`}
+            </div>
+          </div>
+        </section>`;
+      const atalhos = [["historia", "livro", "História", "datas e pessoas"], ["futebol", "bola", "Futebol", "clubes e estádios"], ["quiz", "trofeu", "Quiz", "teste o que aprendeu"]]
+        .filter(([rota]) => temSecao[rota]);
+      const atalhosHtml = atalhos.length ? `<section class="secao-explorar" aria-labelledby="entender-titulo">
+          <div class="secao-topo"><h2 id="entender-titulo">Para entender o lugar</h2></div>
+          <div class="atalhos-explorar">${atalhos.map(([rota, icone, titulo, sub]) => `
+            <a class="atalho-explorar" href="#/${rota}"><span class="atalho-circ" aria-hidden="true">${ico(icone)}</span><strong>${titulo}</strong><small>${sub}</small></a>`).join("")}
+          </div>
+        </section>` : "";
+      // O GuIA entra depois da primeira seção: perto o bastante para ser visto, sem tirar o lugar do destaque.
+      const [primeira, ...outras] = secoes.map(secaoHtml).filter(Boolean);
+      return `${topoTela}
+        ${gps}
+        ${filtrosHtml}
+        ${aqui && aqui !== d ? `<p class="ponto-perto"><span>Está agora em <strong lang="${LANG}">${esc(aqui.p.lugar)}</strong>?</span> <button class="btn" data-acao="fui" data-lugar="${esc(aqui.p.lugar)}">Marcar como visitado</button></p>` : ""}
+        ${destaqueHtml}
+        ${primeira || ""}
+        ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
+        ${outras.join("")}
+        ${atalhosHtml}`;
     },
     inicio() {
       // Com uma região escolhida, as palavras de todos os temas aparecem juntas, só as daquela região.
@@ -1913,8 +2035,30 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (b.dataset.acao === "gps") return pedirPosicao();
     if (b.dataset.acao === "filtro") {
       filtroCidade = b.dataset.cidade;
-      verTodos = false;
+      secoesAbertas = {};
       return render();
+    }
+    // Mostrar mais: o foco vai para o primeiro lugar que apareceu. Mostrar menos: volta ao topo da seção.
+    if (b.dataset.acao === "secao-mais") {
+      const id = b.dataset.secao;
+      const antes = secoesAbertas[id] || POR_SECAO;
+      secoesAbertas[id] = antes + MAIS_POR_TOQUE;
+      render();
+      const novo = main.querySelector(`#secao-${id} .vitrine-item:nth-child(${antes + 1}) a`);
+      if (novo) novo.focus();
+      return;
+    }
+    if (b.dataset.acao === "secao-menos") {
+      const id = b.dataset.secao;
+      delete secoesAbertas[id];
+      render();
+      const secao = $(`#secao-${id}`);
+      if (secao) {
+        secao.scrollIntoView({ block: "start" });
+        const botao = $(`#mais-${id}`);
+        if (botao) botao.focus({ preventScroll: true });
+      }
+      return;
     }
     if (b.dataset.acao === "regiao") {
       filtroRegiao = b.dataset.regiao;
@@ -1931,10 +2075,6 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       salvarRoteiro();
       return render();
     }
-    if (b.dataset.acao === "ver-todos") {
-      verTodos = true;
-      return render();
-    }
     if (b.dataset.acao === "narrar") return narrar(pontos().find((g) => g.id === b.dataset.guia).historia);
     if (b.dataset.acao === "quero") {
       const nome = b.dataset.lugar;
@@ -1942,7 +2082,12 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       queroIr = on ? [...queroIr, nome] : queroIr.filter((x) => x !== nome);
       salvarMarcas();
       avisar(on ? `${nome} no roteiro Do meu jeito` : "Tirado do roteiro Do meu jeito");
-      return render();
+      // A tela é redesenhada: o foco volta ao mesmo botão para quem usa teclado não perder o lugar.
+      const tinhaFoco = document.activeElement === b;
+      render();
+      const mesmo = main.querySelector(`[data-acao="quero"][data-lugar="${CSS.escape(nome)}"]`);
+      if (tinhaFoco && mesmo) mesmo.focus({ preventScroll: true });
+      return;
     }
     if (b.dataset.acao === "fui") {
       // Já fui tira o lugar do "Quero ir": não faz sentido ir de novo no mesmo roteiro.
