@@ -37,7 +37,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.46";
+  const VERSAO_APP = "1.47";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -47,10 +47,10 @@
   // Atalhos da tela inicial. O país pode trazer os seus em `rapidas` (com o `es` exato da frase);
   // sem eles, valem estes, em que `chave` é um trecho da frase em espanhol.
   const RAPIDAS = pais.rapidas || [
-    { rotulo: "Banheiro", icone: "🚻", chave: "baño" },
-    { rotulo: "Conta", icone: "🧾", chave: "la cuenta" },
-    { rotulo: "Foto", icone: "📷", chave: "sacás una foto" },
-    { rotulo: "Ajuda", icone: "🆘", chave: "ayuda" },
+    { rotulo: "Banheiro", icone: "🚻", ico: "banheiro", chave: "baño" },
+    { rotulo: "Conta", icone: "🧾", ico: "recibo", chave: "la cuenta" },
+    { rotulo: "Foto", icone: "📷", ico: "camera", chave: "sacás una foto" },
+    { rotulo: "Ajuda", icone: "🆘", ico: "sirene", chave: "ayuda" },
   ];
 
   // Favoritos ficam no aparelho; tudo funciona mesmo se o armazenamento falhar.
@@ -313,7 +313,7 @@
       const f = r.es ? todas.find((x) => x.es === r.es) : todas.find((x) => normal(x.es).includes(normal(r.chave)));
       if (!f) return "";
       return `<button class="rapida" data-acao="mostrar" data-i="${vistas.push(f) - 1}">
-        <span class="emoji" aria-hidden="true">${r.icone}</span>
+        ${r.ico && ICONES[r.ico] ? `<span class="cat-icone" aria-hidden="true">${ico(r.ico)}</span>` : `<span class="emoji" aria-hidden="true">${r.icone}</span>`}
         ${esc(r.rotulo)}<span class="sr">: <span lang="${LANG}">${esc(f.es)}</span></span>
       </button>`;
     }).join("");
@@ -442,6 +442,8 @@
   let filtroRegiao = "";
   // Explorar: cada seção mostra 4 lugares e cresce 8 a cada "Mostrar mais". Trocar a cidade volta tudo a 4.
   let secoesAbertas = {};
+  // Depois de pedir o GPS pela pílula, cada redesenho devolve o foco a ela (até sair da tela).
+  let focarPilulaGps = false;
   // Ficha do lugar: aba aberta (História, Repare, Frases ou Fontes). Volta a História ao mudar de tela.
   let abaFicha = "historia";
   // Primeiro ano citado no resumo ou na história: aparece como data na ficha.
@@ -966,12 +968,49 @@
     mate: '<path d="M7 8h10l-1.2 10.5a2 2 0 0 1-2 1.5h-3.6a2 2 0 0 1-2-1.5z"/><path d="M14 8l3-5"/>',
     microfone: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"/>',
     enviar: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+    explorar: '<circle cx="12" cy="12" r="9"/><path d="m15.6 8.4-2.3 4.9-4.9 2.3 2.3-4.9z"/>',
+    aviao: '<path d="M21 15.5 13.5 11V5.5a1.5 1.5 0 0 0-3 0V11L3 15.5v2l7.5-2.5v4L8.5 20.5V22l3.5-1 3.5 1v-1.5l-2-1.5v-4l7.5 2.5z"/>',
+    orelha: '<path d="M7 9a5 5 0 0 1 10 0c0 3-2.5 4-3.5 6s-1 4-3.5 4A2.5 2.5 0 0 1 7.5 17"/><path d="M10 9.5a2 2 0 0 1 4 0c0 1-1 1.5-1.5 2"/>',
+    aceno: '<path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V5a1.5 1.5 0 0 1 3 0v6"/><path d="M14 11V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a5 5 0 0 1-4-2l-2.8-3.8a1.5 1.5 0 0 1 2.3-1.9L8 15"/>',
+    cardapio: '<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+    xicara: '<path d="M4.5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M15.5 10.5H17a2.5 2.5 0 0 1 0 5h-1.8"/><path d="M8 3.5c0 1 1 1.5 1 2.5M11.5 3.5c0 1 1 1.5 1 2.5"/>',
+    carrinho: '<path d="M3 4.5h2.5l2 10.5h10l2-7.5H6.5"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/>',
+    banheiro: '<circle cx="7" cy="5" r="1.8"/><circle cx="17" cy="5" r="1.8"/><path d="M5 9.5h4v5H8v6H6v-6H5z"/><path d="M15 9.5h4l1.5 6h-2v5h-3v-5h-2z"/><path d="M12 3.5v17"/>',
+    camera: '<path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+    ingresso: '<path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5V14a2 2 0 0 0 0-4z"/><path d="M14 7v2M14 11v2M14 15v2"/>',
+    sacola: '<path d="M5.5 8h13l-1 12.5h-11z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
+    onibus: '<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8 17.5V20M16 17.5V20"/><circle cx="8.5" cy="14.3" r=".8"/><circle cx="15.5" cy="14.3" r=".8"/>',
+    cama: '<path d="M3 18.5V6M3 14h18v4.5M21 14v-2.5a3 3 0 0 0-3-3h-7V14"/><circle cx="7" cy="11" r="1.8"/>',
+    bomba: '<path d="M5 20.5V5a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 14 5v15.5M3.5 20.5h12M5 10h9"/><path d="M14 8l3 3v6a1.5 1.5 0 0 0 3 0V9l-3-3"/>',
+    wifi: '<path d="M3 9.5a13 13 0 0 1 18 0M6 13a8.5 8.5 0 0 1 12 0M9 16.5a4 4 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".8"/>',
+    guardasol: '<path d="M12 3.5a8.5 8.5 0 0 1 8.5 8.5h-17A8.5 8.5 0 0 1 12 3.5z"/><path d="M12 12v7.5a1.5 1.5 0 0 1-3 0M3.5 21h17"/>',
+    sirene: '<path d="M6.5 18v-5a5.5 5.5 0 0 1 11 0v5"/><path d="M4.5 18h15v2.5h-15zM12 3v2M4.2 6.2l1.4 1.4M19.8 6.2l-1.4 1.4"/><path d="M10 13a2 2 0 0 1 2-2"/>',
+    farmacia: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/>',
+    numeros: '<path d="M4.5 9 6.5 7.5V16M9.5 9.5a2 2 0 0 1 4 .5c0 2-4 3.5-4 6h4M16.5 8h3l-2 3a2.5 2.5 0 1 1-2 3.5"/>',
+    recibo: '<path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><path d="M9 8h6M9 11.5h6M9 15h4"/>',
+    pao: '<path d="M4 15c0-5 3.5-8 8-8s8 3 8 8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 10.5l1 2.5M12.5 9.5l.5 3M16 10.5l-.5 2.5"/>',
+    semaforo: '<rect x="8" y="2.5" width="8" height="15" rx="2.5"/><circle cx="12" cy="6.5" r="1.3"/><circle cx="12" cy="10" r="1.3"/><circle cx="12" cy="13.5" r="1.3"/><path d="M12 17.5v4"/>',
+    termometro: '<path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v7.5M17 6h2.5M17 9h2.5"/>',
+    chapeu: '<path d="M3 15.5c2 1.5 5.5 2 9 2s7-.5 9-2"/><path d="M6.5 15c.3-4 1.5-8 5.5-8s5.2 4 5.5 8"/><path d="M7 12.5c3 1 7 1 10 0"/>',
     mostrar: '<path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/>',
     pronuncia: '<path d="M4 11v2M8 8v8M12 5v14M16 8v8M20 11v2"/>',
     moeda: '<circle cx="9" cy="9" r="5.5"/><path d="M15.2 8.2a5.5 5.5 0 1 1-7 7"/>',
     instalar: '<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7.5v6m0 0-2.5-2.5M12 13.5l2.5-2.5M10.5 18h3"/>',
   };
   const ico = (nome) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES[nome]}</svg>`;
+  // Situações, conversas e frases rápidas: ícone de traço por id (o emoji do dado só vale para um id novo, sem mapa).
+  const ICONE_SITUACAO = {
+    chegada: "aviao", aeroporto: "aviao", ouvir: "orelha", basico: "aceno", comer: "talheres", restaurante: "talheres",
+    cardapio: "cardapio", cafe: "xicara", mercado: "carrinho", direcoes: "explorar", caminho: "explorar", banheiro: "banheiro",
+    fotos: "camera", foto: "camera", passeios: "ingresso", compras: "sacola", loja: "sacola", dinheiro: "moeda", transporte: "onibus",
+    hospedagem: "cama", posto: "bomba", carro: "carro", taxi: "carro", internet: "wifi", praia: "guardasol", emergencia: "sirene",
+    farmacia: "farmacia", numeros: "numeros", comida: "pao", chimarrao: "mate", cidade: "semaforo", clima: "termometro", tradicao: "chapeu",
+  };
+  const iconeTema = (id, emoji, classe = "cat-icone") => {
+    const nome = ICONE_SITUACAO[id];
+    return nome && ICONES[nome] ? `<span class="${classe}" aria-hidden="true">${ico(nome)}</span>` : `<span class="emoji" aria-hidden="true">${emoji}</span>`;
+  };
+  const tituloTema = (id, emoji, titulo, tag = "h1") => `<${tag} class="titulo-com-icone">${iconeTema(id, emoji, "titulo-icone")}<span>${esc(titulo)}</span></${tag}>`;
   const fotoPessoa = (nome) => (imgs.pessoas[nome] ? `img/pessoas/${imgs.pessoas[nome].id}.jpg` : null);
   const creditoFoto = (c) => (c ? `<p class="credito">Foto: ${esc(c.autor || "Wikimedia Commons")} · <a href="${esc(c.pagina)}" target="_blank" rel="noopener">${esc(c.licenca)}</a></p>` : "");
   const heroi = (src, alt, credito) => (src ? `<figure class="heroi"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${creditoFoto(credito)}</figure>` : "");
@@ -1470,12 +1509,13 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const totalLugares = pais.lugares.reduce((s, c) => s + c.itens.length, 0);
       const fuiEm = pais.lugares.reduce((s, c) => s + c.itens.filter((l) => jaFui[l.nome]).length, 0);
       const nomeFiltro = semTraducao ? "região" : "cidade";
-      const topoTela = `<h1>Perto de você</h1>
-        <p class="lead">${pontos().length} lugares com história. Funciona sem internet, menos os links das fontes.</p>
-        <p class="gps-nota">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>`;
-      const filtrosHtml = `<div class="filtros rolar" role="group" aria-label="Filtrar por ${nomeFiltro}">${filtros.map(([v, r]) => `
+      // Foto-first: o nome da tela já está na sub-aba (aqui só para leitor de tela); GPS vira pílula ao lado dos chips.
+      const topoTela = `<h1 class="sr">Perto de você: ${pontos().length} lugares com história</h1>`;
+      const albumHtml = `<p class="explorar-album">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>`;
+      const pilulaGps = `<button class="btn btn-gps-pilula ${posicao ? "ligado" : ""}" id="pilula-gps" data-acao="gps-pilula" aria-label="${posicao ? "GPS ligado: atualizar a localização" : "Usar o GPS para ordenar pelo que está mais perto"}">${posicao ? `<span class="gps-ponto" aria-hidden="true"></span>GPS ligado` : `${ico("localizar")}Usar GPS`}</button>`;
+      const filtrosHtml = `<div class="explorar-linha">${pilulaGps}<div class="filtros rolar" role="group" aria-label="Filtrar por ${nomeFiltro}">${filtros.map(([v, r]) => `
           <button class="btn ${v === filtroCidade ? "on" : ""}" data-acao="filtro" data-cidade="${esc(v)}" aria-pressed="${v === filtroCidade}">${esc(r)}</button>`).join("")}
-        </div>`;
+        </div></div>`;
       if (!pertos.length) return `${topoTela}${filtrosHtml}<p class="vazio">Nenhum lugar nesta ${nomeFiltro}.</p>`;
 
       // Longe do destino (ainda em casa, por exemplo), as distâncias aparecem, mas sem "a pé" nem "bate-volta".
@@ -1539,13 +1579,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           </section>`;
       };
 
-      const gps = posicao
-        ? `<div class="gps-barra"><span class="gps-ponto" aria-hidden="true"></span>
-            <p>${esc(estadoGps || (chegou ? "Ordenado pelo que está mais perto de você." : `Você está a ${formatarDist(maisPerto.km)} do lugar mais perto${filtroCidade ? ` em ${filtroCidade}` : ` ${doNome}`}. Quando chegar, aparece o que dá pra ir a pé.`))}</p>
-            <button class="btn" data-acao="gps">${ico("localizar")}Atualizar</button></div>`
-        : `<div class="gps-barra"><span class="gps-icone" aria-hidden="true">${ico("localizar")}</span>
-            <p><strong>Veja o que dá pra ir a pé</strong><small>${esc(estadoGps || "Sua localização fica só neste aparelho.")}</small></p>
-            <button class="btn btn-gps" data-acao="gps">Usar localização</button></div>`;
+      // Linha de estado só quando há algo a dizer: erro/espera do GPS ou "longe do destino".
+      const estadoTexto = estadoGps || (posicao && !chegou ? `Você está a ${formatarDist(maisPerto.km)} do lugar mais perto${filtroCidade ? ` em ${filtroCidade}` : ` ${doNome}`}. Quando chegar, aparece o que dá pra ir a pé.` : "");
+      const gps = estadoTexto ? `<p class="explorar-estado" role="status">${esc(estadoTexto)}</p>` : "";
       const aqui = chegou && maisPerto.km < 0.3 && !jaFui[maisPerto.p.lugar] ? maisPerto : null;
       const d = destaque;
       const fotoD = fotoLugar(d.p.id);
@@ -1581,10 +1617,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       // O GuIA entra depois da primeira seção: perto o bastante para ser visto, sem tirar o lugar do destaque.
       const [primeira, ...outras] = secoes.map(secaoHtml).filter(Boolean);
       return `${topoTela}
-        ${gps}
         ${filtrosHtml}
+        ${gps}
         ${aqui && aqui !== d ? `<p class="ponto-perto"><span>Está agora em <strong lang="${LANG}">${esc(aqui.p.lugar)}</strong>?</span> <button class="btn" data-acao="fui" data-lugar="${esc(aqui.p.lugar)}">Marcar como visitado</button></p>` : ""}
         ${destaqueHtml}
+        ${albumHtml}
         ${primeira || ""}
         ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
         ${outras.join("")}
@@ -1607,10 +1644,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <h1>${semTraducao ? "Palavras do dia a dia" : "O que você precisa agora?"}</h1>
         <p class="lead">${semTraducao ? "Toque no tema e veja o que você vai ouvir por lá." : "Toque na situação, ouça a frase ou mostre a tela."}</p>
         ${botoes}
-        ${daRegiao && daRegiao.length ? daRegiao.map(({ s, frases }) => `<h2>${s.icone} ${esc(s.titulo)}</h2>${lista(frases)}`).join("") : `
+        ${daRegiao && daRegiao.length ? daRegiao.map(({ s, frases }) => `${tituloTema(s.id, s.icone, s.titulo, "h2")}${lista(frases)}`).join("") : `
         <div class="grade">${pais.situacoes.map((s, i) => `
           <a class="categoria" style="--cor:${corDoIndice(i)}" href="#/s/${s.id}">
-            <span class="emoji" aria-hidden="true">${s.icone}</span>
+            ${iconeTema(s.id, s.icone)}
             <strong>${esc(s.titulo)}</strong>
             <small>${s.frases.length} ${semTraducao ? "palavras" : "frases"}</small>
           </a>`).join("")}
@@ -1622,7 +1659,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       if (!s) return telas.inicio();
       const { botoes, itens } = porRegiao(s.frases);
       return `<a class="voltar" href="#/">← ${semTraducao ? "Palavras" : "Frases"}</a>
-        <h1>${s.icone} ${esc(s.titulo)}</h1>
+        ${tituloTema(s.id, s.icone, s.titulo)}
         <p class="lead">${itens.length} ${semTraducao ? "palavras" : "frases úteis"}</p>
         ${botoes}
         ${lista(itens)}`;
@@ -1634,14 +1671,14 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <p class="lead">O que dizer e o que vão te responder, na ordem em que acontece.</p>
           <div class="grade">${(pais.conversas || []).map((x, i) => `
             <a class="categoria" style="--cor:${corDoIndice(i + 5)}" href="#/conversas/${x.id}">
-              <span class="emoji" aria-hidden="true">${x.icone}</span>
+              ${iconeTema(x.id, x.icone)}
               <strong>${esc(x.titulo)}</strong>
               <small>${x.passos.length} etapas</small>
             </a>`).join("")}
           </div>`;
       }
       return `<a class="voltar" href="#/conversas">← Conversas</a>
-        <h1>${c.icone} ${esc(c.titulo)}</h1>
+        ${tituloTema(c.id, c.icone, c.titulo)}
         ${c.passos.map((p) => `
           <h2>${esc(p.titulo)}</h2>
           ${lista(p.es.map((es) => todas.find((f) => f.es === es)).filter(Boolean))}`).join("")}`;
@@ -1724,7 +1761,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         <div class="tabela">${pais.falsosAmigos.map((f) => `
           <div class="item">
             <h3 lang="${LANG}">${esc(f.es)}</h3>
-            <p class="${f.pt.startsWith("⚠️") ? "alerta" : ""}">= ${esc(f.pt)}</p>
+            <p class="${f.pt.startsWith("⚠️") ? "alerta" : ""}">= ${f.pt.startsWith("⚠️") ? `<span class="falso-aviso">${ico("aviso")}</span>${esc(f.pt.replace(/^⚠️\s*/u, ""))}` : esc(f.pt)}</p>
             <p class="suave">Não é: ${esc(f.errado)}</p>
           </div>`).join("")}
         </div>`;
@@ -2204,6 +2241,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     recemColado = null;
     comemorar = null;
     direcaoPagina = "";
+    if (focarPilulaGps) { const pil = $("#pilula-gps"); if (pil) pil.focus({ preventScroll: true }); }
     // Na fileira de sub-abas que rola no celular, a ativa fica à vista.
     const subAtiva = main.querySelector(".subaba.ativa");
     if (subAtiva) subAtiva.parentElement.scrollLeft = subAtiva.offsetLeft - subAtiva.parentElement.offsetLeft - 16;
@@ -2374,6 +2412,20 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       return render();
     }
     if (b.dataset.acao === "gps") return pedirPosicao();
+    // Pílula do Explorar: com GPS ligado, atualiza; com permissão já dada, liga direto; senão explica antes de pedir.
+    if (b.dataset.acao === "gps-pilula") {
+      focarPilulaGps = true;
+      if (posicao) return pedirPosicao();
+      const abrirDialogo = () => {
+        const d = $("#dialogo-gps");
+        if (d && d.showModal) d.showModal();
+        else pedirPosicao();
+      };
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: "geolocation" }).then((st) => (st.state === "granted" ? pedirPosicao() : abrirDialogo())).catch(abrirDialogo);
+      } else abrirDialogo();
+      return;
+    }
     if (b.dataset.acao === "filtro") {
       filtroCidade = b.dataset.cidade;
       secoesAbertas = {};
@@ -2667,6 +2719,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   window.addEventListener("hashchange", () => {
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     quizAtual = null;
+    focarPilulaGps = false;
     abaFicha = "historia";
     placarOnline = {};
     placarFalhou = {};
@@ -2738,6 +2791,13 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     if (["", "#", "#/"].includes(location.hash)) history.replaceState(null, "", abertura);
     $(".marca").setAttribute("href", abertura);
     $("#busca").placeholder = `Buscar: ${pais.girias.slice(0, 3).map((g) => g.es.toLowerCase()).join(", ")}…`;
+  }
+  // Diálogo do GPS (index.html): Ativar pede a localização; ao fechar, o foco volta para a pílula.
+  const dialogoGps = $("#dialogo-gps");
+  if (dialogoGps) {
+    $("#gps-ativar").addEventListener("click", () => { focarPilulaGps = true; dialogoGps.close(); pedirPosicao(); });
+    $("#gps-agora-nao").addEventListener("click", () => dialogoGps.close());
+    dialogoGps.addEventListener("close", () => { const p = $("#pilula-gps"); if (p) p.focus(); });
   }
   // Funções puras para os testes (tests/logica.test.mjs). Não muda nada no navegador.
   window.VIAJADOR_INTERNO = { montarRoteiro, diasParaIncluir, lugaresCitados, calcularMoeda, montarContexto, orientacaoDaConversa };
