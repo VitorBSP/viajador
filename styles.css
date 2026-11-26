@@ -668,9 +668,10 @@ a.btn { text-decoration: none; }
   font-size: 54px;
 }
 .fig-arte img { width: 100%; height: 100%; object-fit: cover; }
-.fig-faixa { display: grid; padding: 6px 6px 2px; border-radius: 0 0 6px 6px; background: var(--cor); color: #fff; text-align: center; }
+/* A cor da figurinha vem escurecida para o nome e a data em branco passarem do AA (4,5:1) em qualquer matiz. */
+.fig-faixa { display: grid; padding: 6px 6px 2px; border-radius: 0 0 6px 6px; background: color-mix(in srgb, var(--cor) 60%, #000); color: #fff; text-align: center; }
 .fig-faixa strong { font-size: 13px; line-height: 1.2; }
-.fig-faixa small { font-size: 10px; opacity: .85; }
+.fig-faixa small { font-size: 10px; }
 .fig-num {
   position: absolute; top: 10px; left: 10px; z-index: 2; padding: 1px 6px; border-radius: 4px;
   background: rgba(255, 255, 255, .92); color: #1b2433; font: 700 10px Inter, system-ui, sans-serif; letter-spacing: .04em;
@@ -742,7 +743,7 @@ a.btn { text-decoration: none; }
 /* Chamada para o GuIA nas telas de uso na rua. */
 .chamada-guia {
   display: flex; align-items: center; gap: 12px; margin: 0 0 20px; padding: 14px 16px; border-radius: var(--raio);
-  background: linear-gradient(135deg, var(--topo), #2457b8); color: #fff; text-decoration: none; box-shadow: var(--sombra);
+  background: linear-gradient(135deg, var(--topo), #1d4e95); color: #fff; text-decoration: none; box-shadow: var(--sombra);
 }
 button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; cursor: pointer; }
 .chamada-guia .chamada-icone {
@@ -750,9 +751,9 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
   background: linear-gradient(135deg, #ffd25e, var(--sol)); font-size: 22px;
 }
 .chamada-guia strong { display: block; font-size: 16px; }
-.chamada-guia .ia { color: var(--sol); }
+.chamada-guia .ia { color: #ffc445; }
 .chamada-guia small { display: block; color: #dfe7f5; font-size: 14px; }
-.chamada-guia .chamada-seta { margin-left: auto; flex: none; font-size: 20px; color: var(--sol); }
+.chamada-guia .chamada-seta { margin-left: auto; flex: none; font-size: 20px; color: #ffc445; }
 .kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 3px 10px; border-radius: 999px;
   background: var(--sol-claro); border: 1px solid var(--sol); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 
@@ -848,7 +849,7 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
   background: linear-gradient(180deg, rgba(8, 14, 26, .08) 10%, rgba(8, 14, 26, .55) 48%, rgba(8, 14, 26, .9));
 }
 .destaque-texto { position: relative; z-index: 1; display: grid; gap: 6px; width: 100%; padding: 18px; text-shadow: 0 1px 3px rgba(0, 0, 0, .35); }
-.destaque-olho { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffd166; font-variant-numeric: tabular-nums; }
+.destaque-olho { justify-self: start; margin: 0; padding: 3px 10px; border-radius: 10px; background: rgba(8, 14, 26, .62); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffd166; font-variant-numeric: tabular-nums; }
 .destaque h2 { font-size: 28px; line-height: 1.1; }
 .destaque h2 a { text-decoration: none; }
 .destaque-resumo { margin: 0; max-width: 46ch; font-size: 15px; color: #e3eaf6; }
@@ -891,7 +892,7 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
   position: absolute; top: 4px; right: 4px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
   border: 0; border-radius: 50%; background: none; color: #fff; cursor: pointer;
 }
-.vitrine-quero::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: rgba(10, 16, 28, .55); }
+.vitrine-quero::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: rgba(10, 16, 28, .68); }
 .vitrine-quero .ico { position: relative; }
 .vitrine-quero.on { color: #1b2433; }
 .vitrine-quero.on::before { background: var(--sol); }
@@ -1068,7 +1069,7 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .lugar-capa { position: relative; margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
 .lugar-capa .lugar-foto { margin: 0; max-height: 220px; border-radius: 0; }
 .lugar-capa-acoes { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 6px; }
-.btn-foto { padding: 4px 12px; border-color: rgba(255, 255, 255, .55); background: rgba(10, 16, 28, .62); color: #fff; font-weight: 600; backdrop-filter: blur(4px); }
+.btn-foto { padding: 4px 12px; border-color: rgba(255, 255, 255, .55); background: rgba(10, 16, 28, .8); color: #fff; font-weight: 600; backdrop-filter: blur(4px); }
 .btn-foto:hover { background: rgba(10, 16, 28, .78); }
 .btn-foto.on { background: var(--sol); border-color: var(--sol); color: #1b2433; }
 .btn-foto.on-verde { background: #1e7a4c; border-color: #1e7a4c; color: #fff; }

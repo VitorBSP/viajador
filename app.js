@@ -37,7 +37,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.43";
+  const VERSAO_APP = "1.44";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -262,7 +262,7 @@
     const fav = favoritos.includes(f.es);
     return `<article class="frase">
       <p class="frase-es" lang="${LANG}">${destacar(f.es)}</p>
-      ${f.pr ? `<span class="frase-pr">${ico("pronuncia")}${esc(f.pr)}</span>` : ""}
+      ${f.pr && !semTraducao ? `<span class="frase-pr">${ico("pronuncia")}${esc(f.pr)}</span>` : ""}
       <p class="frase-pt">${destacar(f.pt)}</p>
       ${f.dica ? `<p class="frase-dica">${ico("dica")}<span>${destacar(f.dica)}</span></p>` : ""}
       ${f.ex ? `<p class="frase-dica">Ex.: <span lang="${LANG}">${destacar(f.ex)}</span></p>` : ""}
