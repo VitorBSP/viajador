@@ -4,13 +4,15 @@
   --texto: #1b2433;
   --suave: #5d6878;
   --linha: #e5e1d6;
-  --celeste: #0b3d91;
+  --celeste: #0f356b;
   --celeste-claro: #e6eefb;
   --sol: #f2a900;
   --sol-claro: #fff4d6;
-  --topo: #0b3d91;
+  --topo: #0f356b;
   --borda-btn: #7d8796;
-  --foco: #0b3d91;
+  --foco: #0f356b;
+  /* Acento territorial: só em chips ativos; a marca (topo, barra, botões principais) fica neutra. */
+  --acento: #0f356b;
   --sombra: 0 1px 2px rgba(20, 30, 50, .06), 0 4px 16px rgba(20, 30, 50, .06);
   --raio: 16px;
   /* Onda B: turnos do roteiro (cor e texto sobre ela), verde de "Já fui" e dourado para texto (contraste AA no papel). */
@@ -41,8 +43,16 @@
     --turno-noite: #8fa3e8; --turno-noite-txt: #1b2433;
     --verde: #4cc38a; --verde-claro: #12291e;
     --sol-texto: #ffc23d;
+    --acento: #8fb6ff;
     color-scheme: dark;
   }
+}
+/* UY: azul da bandeira. RS: verde-mate. Texto branco sobre o acento com contraste de 5:1 ou mais; no escuro, texto escuro. */
+:root[data-pais="uy"] { --acento: #0b5ed7; --acento-txt: #fff; }
+:root[data-pais="rs"] { --acento: #1b7a4a; --acento-txt: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root[data-pais="uy"] { --acento: #7db0ff; --acento-txt: #0f1420; }
+  :root[data-pais="rs"] { --acento: #63c995; --acento-txt: #0f1420; }
 }
 
 * { box-sizing: border-box; }
@@ -105,42 +115,42 @@ h1 .bandeira { width: 36px; height: 24px; margin-right: 4px; vertical-align: -2p
 .busca input { min-height: 44px; }
 @media (min-width: 700px) { .busca input { min-height: 40px; height: 40px; padding: 8px 14px; font-size: 15px; } }
 .busca input::placeholder { color: #5d6878; opacity: 1; }
-/* Abas: no PC, uma linha no topo; o menu "Mais" abre um painel com as outras seções. */
-.abas {
-  position: relative; display: flex; gap: 4px;
-  max-width: 760px; margin: 8px auto 0;
+/* Cinco pilares. No PC, uma linha de abas no topo azul; no celular, barra clara embaixo com o GuIA elevado. */
+.abas { position: relative; display: flex; gap: 4px; max-width: 760px; margin: 8px auto 0; }
+.abas > a {
+  flex: none; display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 12px; text-decoration: none;
+  font-size: 14px; font-weight: 500; color: #dfe7f5; border-bottom: 3px solid transparent;
 }
-.abas > a, .aba-mais {
-  flex: none; display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; text-decoration: none;
-  font-size: 14px; font-weight: 500; color: #dfe7f5;
-  background: none; border: 0; border-bottom: 3px solid transparent; cursor: pointer;
-}
-.abas > a:hover, .aba-mais:hover { color: #fff; }
-.abas > a.ativa, .aba-mais.ativa { color: #fff; border-color: var(--sol); }
+.abas > a:hover { color: #fff; }
+.abas > a.ativa { color: #fff; border-color: var(--sol); }
+.abas .ico { width: 18px; height: 18px; }
+.aba-icone { display: inline-grid; place-items: center; }
 /* "GuIA": o IA em destaque, para o I maiúsculo não ser lido como l na fonte sem serifa. */
 .abas .ia { color: var(--sol); font-weight: 700; }
 .abas :focus-visible { outline-offset: -3px; }
-.aba-icone, .aba-curto, .abas [hidden] { display: none; }
-.aba-mais { margin-left: auto; }
-.aba-seta { font-size: 11px; transition: transform .15s; }
-.aba-mais[aria-expanded="true"] .aba-seta { transform: rotate(180deg); }
+.abas [hidden] { display: none; }
+.abas > a.aba-ia { align-self: center; min-height: 36px; margin: 0 4px; padding: 0 14px; border: 0; border-radius: 999px; color: #fff; font-weight: 600;
+  background: rgba(255, 196, 69, .14); box-shadow: inset 0 0 0 1.5px var(--sol); }
+.abas > a.aba-ia .aba-icone { color: var(--sol); }
+.abas > a.aba-ia.ativa { background: rgba(255, 196, 69, .28); box-shadow: inset 0 0 0 2px var(--sol); }
 
-.mais {
-  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 2;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px;
-  padding: 16px; border-radius: var(--raio);
-  background: var(--cartao); color: var(--texto);
-  box-shadow: 0 12px 40px rgba(10, 20, 40, .25);
+/* Sub-abas de cada pilar (Explorar, Falar, Álbum): chips logo abaixo do topo. O ativo usa o acento do território. */
+.subabas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.subaba {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; white-space: nowrap;
+  border: 1px solid var(--linha); background: var(--cartao); color: var(--texto); font-size: 14px; font-weight: 600; text-decoration: none;
 }
-.mais[hidden] { display: none; }
-.mais-titulo { margin: 0 0 4px; padding: 0 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
-.mais a {
-  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border-radius: 10px;
-  text-decoration: none; font-weight: 500;
+.subaba:hover { border-color: var(--acento); }
+.subaba.ativa { background: var(--acento); border-color: var(--acento); color: var(--acento-txt, #fff); }
+@media (max-width: 699px) {
+  .subabas { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: -4px -16px 16px; padding: 4px 16px; }
+  .subabas::-webkit-scrollbar { display: none; }
+  .subaba { flex: none; }
 }
-.mais a:hover { background: var(--celeste-claro); }
-.mais a.ativa { background: var(--sol-claro); box-shadow: inset 3px 0 0 var(--sol); }
-.mais :focus-visible { outline-color: var(--foco); outline-offset: -3px; }
+/* Filtros de cidade ou região ativos também levam o acento. */
+.filtros .btn.on[data-acao="filtro"], .filtros .btn.on[data-acao="regiao"], .filtros .btn.on[data-acao="roteiro-cidade"] {
+  background: var(--acento); border-color: var(--acento); color: var(--acento-txt, #fff);
+}
 
 /* PC e notebook: busca na mesma linha da marca, para o topo ocupar menos altura. */
 @media (min-width: 700px) {
@@ -151,26 +161,31 @@ h1 .bandeira { width: 36px; height: 24px; margin-right: 4px; vertical-align: -2p
 @media (max-width: 699px) {
   .abas {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-    max-width: none; margin: 0; gap: 0;
-    padding: 4px 4px max(4px, env(safe-area-inset-bottom));
-    background: var(--topo); box-shadow: 0 -2px 12px rgba(10, 20, 40, .2);
+    max-width: none; margin: 0; gap: 0; align-items: flex-end;
+    padding: 4px max(4px, env(safe-area-inset-left)) max(6px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-right));
+    background: var(--cartao); border-top: 1px solid var(--linha); box-shadow: 0 -2px 12px rgba(10, 20, 40, .08);
   }
-  .abas > a, .aba-mais {
-    flex: 1 1 0; min-width: 0; flex-direction: column; justify-content: center; gap: 2px;
-    min-height: 56px; padding: 0 2px; margin: 0;
-    font-size: 11px; line-height: 1.2; text-align: center;
-    border-bottom: 0; border-top: 3px solid transparent;
+  .abas > a {
+    flex: 1 1 0; min-width: 0; flex-direction: column; justify-content: center; gap: 3px;
+    min-height: 56px; padding: 4px 2px; margin: 0;
+    font-size: 11.5px; line-height: 1.2; text-align: center; color: var(--suave); border-bottom: 0;
   }
-  .aba-icone { display: block; font-size: 20px; line-height: 1; }
-  .aba-longo, .aba-seta { display: none; }
-  .aba-curto { display: inline; }
-  .mais {
-    position: fixed; top: auto; bottom: calc(64px + env(safe-area-inset-bottom)); left: 8px; right: 8px;
-    max-height: calc(100vh - 140px); overflow-y: auto;
-    grid-template-columns: 1fr; gap: 12px;
+  .abas > a:hover { color: var(--texto); }
+  .abas > a .aba-icone { width: 48px; height: 30px; border-radius: 999px; }
+  .abas .ico { width: 22px; height: 22px; }
+  .abas > a.ativa { color: var(--celeste); font-weight: 700; }
+  .abas > a.ativa .aba-icone { background: var(--celeste-claro); }
+  .abas .ia { color: var(--sol-texto); }
+  /* GuIA no centro, elevado: quadrado azul com ícone dourado e anel da cor da barra. */
+  .abas > a.aba-ia { align-self: flex-end; min-height: 56px; margin: 0; padding: 4px 2px; border-radius: 0; background: none; box-shadow: none; color: var(--suave); font-weight: 700; }
+  .abas > a.aba-ia .aba-icone {
+    width: 54px; height: 54px; margin-top: -26px; border-radius: 18px; color: #ffc445;
+    background: linear-gradient(150deg, #1d4e95, #0f356b); box-shadow: 0 0 0 5px var(--cartao), 0 8px 18px rgba(15, 53, 107, .35);
   }
-  .mais-grupo { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
-  .mais-titulo { grid-column: 1 / -1; }
+  .abas > a.aba-ia .ico { width: 26px; height: 26px; }
+  .abas > a.aba-ia.ativa { background: none; box-shadow: none; color: var(--celeste); }
+  .abas > a.aba-ia.ativa .aba-icone { background: linear-gradient(150deg, #1d4e95, #0f356b); box-shadow: 0 0 0 5px var(--cartao), 0 0 0 7px var(--sol); }
+  .abas :focus-visible { outline-color: var(--foco); }
   .conteudo { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
   .aviso { bottom: calc(80px + env(safe-area-inset-bottom)); }
   /* Com o teclado aberto, a barra só atrapalharia. */
@@ -724,41 +739,6 @@ a.btn { text-decoration: none; }
   .figurinha.nova .fig-brilho { opacity: 0; }
 }
 
-/* Destaque do Roteiro (assistente) e do álbum: etiqueta no computador, ícone dourado no celular, selo no topo da tela. */
-.aba-selo { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; background: var(--sol); color: #1b2433;
-  font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; vertical-align: middle; }
-@media (max-width: 699px) {
-  .aba-selo { display: none; }
-  .aba-destaque .aba-icone { padding: 3px 8px; border-radius: 999px; background: var(--sol); }
-}
-/* GuIA: a aba que mais se destaca. No computador, um botão dourado; no celular, um botão redondo acima da barra. */
-.abas > a.aba-ia {
-  align-self: center; min-height: 36px; margin: 0 4px; padding: 0 14px; border-radius: 999px; border-bottom: 0;
-  background: linear-gradient(135deg, #ffd25e, var(--sol)); color: #1b2433; font-weight: 700;
-  box-shadow: 0 0 0 2px rgba(255, 210, 94, .35), 0 4px 14px rgba(242, 169, 0, .35);
-}
-.abas > a.aba-ia:hover { color: #1b2433; filter: brightness(1.05); }
-.abas > a.aba-ia.ativa { color: #1b2433; box-shadow: 0 0 0 3px #fff; }
-.abas > a.aba-ia .ia { color: #0b3d91; }
-@media (max-width: 699px) {
-  .abas > a.aba-ia {
-    align-self: stretch; min-height: 56px; margin: 0; padding: 0 2px; border-radius: 0;
-    background: none; box-shadow: none; color: #fff; font-weight: 700;
-  }
-  .abas > a.aba-ia .ia { color: var(--sol); }
-  .abas > a.aba-ia .aba-icone {
-    display: grid; place-items: center; width: 46px; height: 46px; margin: -22px auto 0; border-radius: 50%;
-    font-size: 22px; background: linear-gradient(135deg, #ffd25e, var(--sol));
-    box-shadow: 0 0 0 4px var(--topo), 0 6px 16px rgba(0, 0, 0, .3);
-  }
-  .abas > a.aba-ia.ativa .aba-icone { box-shadow: 0 0 0 4px var(--topo), 0 0 0 6px #fff; }
-  .abas > a.aba-ia.ativa { border-top-color: transparent; }
-}
-@media (min-width: 700px) {
-  .abas > a.aba-ia .aba-icone { display: inline; font-size: 15px; }
-}
-@media (min-width: 700px) and (max-width: 1023px) { .abas > a.aba-ia { color: #1b2433; } }
-
 /* Chamada para o GuIA nas telas de uso na rua. */
 .chamada-guia {
   display: flex; align-items: center; gap: 12px; margin: 0 0 20px; padding: 14px 16px; border-radius: var(--raio);
@@ -776,32 +756,19 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .kicker { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 6px; padding: 3px 10px; border-radius: 999px;
   background: var(--sol-claro); border: 1px solid var(--sol); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
 
-/* Quiz: na barra a partir de 360 px; em telas menores, oito abas ficariam com menos de 44 px e ele vai para "Mais". */
-.mais a.so-estreito { display: none; }
-@media (max-width: 359px) {
-  .abas > a.so-largo { display: none; }
-  .mais a.so-estreito:not([hidden]) { display: flex; }
-}
-
-/* PC: topo, abas e conteúdo com a mesma largura, para tudo ficar alinhado. Em telas largas há espaço para as etiquetas;
-   em telas médias, nomes curtos e destaque só na cor. */
-@media (min-width: 700px) {
-  .abas > a, .aba-mais { padding: 0 10px; }
-}
+/* PC: topo, abas e conteúdo com a mesma largura, para tudo ficar alinhado. */
 @media (min-width: 1024px) {
   .topo-linha, .abas, .conteudo { max-width: 960px; }
   .busca { max-width: 520px; }
-}
-@media (min-width: 700px) and (max-width: 1023px) {
-  .aba-selo, .abas .aba-longo { display: none; }
-  .abas .aba-curto { display: inline; }
-  .abas > a.aba-destaque { color: var(--sol); }
-  .abas > a.aba-destaque.ativa { color: #fff; }
 }
 /* Celular: o seletor de país cabe na mesma linha da marca. */
 @media (max-width: 699px) {
   .pais { gap: 6px; }
   .pais select { max-width: 150px; height: 36px; padding: 0 6px; }
+}
+/* Celulares estreitos: com "por Duck AI" na marca, o seletor encolhe para caber na mesma linha. */
+@media (max-width: 389px) {
+  .pais select { max-width: 112px; }
 }
 .filtros-rotulo { align-self: center; font-size: 14px; font-weight: 600; margin-right: 4px; }
 
@@ -1186,3 +1153,13 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .chat-cota b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; font-variant-numeric: tabular-nums; }
 .chat-opcoes { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 8px; }
 .chat-opcoes .chat-opcao { margin-top: 0; }
+
+/* v1.43: ícones de traço no lugar dos emojis estruturais (frases, conversor, modo Mostrar). */
+.frase-pr > .ico, .frase-dica > .ico, .frase-regioes > .ico, .frase-dica-icone > .ico { width: 16px; height: 16px; margin-right: 5px; vertical-align: -3px; }
+.frase-dica > .ico, .frase-dica-icone > .ico { color: var(--sol-texto); }
+.ico-cheio { fill: currentColor; }
+.btn.on .ico-cheio { color: #1b2433; }
+#moeda-titulo .ico { width: 18px; height: 18px; margin-right: 6px; vertical-align: -3px; color: var(--celeste); }
+.atalho-moeda .atalho-icone { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--celeste-claro); color: var(--celeste); }
+.mostrar-btn .ico { width: 24px; height: 24px; }
+.mostrar-acesa .ico { width: 16px; height: 16px; vertical-align: -3px; }

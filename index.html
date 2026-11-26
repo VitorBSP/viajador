@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Viajador</title>
   <meta name="description" content="Guia de bolso para viajar pelo Uruguai e pelo Rio Grande do Sul: roteiros, lugares perto de você, frases com pronúncia, gírias, álbum, história e GuIA, mesmo sem internet.">
-  <meta name="theme-color" content="#0b3d91" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0F356B" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b2a63" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -41,38 +41,14 @@
         <select id="pais"></select>
       </label>
     </div>
-    <!-- Abas principais; o resto fica em "Mais". No celular, a barra vai para baixo da tela e cabem oito a partir de 360 px; abaixo disso, o Quiz vai para "Mais". -->
-    <nav class="abas" id="abas" aria-label="Seções">
-      <a href="#/" data-aba=""><span class="aba-icone" aria-hidden="true">💬</span>Frases</a>
-      <a href="#/guia" data-aba="guia"><span class="aba-icone" aria-hidden="true">📍</span><span class="aba-longo">Perto de você</span><span class="aba-curto">Perto</span></a>
-      <!-- Roteiro e álbum ganham destaque: um é o assistente que monta a viagem, o outro é o álbum de figurinhas. -->
-      <a href="#/roteiro" data-aba="roteiro" class="aba-destaque"><span class="aba-icone" aria-hidden="true">🗺️</span>Roteiro<span class="aba-selo">assistente</span></a>
-      <a href="#/album" data-aba="album" class="aba-destaque"><span class="aba-icone" aria-hidden="true">📔</span>Álbum</a>
-      <a href="#/ia" data-aba="ia" class="aba-ia"><span class="aba-icone" aria-hidden="true">✨</span><span class="aba-longo">Gu<span class="ia">IA</span> Turístico</span><span class="aba-curto">Gu<span class="ia">IA</span></span></a>
-      <a href="#/historia" data-aba="historia"><span class="aba-icone" aria-hidden="true">📜</span>História</a>
-      <a href="#/quiz" data-aba="quiz" class="so-largo"><span class="aba-icone" aria-hidden="true">🏆</span>Quiz</a>
-      <button type="button" class="aba-mais" id="mais-botao" aria-expanded="false" aria-controls="mais"><span class="aba-icone" aria-hidden="true">☰</span>Mais<span class="aba-seta" aria-hidden="true">▾</span></button>
-      <div class="mais" id="mais" hidden>
-        <div class="mais-grupo">
-          <p class="mais-titulo">Falar como local</p>
-          <a href="#/conversas" data-aba="conversas">🗨️ Conversas</a>
-          <a href="#/girias" data-aba="girias">😎 Gírias</a>
-          <a href="#/ditados" data-aba="ditados">📖 Ditados</a>
-          <a href="#/dicas" data-aba="dicas">🗣️ Pronúncia</a>
-        </div>
-        <div class="mais-grupo">
-          <p class="mais-titulo">Conhecer o país</p>
-          <a href="#/lugares" data-aba="lugares">🏛️ Lugares e comidas</a>
-          <a href="#/origem" data-aba="origem">🧭 Origem do país</a>
-          <a href="#/futebol" data-aba="futebol">⚽ Futebol</a>
-          <a href="#/quiz" data-aba="quiz" class="so-estreito">🏆 Quiz</a>
-        </div>
-        <div class="mais-grupo">
-          <p class="mais-titulo">Sua viagem</p>
-          <a href="#/preparar" data-aba="preparar">🧳 Preparar</a>
-          <a href="#/favoritos" data-aba="favoritos">★ Salvos</a>
-        </div>
-      </div>
+    <!-- Cinco pilares (docs/APP_SPEC.md). No celular a barra vai para baixo da tela, com o GuIA elevado no centro;
+         no PC fica na 2ª linha do topo. As outras seções viram sub-abas dentro de cada pilar (PILARES, em app.js). -->
+    <nav class="abas" id="abas" aria-label="Seções principais">
+      <a href="#/guia" data-pilar="explorar"><span class="aba-icone"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m15.6 8.4-2.3 4.9-4.9 2.3 2.3-4.9z"/></svg></span><span class="aba-nome">Explorar</span></a>
+      <a href="#/" data-pilar="falar"><span class="aba-icone"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4.5h14A1.5 1.5 0 0 1 20.5 6v9a1.5 1.5 0 0 1-1.5 1.5h-7.5L7 20v-3.5H5A1.5 1.5 0 0 1 3.5 15V6A1.5 1.5 0 0 1 5 4.5z"/></svg></span><span class="aba-nome" id="aba-falar-nome">Falar</span></a>
+      <a href="#/ia" data-pilar="ia" class="aba-ia"><span class="aba-icone"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9L11 17.5l-1.9-5.1L4 10.5l5.1-1.9z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span><span class="aba-nome">Gu<span class="ia">IA</span></span></a>
+      <a href="#/roteiro" data-pilar="roteiro"><span class="aba-icone"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="6" cy="6" r="2.25"/><circle cx="18" cy="18" r="2.25"/><path d="M8.25 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.75"/></svg></span><span class="aba-nome">Roteiro</span></a>
+      <a href="#/album" data-pilar="album"><span class="aba-icone"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5a2 2 0 0 1 2-2h12v15H7a2 2 0 0 0-2 2z"/><path d="M5 20a2 2 0 0 0 2 2h12v-4"/><path d="M10 7.5h5v5.5h-5z"/></svg></span><span class="aba-nome">Álbum</span></a>
     </nav>
   </header>
 
@@ -82,16 +58,16 @@
     <div class="mostrar-barra">
       <button class="mostrar-btn" id="mostrar-menos" aria-label="Diminuir letra">A−</button>
       <button class="mostrar-btn" id="mostrar-mais" aria-label="Aumentar letra">A+</button>
-      <button class="mostrar-btn" id="mostrar-girar" aria-label="Girar frase" aria-pressed="false"><span aria-hidden="true">⟳</span></button>
-      <button class="mostrar-btn" id="mostrar-ouvir" aria-label="Ouvir frase"><span aria-hidden="true">🔊</span></button>
-      <button class="mostrar-btn mostrar-fechar" id="mostrar-fechar" aria-label="Fechar"><span aria-hidden="true">×</span></button>
+      <button class="mostrar-btn" id="mostrar-girar" aria-label="Girar frase" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></svg></button>
+      <button class="mostrar-btn" id="mostrar-ouvir" aria-label="Ouvir frase"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg></button>
+      <button class="mostrar-btn mostrar-fechar" id="mostrar-fechar" aria-label="Fechar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/></svg></button>
     </div>
     <div class="mostrar-texto" id="mostrar-texto">
       <p class="mostrar-es" id="mostrar-es" lang="es"></p>
       <p class="mostrar-pr" id="mostrar-pr"></p>
       <p class="mostrar-pt" id="mostrar-pt"></p>
     </div>
-    <p class="mostrar-acesa" id="mostrar-acesa" hidden><span aria-hidden="true">🔆</span> Tela fica acesa</p>
+    <p class="mostrar-acesa" id="mostrar-acesa" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1"/></svg> Tela fica acesa</p>
   </div>
 
   <div class="aviso" id="aviso" role="status" aria-live="polite"></div>

@@ -13,6 +13,8 @@
   // por lá e `pt` é o que quer dizer, então somem "Ouvir", "Mostrar" e os textos sobre espanhol.
   const LANG = pais.voz[0];
   const semTraducao = /^pt/i.test(LANG);
+  // Acento territorial sutil (chips ativos), definido no CSS por [data-pais]. A marca no topo fica neutra.
+  document.documentElement.dataset.pais = pais.codigo;
 
   // Favoritos, checklist, quiz e ranking são de cada país. Antes do seletor só existia o Uruguai,
   // então as chaves antigas passam para ":uy"; a antiga só sai depois de copiada.
@@ -35,7 +37,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.42";
+  const VERSAO_APP = "1.43";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -254,20 +256,20 @@
 
   // Frases renderizadas guardam seu índice em `vistas` para os botões acharem os dados.
   let vistas = [];
-  const marcaFav = (on) => `<span aria-hidden="true">${on ? "★" : "☆"}</span>`;
+  const marcaFav = (on) => (on ? ico("estrela").replace('class="ico"', 'class="ico ico-cheio"') : ico("estrela"));
   function cartaoFrase(f) {
     const i = vistas.push(f) - 1;
     const fav = favoritos.includes(f.es);
     return `<article class="frase">
       <p class="frase-es" lang="${LANG}">${destacar(f.es)}</p>
-      ${f.pr ? `<span class="frase-pr"><span aria-hidden="true">🗣️</span> ${esc(f.pr)}</span>` : ""}
+      ${f.pr ? `<span class="frase-pr">${ico("pronuncia")}${esc(f.pr)}</span>` : ""}
       <p class="frase-pt">${destacar(f.pt)}</p>
-      ${f.dica ? `<p class="frase-dica"><span aria-hidden="true">💡</span> ${destacar(f.dica)}</p>` : ""}
+      ${f.dica ? `<p class="frase-dica">${ico("dica")}<span>${destacar(f.dica)}</span></p>` : ""}
       ${f.ex ? `<p class="frase-dica">Ex.: <span lang="${LANG}">${destacar(f.ex)}</span></p>` : ""}
-      ${f.regioes ? `<p class="frase-regioes"><span aria-hidden="true">📍</span> ${f.regioes.map(esc).join(" · ")}</p>` : ""}
+      ${f.regioes ? `<p class="frase-regioes">${ico("alfinete")}${f.regioes.map(esc).join(" · ")}</p>` : ""}
       <div class="frase-acoes">
-        ${semTraducao ? "" : `<button class="btn" data-acao="falar" data-i="${i}"><span aria-hidden="true">🔊</span> Ouvir</button>
-        <button class="btn" data-acao="mostrar" data-i="${i}"><span aria-hidden="true">⛶</span> Mostrar</button>`}
+        ${semTraducao ? "" : `<button class="btn" data-acao="falar" data-i="${i}">${ico("ouvir")}Ouvir</button>
+        <button class="btn" data-acao="mostrar" data-i="${i}">${ico("mostrar")}Mostrar</button>`}
         <button class="btn ${fav ? "on" : ""}" data-acao="fav" data-i="${i}" aria-pressed="${fav}">${marcaFav(fav)} Salvar</button>
       </div>
     </article>`;
@@ -327,7 +329,7 @@
   const instalado = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone;
   function instalar() {
     if (instalado()) return "";
-    if (pedidoInstalar) return `<div class="instalar"><button class="btn" data-acao="instalar"><span aria-hidden="true">📲</span> Instalar o app</button></div>`;
+    if (pedidoInstalar) return `<div class="instalar"><button class="btn" data-acao="instalar">${ico("instalar")}Instalar o app</button></div>`;
     if (/iphone|ipad|ipod/i.test(navigator.userAgent)) return `<div class="instalar"><p>Para usar como app: toque em Compartilhar e depois em “Adicionar à Tela de Início”.</p></div>`;
     return "";
   }
@@ -343,6 +345,7 @@
     quiz: (pais.quiz || []).length > 0,
     conversas: (pais.conversas || []).length > 0,
     preparar: (pais.checklist || []).length + (pais.etiqueta || []).length > 0 || Boolean(pais.moeda),
+    conversor: Boolean(pais.moeda),
     dicas: pais.pronuncia.length > 0,
     roteiro: pais.lugares.some((c) => c.itens.some((l) => l.prioridade)),
     // O GuIA (supabase/functions/guia) escolhe a persona pelo código do país; só aparece onde o país tem `ia: true` (ou no Uruguai).
@@ -401,8 +404,8 @@
     const res = calcularMoeda();
     return `<section class="conversor" aria-labelledby="moeda-titulo">
       <div class="conversor-topo">
-        <strong id="moeda-titulo">💱 Conversor ${esc(moedaCfg.codigo)} ↔ BRL (offline)</strong>
-        <button class="btn" type="button" data-acao="moeda-inverter">⇄ ${localParaBrl ? `${esc(moedaCfg.codigo)} → R$` : `R$ → ${esc(moedaCfg.codigo)}`}</button>
+        <strong id="moeda-titulo">${ico("moeda")}Conversor ${esc(moedaCfg.codigo)} ↔ BRL (offline)</strong>
+        <button class="btn" type="button" data-acao="moeda-inverter">${ico("trocar")}${localParaBrl ? `${esc(moedaCfg.codigo)} → R$` : `R$ → ${esc(moedaCfg.codigo)}`}</button>
       </div>
       <label class="conversor-entrada">
         <span class="conversor-prefixo">${esc(localParaBrl ? moedaCfg.simbolo : "R$")}</span>
@@ -936,6 +939,10 @@
     mate: '<path d="M7 8h10l-1.2 10.5a2 2 0 0 1-2 1.5h-3.6a2 2 0 0 1-2-1.5z"/><path d="M14 8l3-5"/>',
     microfone: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5"/>',
     enviar: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+    mostrar: '<path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/>',
+    pronuncia: '<path d="M4 11v2M8 8v8M12 5v14M16 8v8M20 11v2"/>',
+    moeda: '<circle cx="9" cy="9" r="5.5"/><path d="M15.2 8.2a5.5 5.5 0 1 1-7 7"/>',
+    instalar: '<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M12 7.5v6m0 0-2.5-2.5M12 13.5l2.5-2.5M10.5 18h3"/>',
   };
   const ico = (nome) => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES[nome]}</svg>`;
   const fotoPessoa = (nome) => (imgs.pessoas[nome] ? `img/pessoas/${imgs.pessoas[nome].id}.jpg` : null);
@@ -943,6 +950,32 @@
   const heroi = (src, alt, credito) => (src ? `<figure class="heroi"><img src="${esc(src)}" alt="${esc(alt)}" loading="lazy">${creditoFoto(credito)}</figure>` : "");
   const miniatura = (src, icone) => (src ? `<img class="mini" src="${esc(src)}" alt="" loading="lazy">` : `<span class="emoji" aria-hidden="true">${icone}</span>`);
   const corDoIndice = (i) => `hsl(${Math.round((i * 137.5) % 360)} 68% 42%)`;
+  // Cinco pilares da barra e as sub-abas de cada um. Toda rota pertence a um pilar (menos busca e créditos),
+  // e cada sub-aba só aparece se o país tem aquela seção (temSecao).
+  const PILARES = {
+    explorar: [["guia", "Perto de você"], ["lugares", "Lugares e comidas"], ["historia", "História"], ["origem", "Origem"], ["futebol", "Futebol"], ["quiz", "Quiz"]],
+    falar: [["", semTraducao ? "Palavras" : "Situações"], ["conversas", "Conversas"], ["girias", "Gírias"], ["ditados", "Ditados"], ["dicas", semTraducao ? "Jeito de falar" : "Pronúncia"], ["conversor", "Conversor"]],
+    ia: [],
+    roteiro: [],
+    album: [["album", "Por onde andei"], ["favoritos", "Salvos"], ["preparar", "Preparar"]],
+  };
+  const ROTA_PILAR = { s: "falar" };
+  Object.entries(PILARES).forEach(([p, abas]) => abas.forEach(([r]) => { ROTA_PILAR[r] = p; }));
+  ROTA_PILAR.ia = "ia";
+  ROTA_PILAR.roteiro = "roteiro";
+  // Rota que não existe (ou que o país não tem) abre Frases, então conta como Falar; Créditos não é de pilar nenhum.
+  const pilarDa = (rota) => {
+    if (rota === "s") return "falar";
+    if (telas[rota] && temSecao[rota] !== false) return ROTA_PILAR[rota] || null;
+    return "falar";
+  };
+  function subabas(pilar, rota) {
+    const abas = (PILARES[pilar] || []).filter(([r]) => r === "" || temSecao[r] !== false);
+    if (abas.length < 2) return "";
+    const atual = rota === "s" ? "" : rota;
+    return `<nav class="subabas" aria-label="Seções de ${pilar === "falar" ? (semTraducao ? "Vocabulário" : "Falar") : pilar === "explorar" ? "Explorar" : "Álbum"}">${abas.map(([r, nome]) => `
+      <a class="subaba ${r === atual ? "ativa" : ""}" href="#/${r}"${r === atual ? ' aria-current="page"' : ""}>${nome}</a>`).join("")}</nav>`;
+  }
   // Perto de você abre com a foto do destaque e o GuIA com o próprio cabeçalho: nenhum dos dois leva ilustração de capa.
   const CAPAS = { "": "inicio", historia: "historia", futebol: "futebol", quiz: "quiz", conversas: "conversas", lugares: "lugares", girias: "girias", ditados: "ditados", dicas: "dicas", preparar: "preparar", favoritos: "favoritos" };
   const capa = (nome) => `<img class="capa" src="img/arte/${nome}.svg" alt="" aria-hidden="true">`;
@@ -1533,8 +1566,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         ? pais.situacoes.map((s) => ({ s, frases: s.frases.filter((f) => (f.regioes || []).includes(filtroRegiao)) })).filter((x) => x.frases.length)
         : null;
       return `${rapidas()}
-        ${moedaCfg ? `<a class="atalho-moeda" href="#/preparar">
-          <span class="emoji" aria-hidden="true">💱</span>
+        ${moedaCfg ? `<a class="atalho-moeda" href="#/conversor">
+          <span class="atalho-icone" aria-hidden="true">${ico("moeda")}</span>
           <span><strong>Conversor ${esc(moedaCfg.codigo)} ↔ R$ + ${moedaCfg.gorjeta ? `${moedaCfg.gorjeta}% propina` : "câmbio"}</strong><small>Funciona sem internet · 1 R$ = ${moedaEst.taxa.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${esc(moedaCfg.codigo)}</small></span>
           <span class="atalho-seta" aria-hidden="true">→</span>
         </a>` : ""}
@@ -1672,7 +1705,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
           <div class="item">
             <h3>${esc(p.regra)}</h3>
             <p lang="${LANG}">${esc(p.ex)}</p>
-            ${p.dica ? `<p class="suave"><span aria-hidden="true">💡</span> ${esc(p.dica)}</p>` : ""}
+            ${p.dica ? `<p class="suave frase-dica-icone">${ico("dica")}<span>${esc(p.dica)}</span></p>` : ""}
           </div>`).join("")}
         </div>`;
     },
@@ -2073,9 +2106,15 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     },
     favoritos() {
       const fs = favoritos.map((es) => todas.find((f) => f.es === es)).filter(Boolean);
-      return `<h1>★ Salvos</h1>
+      return `<h1>Salvos</h1>
         <p class="lead">Suas frases favoritas ficam guardadas neste aparelho.</p>
-        ${fs.length ? lista(fs) : `<p class="vazio">Toque em ☆ Salvar em qualquer frase para guardá-la aqui.</p>`}`;
+        ${fs.length ? lista(fs) : `<p class="vazio">Nenhuma frase salva ainda. Toque em Salvar nas que você mais vai usar.</p>`}`;
+    },
+    // Conversor sozinho, dentro de Falar. #/preparar continua com conversor, checklist e etiqueta.
+    conversor() {
+      return `<h1>Conversor</h1>
+        <p class="lead">Converta na hora da conta, mesmo sem internet.</p>
+        ${conversorHtml()}`;
     },
     busca(termo) {
       const t = normal(termo);
@@ -2114,18 +2153,22 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     // Algumas ilustrações são do Uruguai (bandeira, "¡TA!"); `capas` no país escolhe as que servem.
     const nomeArte = !termo && !param && CAPAS[rota];
     const arte = nomeArte && (!pais.capas || pais.capas.includes(nomeArte)) ? nomeArte : "";
-    main.innerHTML = `${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
+    const pilar = termo ? null : pilarDa(rota);
+    // Sub-abas só nas telas principais; nas de detalhe (lugar, capítulo, situação…) a barra já marca o pilar e há o "voltar".
+    main.innerHTML = `${param === undefined && pilar ? subabas(pilar, rota) : ""}${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
     if (comemorar && rota === "album") confete();
     recemColado = null;
     comemorar = null;
     direcaoPagina = "";
+    // Na fileira de sub-abas que rola no celular, a ativa fica à vista.
+    const subAtiva = main.querySelector(".subaba.ativa");
+    if (subAtiva) subAtiva.parentElement.scrollLeft = subAtiva.offsetLeft - subAtiva.parentElement.offsetLeft - 16;
     document.querySelectorAll("#abas a").forEach((a) => {
-      const ativa = !termo && (a.dataset.aba === rota || (a.dataset.aba === "" && rota === "s"));
+      const ativa = a.dataset.pilar === pilar;
       a.classList.toggle("ativa", ativa);
       if (ativa) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
-    $("#mais-botao").classList.toggle("ativa", !!$("#mais a.ativa"));
   }
 
   // Mapa da capa do álbum: o contorno vai se enchendo com a bandeira, de baixo para cima, na proporção das figurinhas
@@ -2170,7 +2213,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   const semMovimento = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   function confete() {
     if (semMovimento()) return;
-    const cores = ["#f2a900", "#0b3d91", "#e4002b", "#00843d", "#8fb6ff", "#ff8a7a"];
+    const cores = ["#f2a900", "#0f356b", "#e4002b", "#00843d", "#8fb6ff", "#ff8a7a"];
     const caixa = document.createElement("div");
     caixa.className = "confete";
     caixa.setAttribute("aria-hidden", "true");
@@ -2223,16 +2266,6 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       cartao.style.removeProperty("--rx");
       cartao.style.removeProperty("--ry");
     }
-  });
-
-  // Menu "Mais": fecha ao escolher uma seção, ao tocar fora ou com Esc.
-  function abrirMais(abrir) {
-    $("#mais").hidden = !abrir;
-    $("#mais-botao").setAttribute("aria-expanded", abrir);
-  }
-  $("#mais-botao").addEventListener("click", () => abrirMais($("#mais").hidden));
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest("#mais-botao") && (!e.target.closest("#mais") || e.target.closest("a"))) abrirMais(false);
   });
 
   main.addEventListener("click", (e) => {
@@ -2572,10 +2605,6 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     fecharMostrar();
-    if (!$("#mais").hidden) {
-      abrirMais(false);
-      $("#mais-botao").focus();
-    }
   });
 
   main.addEventListener("keydown", (e) => {
@@ -2652,7 +2681,11 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     history.replaceState(null, "", "#/");
     location.reload();
   });
-  document.querySelectorAll("#abas [data-aba]").forEach((a) => { a.hidden = temSecao[a.dataset.aba] === false; });
+  // Pilares que o país não tem somem da barra; sem Perto de você, Explorar abre em Lugares.
+  $('#abas [data-pilar="ia"]').hidden = !temSecao.ia;
+  $('#abas [data-pilar="roteiro"]').hidden = !temSecao.roteiro;
+  if (!temSecao.guia) $('#abas [data-pilar="explorar"]').setAttribute("href", "#/lugares");
+  if (semTraducao) $("#aba-falar-nome").textContent = "Vocabulário";
   document.title = `Viajador · ${pais.nome}`;
   $("#mostrar-es").lang = LANG;
   if (semTraducao) {
@@ -2660,9 +2693,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     const abertura = temSecao.guia ? "#/guia" : "#/lugares";
     if (["", "#", "#/"].includes(location.hash)) history.replaceState(null, "", abertura);
     $(".marca").setAttribute("href", abertura);
-    $('#abas a[data-aba=""]').innerHTML = `<span class="aba-icone" aria-hidden="true">💬</span>Palavras`;
     $("#busca").placeholder = `Buscar: ${pais.girias.slice(0, 3).map((g) => g.es.toLowerCase()).join(", ")}…`;
-    $("#mais a[data-aba=dicas]").textContent = "🗣️ Jeito de falar";
   }
   render();
 })();
