@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.42";
+  const VERSAO_APP = "1.43";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -1056,7 +1056,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const j = await r.json().catch(() => ({}));
       texto = j.resposta || j.erro || (r.status === 404 ? "O GuIA Turístico ainda não está ligado no servidor." : "Não consegui responder agora.");
       // A cota de verdade é do servidor; aqui só a contagem deste aparelho, para o anel ao lado do botão de perguntar.
-      if (r.status === 429) contarPerguntas(LIMITE_IA);
+      // 429 só zera o anel se o texto do servidor falar de limite/cota; senão é pico de uso e a mensagem basta.
+      if (r.status === 429) { if (/limit|cota|hoje|aparelho|perguntas/i.test(texto)) contarPerguntas(LIMITE_IA); }
       else if (j.resposta) contarPerguntas(perguntasHoje() + 1);
       conversa.push(j.resposta ? { quem: "guia", texto, lugares: lugaresCitados(texto) } : { quem: "erro", texto });
     } catch (e) {
@@ -1148,7 +1149,10 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       return `<header class="chat-topo">
           <span class="chat-avatar grande" aria-hidden="true">${ico("guia")}</span>
           <span class="chat-titulo"><h1>Gu<span class="ia">IA</span> Turístico</h1><small>Responde com o conteúdo do Viajador</small></span>
-          <span class="selo-pro" title="Recursos extras no futuro, sem tirar nada do que já é gratuito">Duck AI PRO · em breve</span>
+          <details class="selo-pro-info">
+            <summary class="selo-pro">Duck AI PRO · em breve</summary>
+            <p>No futuro, o Duck AI PRO deve trazer GuIA sem limite de perguntas e sincronização dos roteiros e do álbum entre aparelhos. Sem data definida, e nada do que já é gratuito vai sair do app.</p>
+          </details>
         </header>
         ${supabaseOnline() ? "" : `<p class="frase-dica">O GuIA Turístico ainda não foi configurado.</p>`}
         <div class="chat">${conversa.length ? conversa.map(mensagem).join("") : `
@@ -1365,8 +1369,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
             <p class="ficha-dica">${ico("dica")}<span><strong>Dica:</strong> ${esc(l.dica)}</span></p>`,
           frases: `<h2 class="sr">${semTraducao ? "Palavra do lugar" : "Frases para este lugar"}</h2>${lista(l.frases)}`,
           fontes: `<ol class="ficha-notas">${g.fontes.map((f) => `<li><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.titulo)}</a></li>`).join("")}</ol>
-            <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>
-            ${creditoFoto(credito)}`,
+            <p class="gps-nota">Conferido em ${esc(g.revisado.split("-").reverse().join("/"))}. Horários e acesso podem mudar.</p>`,
         }[aba];
         return `<article class="ficha" aria-labelledby="ficha-titulo">
             <header class="ficha-capa ${foto ? "" : "sem-foto"}" style="--cor:${corDoIndice(pontos().indexOf(g))}">

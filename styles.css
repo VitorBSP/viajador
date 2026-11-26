@@ -1134,6 +1134,10 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .chat-avatar .ico { width: 18px; height: 18px; }
 .chat-avatar.grande { width: 48px; height: 48px; border-radius: 16px; }
 .chat-avatar.grande .ico { width: 26px; height: 26px; }
+.selo-pro-info { position: relative; }
+.selo-pro-info summary { list-style: none; cursor: pointer; min-height: 32px; display: inline-flex; align-items: center; }
+.selo-pro-info summary::-webkit-details-marker { display: none; }
+.selo-pro-info p { position: absolute; right: 0; top: calc(100% + 6px); z-index: 5; width: min(280px, 80vw); margin: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid #3a3220; background: #0e131e; color: var(--texto, #fff); font-size: 14px; line-height: 1.4; }
 .selo-pro { padding: 3px 9px; border-radius: 999px; border: 1px solid #3a3220; background: #0e131e; color: #ffc445; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
 .chat { gap: 12px; }
 .chat-linha { display: flex; align-items: flex-end; gap: 8px; }
