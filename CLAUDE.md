@@ -29,9 +29,12 @@ Você está trabalhando no **Viajador** (`https://vitorbsp.github.io/viajador/`)
 
 ```bash
 python3 scripts/validar.py
+node --test tests/*.test.mjs
 node --check app.js
 node --check sw.js
 ```
+
+Os testes (`tests/logica.test.mjs`) carregam o `app.js` e os dados reais num `node:vm` e usam as funções puras expostas em `window.VIAJADOR_INTERNO` (`montarRoteiro`, `lugaresCitados`, `calcularMoeda`, `montarContexto`, `orientacaoDaConversa`). Só `node:test` e `node:assert/strict`, sem npm. No Node 22, `node --test tests/` não aceita pasta: use o padrão `tests/*.test.mjs`.
 
 O deploy no GitHub Pages (`.github/workflows/pages.yml`) roda `python3 scripts/validar.py` como gate e **rejeita** o deploy se houver qualquer erro de schema, versão dessincronizada ou imagem fora do `sw.js`.
 

@@ -37,7 +37,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.44";
+  const VERSAO_APP = "1.45";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -373,17 +373,22 @@
     return Number.isFinite(n) && n >= 0 ? n : 0;
   };
   const fmtBrl = (n) => `R$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  const fmtLocal = (n) => `${moedaCfg.simbolo} ${n.toLocaleString("pt-BR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
-  function calcularMoeda() {
-    if (!moedaCfg || !moedaEst) return { principal: "", detalhe: "" };
-    const taxa = moedaEst.taxa > 0 ? moedaEst.taxa : moedaCfg.taxaPadrao;
-    const base = lerNumero(moedaEst.valor);
-    const pct = moedaEst.gorjeta && moedaCfg.gorjeta ? moedaCfg.gorjeta / 100 : 0;
-    const localBase = moedaEst.direcao === "local-brl" ? base : base * taxa;
-    const brlBase = moedaEst.direcao === "local-brl" ? base / taxa : base;
+  // Arredonda aos centavos antes de decidir se mostra decimais: 100 × 7,4 × 1,1 dá 814,0000000001 e deve aparecer "814".
+  const fmtLocal = (n) => {
+    const v = Math.round(n * 100) / 100;
+    return `${moedaCfg.simbolo} ${v.toLocaleString("pt-BR", { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
+  };
+  // Recebe o estado do conversor (por padrão, o da tela) e não mexe em nada: é o que os testes chamam.
+  function calcularMoeda(est = moedaEst) {
+    if (!moedaCfg || !est) return { principal: "", detalhe: "" };
+    const taxa = est.taxa > 0 ? est.taxa : moedaCfg.taxaPadrao;
+    const base = lerNumero(est.valor);
+    const pct = est.gorjeta && moedaCfg.gorjeta ? moedaCfg.gorjeta / 100 : 0;
+    const localBase = est.direcao === "local-brl" ? base : base * taxa;
+    const brlBase = est.direcao === "local-brl" ? base / taxa : base;
     const localTotal = localBase * (1 + pct);
     const brlTotal = brlBase * (1 + pct);
-    const principal = moedaEst.direcao === "local-brl" ? fmtBrl(brlTotal) : fmtLocal(localTotal);
+    const principal = est.direcao === "local-brl" ? fmtBrl(brlTotal) : fmtLocal(localTotal);
     const detalhe = pct
       ? `Conta: ${fmtLocal(localBase)} (${fmtBrl(brlBase)}) + ${moedaCfg.gorjeta}% propina: ${fmtLocal(localBase * pct)} (${fmtBrl(brlBase * pct)})`
       : `1 R$ = ${taxa.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${moedaCfg.codigo}`;
@@ -1032,7 +1037,7 @@
     const partes = [`País: ${pais.nome}. ${pais.intro}`];
     const descreve = (g) => {
       const l = lugarDo(g);
-      return `LUGAR: ${g.lugar} (${l.cidade})${posicao ? `, a ${formatarDist(distanciaKm(posicao, g.coords))} do viajante` : ""}\n${g.historia.join(" ")}\nO que reparar: ${g.reparar}\nDica: ${l.dica}\nFrases: ${l.frases.map((f) => `${f.es}${f.pr ? ` (${f.pr})` : ""} = ${f.pt}`).join("; ")}`;
+      return `LUGAR: ${g.lugar} (${l.cidade})${posicao ? `, a ${formatarDist(distanciaKm(posicao, g.coords))} do viajante` : ""}\n${g.historia.join(" ")}\nO que reparar: ${g.reparar}\nDica: ${l.dica}\nFrases: ${l.frases.map((f) => `${f.es}${f.pr && !semTraducao ? ` (${f.pr})` : ""} = ${f.pt}`).join("; ")}`;
     };
     const escolhidos = new Map();
     if (posicao) [...pontos()].sort((a, b) => distanciaKm(posicao, a.coords) - distanciaKm(posicao, b.coords)).slice(0, 3).forEach((g) => escolhidos.set(g.id, g));
@@ -1057,7 +1062,8 @@
     ].filter((x) => x.n >= 1).sort((a, b) => b.n - a.n).slice(0, 8);
     vocab.forEach((x) => partes.push(x.t));
     const frases = todas.map((fr) => ({ fr, n: pontua(`${fr.es} ${fr.pt}`) })).filter((y) => y.n >= 1).sort((a, b) => b.n - a.n).slice(0, 6);
-    if (frases.length) partes.push(`FRASES ÚTEIS: ${frases.map(({ fr }) => `${fr.es}${fr.pr ? ` (${fr.pr})` : ""} = ${fr.pt}`).join("; ")}`);
+    // No RS não há o que pronunciar: a pronúncia das frases (algumas têm, no dado) não vai para o guia.
+    if (frases.length) partes.push(`${semTraducao ? "PALAVRAS E FRASES LOCAIS" : "FRASES ÚTEIS"}: ${frases.map(({ fr }) => `${fr.es}${fr.pr && !semTraducao ? ` (${fr.pr})` : ""} = ${fr.pt}`).join("; ")}`);
     if (escolhidos.size + hist.length === 0) partes.push(`LUGARES DO GUIA: ${pontos().map((g) => `${g.lugar} (${lugarDo(g).cidade}): ${g.resumo}`).join(" | ")}`);
     return partes.join("\n\n").slice(0, TAM_CONTEXTO);
   }
@@ -1067,7 +1073,7 @@
       ? `ESTA CONVERSA JÁ ESTÁ EM ANDAMENTO: não cumprimente${semTraducao ? "" : " nem diga Hola, che ou Olá"}. Responda direto, continuando o assunto.`
       : "PRIMEIRA MENSAGEM DA CONVERSA: pode cumprimentar em poucas palavras.") +
     (semTraducao
-      ? " Só explique uma palavra ou costume local quando tiver a ver com a pergunta, sem repetir os que já explicou e sem traduzir para o espanhol."
+      ? " Só explique uma palavra ou costume local quando tiver a ver com a pergunta, sem repetir os que já explicou e sem traduzir para outro idioma."
       : " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.");
   async function perguntarAoGuia(pergunta) {
     if (!supabaseOnline()) return avisar("O GuIA Turístico ainda não foi configurado");
@@ -2695,5 +2701,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     $(".marca").setAttribute("href", abertura);
     $("#busca").placeholder = `Buscar: ${pais.girias.slice(0, 3).map((g) => g.es.toLowerCase()).join(", ")}…`;
   }
+  // Funções puras para os testes (tests/logica.test.mjs). Não muda nada no navegador.
+  window.VIAJADOR_INTERNO = { montarRoteiro, lugaresCitados, calcularMoeda, montarContexto, orientacaoDaConversa };
   render();
 })();
