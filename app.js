@@ -35,7 +35,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.43";
+  const VERSAO_APP = "1.44";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -370,7 +370,8 @@
     return Number.isFinite(n) && n >= 0 ? n : 0;
   };
   const fmtBrl = (n) => `R$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  const fmtLocal = (n) => `${moedaCfg.simbolo} ${n.toLocaleString("pt-BR", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
+  // Arredonda antes de olhar os centavos: 100 × 7,4 × 1,1 dá 814.0000000000001 e não deve virar "814,00".
+  const fmtLocal = (n) => `${moedaCfg.simbolo} ${n.toLocaleString("pt-BR", { minimumFractionDigits: Math.round(n * 100) % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
   function calcularMoeda() {
     if (!moedaCfg || !moedaEst) return { principal: "", detalhe: "" };
     const taxa = moedaEst.taxa > 0 ? moedaEst.taxa : moedaCfg.taxaPadrao;
@@ -1034,7 +1035,7 @@
       ? `ESTA CONVERSA JÁ ESTÁ EM ANDAMENTO: não cumprimente${semTraducao ? "" : " nem diga Hola, che ou Olá"}. Responda direto, continuando o assunto.`
       : "PRIMEIRA MENSAGEM DA CONVERSA: pode cumprimentar em poucas palavras.") +
     (semTraducao
-      ? " Só explique uma palavra ou costume local quando tiver a ver com a pergunta, sem repetir os que já explicou e sem traduzir para o espanhol."
+      ? " Só explique uma palavra ou costume local quando tiver a ver com a pergunta, sem repetir os que já explicou."
       : " Só ensine uma frase em espanhol quando ela tiver a ver com a pergunta, e não repita frases que já ensinou.");
   async function perguntarAoGuia(pergunta) {
     if (!supabaseOnline()) return avisar("O GuIA Turístico ainda não foi configurado");
@@ -2656,6 +2657,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     location.reload();
   });
   document.querySelectorAll("#abas [data-aba]").forEach((a) => { a.hidden = temSecao[a.dataset.aba] === false; });
+  // Funções puras expostas só para os testes (tests/logica.test.mjs); o app não as usa por esse caminho.
+  window.VIAJADOR_INTERNO = { pais, semTraducao, montarRoteiro, lugaresCitados, calcularMoeda, montarContexto, orientacaoDaConversa, moedaEst, definirPosicao: (p) => { posicao = p; } };
   document.title = `Viajador · ${pais.nome}`;
   $("#mostrar-es").lang = LANG;
   if (semTraducao) {
