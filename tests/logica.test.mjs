@@ -77,6 +77,20 @@ describe("montarRoteiro", () => {
     for (const y of naAgenda) assert.ok(r.escolhidos.has(y), `${y.l.nome} na agenda sem estar escolhido`);
     for (const dia of r.agenda) assert.deepEqual(plano(dia.map((tu) => tu.id)), ["manha", "tarde", "noite"]);
   });
+
+  test("diasParaIncluir nunca sugere menos dias que o já escolhido quando faltam obrigatórios", () => {
+    const opcoes = { sem: new Set(), forcar: new Set(), limiteEstrada: 0.25 };
+    const r = uy.montarRoteiro(["Montevidéu", "Punta del Este"], 1, opcoes);
+    const semTempo = r.faltam.filter((x) => !r.longe.includes(x));
+    assert.ok(semTempo.length > 0, "em 1 dia com 2 cidades falta obrigatório por tempo");
+    const aviso = uy.diasParaIncluir(["Montevidéu", "Punta del Este"], 1, opcoes, semTempo);
+    assert.ok(aviso.dias === null || aviso.dias > 1, `dias sugeridos (${aviso.dias}) deveria ser > 1 ou null`);
+    if (aviso.dias !== null) {
+      const t = uy.montarRoteiro(["Montevidéu", "Punta del Este"], aviso.dias, opcoes);
+      const aindaFaltam = semTempo.filter((x) => !aviso.nunca.includes(x.l) && t.faltam.some((y) => y.l === x.l));
+      assert.equal(aindaFaltam.length, 0, "nos dias sugeridos, os obrigatórios avisados devem entrar");
+    }
+  });
 });
 
 describe("lugaresCitados", () => {
