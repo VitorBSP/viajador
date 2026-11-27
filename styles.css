@@ -85,7 +85,7 @@ button { font: inherit; color: inherit; }
   position: sticky; top: 0; z-index: 10;
   background: var(--topo);
   color: #fff;
-  padding: 12px 16px 0;
+  padding: 12px 16px 12px;
   padding-top: max(12px, env(safe-area-inset-top));
 }
 .topo-linha { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; max-width: 760px; margin: 0 auto; }
@@ -106,14 +106,16 @@ h1 .bandeira { width: 36px; height: 24px; margin-right: 4px; vertical-align: -2p
   background: rgba(255, 255, 255, .12); color: #fff; cursor: pointer;
 }
 .pais option { background: #fff; color: #1b2433; }
-.busca { display: block; order: 3; flex: 1 0 100%; margin: 4px 0 0; }
+/* Busca em pílula com lupa à esquerda (protótipo v2). */
+.busca { position: relative; display: block; order: 3; flex: 1 0 100%; margin: 6px 0 0; }
+.busca-lupa { position: absolute; left: 15px; top: 50%; width: 19px; height: 19px; transform: translateY(-50%); color: #5d6878; pointer-events: none; }
 .busca input {
-  width: 100%; border: 0; border-radius: 12px;
-  padding: 12px 14px; font-size: 16px;
+  width: 100%; border: 0; border-radius: 999px;
+  padding: 12px 16px 12px 44px; font-size: 16px;
   background: #fff; color: #1b2433;
 }
 .busca input { min-height: 44px; }
-@media (min-width: 700px) { .busca input { min-height: 40px; height: 40px; padding: 8px 14px; font-size: 15px; } }
+@media (min-width: 700px) { .busca input { min-height: 40px; height: 40px; padding: 8px 16px 8px 42px; font-size: 15px; } }
 .busca input::placeholder { color: #5d6878; opacity: 1; }
 /* Cinco pilares. No PC, uma linha de abas no topo azul; no celular, barra clara embaixo com o GuIA elevado. */
 .abas { position: relative; display: flex; gap: 4px; max-width: 760px; margin: 8px auto 0; }
@@ -1168,3 +1170,87 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .atalho-moeda .atalho-icone { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--celeste-claro); color: var(--celeste); }
 .mostrar-btn .ico { width: 24px; height: 24px; }
 .mostrar-acesa .ico { width: 16px; height: 16px; vertical-align: -3px; }
+
+/* v1.47 · PC com a linguagem do celular: topo azul só com marca, busca e país; faixa clara com os 5 pilares
+   (mesma superfície da barra do celular), ativo em pílula azul-clara e GuIA com o quadrado azul e ícone dourado. */
+@media (min-width: 700px) {
+  .abas {
+    max-width: none; margin: 12px -16px -12px; padding: 6px 16px; justify-content: center; gap: 6px;
+    background: var(--cartao); border-bottom: 1px solid var(--linha); box-shadow: 0 2px 10px rgba(10, 20, 40, .06);
+  }
+  .abas > a { min-height: 44px; padding: 0 16px 0 8px; gap: 6px; border: 0; border-radius: 999px; color: var(--suave); font-weight: 600; }
+  .abas > a .aba-icone { width: 34px; height: 30px; border-radius: 999px; }
+  .abas > a:hover { color: var(--texto); background: var(--fundo); }
+  .abas > a.ativa { color: var(--celeste); background: var(--celeste-claro); }
+  .abas .ico { width: 20px; height: 20px; }
+  .abas .ia { color: var(--sol-texto); }
+  .abas > a.aba-ia { align-self: auto; min-height: 44px; margin: 0; padding: 0 16px 0 6px; background: none; box-shadow: none; color: var(--suave); }
+  .abas > a.aba-ia .aba-icone { width: 32px; height: 32px; border-radius: 11px; color: #ffc445; background: linear-gradient(150deg, #1d4e95, #0f356b); }
+  .abas > a.aba-ia .ico { width: 18px; height: 18px; }
+  .abas > a.aba-ia:hover { background: var(--fundo); }
+  .abas > a.aba-ia.ativa { color: var(--celeste); background: var(--celeste-claro); box-shadow: none; }
+  .abas > a.aba-ia.ativa .aba-icone { box-shadow: 0 0 0 2px var(--cartao), 0 0 0 4px var(--sol); }
+  .abas :focus-visible { outline-color: var(--foco); outline-offset: 2px; }
+}
+
+/* Explorar foto-first: pílula de GPS na mesma linha dos chips de cidade, sem card grande antes da foto. */
+.explorar-linha { display: flex; gap: 8px; align-items: center; margin: 0 0 14px; }
+.explorar-linha .filtros { flex: 1; min-width: 0; margin: 0; }
+.btn-gps-pilula { flex: none; gap: 6px; font-weight: 600; background: var(--cartao); }
+.btn-gps-pilula .ico { color: var(--celeste); }
+.btn-gps-pilula.ligado { border-color: var(--verde); color: var(--verde); }
+.btn-gps-pilula .gps-ponto { margin: 0 2px; }
+.explorar-estado { margin: -6px 0 12px; font-size: 13px; color: var(--suave); }
+.explorar-album { margin: -18px 0 24px; font-size: 14px; color: var(--suave); }
+@media (max-width: 699px) {
+  .explorar-linha { margin: 0 -16px 14px; padding-left: 16px; }
+  .explorar-linha .filtros.rolar { margin: 0; padding: 2px 16px 2px 0; }
+  .explorar-linha + .destaque, .explorar-estado + .destaque { margin-top: 0; }
+  .destaque { min-height: 300px; }
+}
+
+/* Diálogo leve do GPS. */
+.dialogo-gps {
+  width: min(92vw, 380px); padding: 22px 20px 18px; border: 0; border-radius: 20px;
+  background: var(--cartao); color: var(--texto); box-shadow: 0 20px 60px rgba(10, 20, 40, .35); text-align: center;
+}
+.dialogo-gps::backdrop { background: rgba(8, 14, 26, .55); }
+.dialogo-gps-icone { width: 40px; height: 40px; padding: 8px; border-radius: 50%; color: var(--celeste); background: var(--celeste-claro); box-sizing: content-box; }
+.dialogo-gps h2 { margin: 12px 0 6px; font-size: 20px; }
+.dialogo-gps p { margin: 0 0 18px; color: var(--suave); }
+.dialogo-gps-botoes { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.dialogo-gps-botoes .btn { flex: 1 1 140px; justify-content: center; }
+
+/* Falar sem emoji: ícone de traço dentro do círculo suave dos cards, das frases rápidas e dos títulos. */
+.categoria .cat-icone, .rapida .cat-icone, .titulo-icone {
+  display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; flex: none;
+  color: color-mix(in srgb, var(--cor, var(--celeste)) 75%, var(--texto)); background: color-mix(in srgb, var(--cor, var(--sol)) 18%, transparent);
+}
+.categoria .cat-icone .ico, .titulo-icone .ico { width: 24px; height: 24px; }
+.rapida .cat-icone { width: 40px; height: 40px; margin: 0 auto 2px; color: #1b2433; background: rgba(255, 255, 255, .45); }
+.rapida .cat-icone .ico { width: 22px; height: 22px; }
+.titulo-com-icone { display: flex; align-items: center; gap: 12px; }
+.titulo-com-icone .titulo-icone { width: 44px; height: 44px; --cor: var(--celeste); }
+.falso-aviso .ico { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
+@media (min-width: 700px) { .explorar-linha { align-items: flex-start; } }
+
+/* Loading com o Duck: abertura em tela cheia e versão compacta (GuIA). Quadro quadrado e arredondado. */
+.abertura {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  background: var(--fundo); transition: opacity .35s ease, visibility .35s;
+}
+.abertura.saindo { opacity: 0; visibility: hidden; pointer-events: none; }
+.duck-loading { display: grid; justify-items: center; gap: 14px; text-align: center; }
+.duck-quadro {
+  width: clamp(160px, 46vw, 200px); aspect-ratio: 1 / 1; border-radius: 20px; overflow: hidden;
+  background: #f3eee4; box-shadow: 0 10px 30px rgba(10, 20, 40, .14), 0 0 0 1px var(--linha);
+}
+.duck-quadro video, .duck-quadro img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* A imagem só aparece quando não há vídeo (movimento reduzido). */
+.duck-quadro video + .duck-img { display: none; }
+.duck-loading p { margin: 0; font-size: 16px; font-weight: 600; color: var(--texto); }
+.duck-loading.compacto { grid-auto-flow: column; justify-content: start; align-items: center; gap: 12px; text-align: left; }
+.duck-loading.compacto .duck-quadro { width: 72px; border-radius: 16px; }
+.duck-loading.compacto p { font-size: 14px; color: var(--suave); }
+@media (prefers-reduced-motion: reduce) { .abertura { transition: none; } }

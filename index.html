@@ -19,6 +19,28 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Abertura com o Duck enquanto os dados do destino carregam; o app.js tira com transição quando a tela está pronta. -->
+  <div class="abertura" id="abertura" role="status">
+    <div class="duck-loading">
+      <div class="duck-quadro">
+        <video autoplay loop muted playsinline disablepictureinpicture poster="img/duck-loading-poster.webp" aria-hidden="true">
+          <source src="img/duck-loading.webm" type="video/webm">
+          <source src="img/duck-loading.mp4" type="video/mp4">
+        </video>
+        <img class="duck-img" src="img/duck-loading.webp" alt="" aria-hidden="true">
+      </div>
+      <p>Preparando o mapa da viagem…</p>
+    </div>
+  </div>
+  <script>
+    // Sem movimento: fica só a imagem. Segurança: se o app não abrir, a abertura some sozinha em 8 s.
+    (function () {
+      var a = document.getElementById("abertura");
+      if (!a) return;
+      if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { var v = a.querySelector("video"); if (v) v.remove(); }
+      setTimeout(function () { a.classList.add("saindo"); }, 8000);
+    })();
+  </script>
   <a class="pular" href="#conteudo" id="pular">Pular para o conteúdo</a>
   <header class="topo" id="topo">
     <div class="topo-linha">
@@ -33,6 +55,7 @@
       </a>
       <label class="busca">
         <span class="sr">Buscar frase</span>
+        <svg class="ico busca-lupa" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></svg>
         <input id="busca" type="search" placeholder="Buscar: banheiro, conta, foto…" autocomplete="off">
       </label>
       <label class="pais">
@@ -69,6 +92,17 @@
     </div>
     <p class="mostrar-acesa" id="mostrar-acesa" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1"/></svg> Tela fica acesa</p>
   </div>
+
+  <!-- GPS do Explorar: só abre quando a permissão ainda não foi dada. -->
+  <dialog class="dialogo-gps" id="dialogo-gps" aria-labelledby="dialogo-gps-titulo">
+    <svg class="ico dialogo-gps-icone" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+    <h2 id="dialogo-gps-titulo">Ver o que dá pra ir a pé</h2>
+    <p>Sua localização fica só neste aparelho e serve para ordenar a lista pelo que está mais perto.</p>
+    <div class="dialogo-gps-botoes">
+      <button type="button" class="btn" id="gps-agora-nao">Agora não</button>
+      <button type="button" class="btn btn-ficha" id="gps-ativar">Ativar localização</button>
+    </div>
+  </dialog>
 
   <div class="aviso" id="aviso" role="status" aria-live="polite"></div>
 
