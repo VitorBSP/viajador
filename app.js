@@ -37,7 +37,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.47";
+  const VERSAO_APP = "1.48";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -1263,7 +1263,7 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
               <span>${esc(x)}</span>
             </button>`; }).join("")}
           </div>`}
-          ${pensando ? `<div class="chat-linha">${avatar}<div class="chat-msg chat-guia chat-pensando" role="status"><p>Pensando…</p></div></div>` : ""}
+          ${pensando ? duckLoading("O Duck está montando sua resposta…", true) : ""}
         </div>
         ${conversa.length && restantes.length ? `<div class="chat-chips" role="group" aria-label="Outras perguntas">${restantes.map((x) => `
           <button class="chip-sugestao" data-acao="ia-sugestao" data-pergunta="${esc(x)}" ${pensando ? "disabled" : ""}>${esc(x)}</button>`).join("")}</div>` : ""}
@@ -2293,6 +2293,15 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
 
   // Confete de página completa: pedaços de papel com queda, giro e cor sorteados, que somem sozinhos.
   const semMovimento = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Loading com o Duck procurando a próxima viagem no mapa. Sem movimento, só a imagem parada.
+  // `compacto`: versão pequena, para dentro de telas (ex.: GuIA esperando a resposta).
+  function duckLoading(mensagem, compacto = false) {
+    const midia = semMovimento()
+      ? `<img class="duck-img" src="img/duck-loading.webp" alt="" aria-hidden="true">`
+      : `<video autoplay loop muted playsinline disablepictureinpicture poster="img/duck-loading.webp" aria-hidden="true">
+          <source src="img/duck-loading.webm" type="video/webm"><source src="img/duck-loading.mp4" type="video/mp4"></video>`;
+    return `<div class="duck-loading ${compacto ? "compacto" : ""}" role="status"><div class="duck-quadro">${midia}</div><p>${esc(mensagem)}</p></div>`;
+  }
   function confete() {
     if (semMovimento()) return;
     const cores = ["#f2a900", "#0f356b", "#e4002b", "#00843d", "#8fb6ff", "#ff8a7a"];
@@ -2802,4 +2811,15 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   // Funções puras para os testes (tests/logica.test.mjs). Não muda nada no navegador.
   window.VIAJADOR_INTERNO = { montarRoteiro, diasParaIncluir, lugaresCitados, calcularMoeda, montarContexto, orientacaoDaConversa };
   render();
+  // Abertura do Duck: com tudo já em cache (service worker no controle), sai assim que a tela está pronta;
+  // na primeira visita, fica pelo menos 1 s no ar para dar tempo de ver e de terminar de carregar.
+  const abertura = $("#abertura");
+  if (abertura && abertura.classList) {
+    const emCache = Boolean(navigator.serviceWorker && navigator.serviceWorker.controller);
+    const agora = window.performance && performance.now ? performance.now() : 0;
+    setTimeout(() => {
+      abertura.classList.add("saindo");
+      setTimeout(() => abertura.remove(), 450);
+    }, emCache ? 0 : Math.max(0, 1000 - agora));
+  }
 })();

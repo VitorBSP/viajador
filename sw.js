@@ -1,6 +1,6 @@
 // Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-1.47"; // igual a VERSAO_APP, em app.js
+const VERSAO = "viajador-1.48"; // igual a VERSAO_APP, em app.js
 const NUCLEO = [
   "./",
   "styles.css",
@@ -13,6 +13,10 @@ const NUCLEO = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
+  "img/duck-loading.webp",
+  "img/duck-loading.jpg",
+  "img/duck-loading.webm",
+  "img/duck-loading.mp4",
   "img/arte/inicio.svg",
   "img/arte/origem-rs.svg",
   "img/arte/ia.svg",
@@ -145,12 +149,36 @@ async function redePrimeiro(chave) {
   return Promise.race([rede.catch(() => salvo), limite]);
 }
 
+// Vídeo do loading: Safari pede trechos (Range) e só toca com resposta 206. Sai do cache cortado no trecho pedido.
+async function trechoDoCache(request) {
+  const cache = await caches.open(VERSAO);
+  const salvo = await cache.match(request.url, { ignoreSearch: true });
+  if (!salvo) return fetch(request);
+  const dados = await salvo.arrayBuffer();
+  const m = /bytes=(\d*)-(\d*)/.exec(request.headers.get("range") || "");
+  const ini = m && m[1] ? Number(m[1]) : 0;
+  const fim = m && m[2] ? Math.min(Number(m[2]), dados.byteLength - 1) : dados.byteLength - 1;
+  return new Response(dados.slice(ini, fim + 1), {
+    status: 206,
+    headers: {
+      "Content-Type": salvo.headers.get("Content-Type") || "video/mp4",
+      "Content-Range": `bytes ${ini}-${fim}/${dados.byteLength}`,
+      "Content-Length": String(fim - ini + 1),
+      "Accept-Ranges": "bytes",
+    },
+  });
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   // Perguntas ao GuIA Turístico vão direto para a rede.
   if (url.pathname.includes("/functions/v1/")) return;
+  if (url.origin === self.location.origin && request.headers.has("range") && /\.(mp4|webm)$/.test(url.pathname)) {
+    event.respondWith(trechoDoCache(request));
+    return;
+  }
   if (HOSTS_FONTES.includes(url.hostname)) {
     event.respondWith(primeiroCache(request));
   } else if (url.origin === self.location.origin) {

@@ -1233,3 +1233,24 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .titulo-com-icone .titulo-icone { width: 44px; height: 44px; --cor: var(--celeste); }
 .falso-aviso .ico { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
 @media (min-width: 700px) { .explorar-linha { align-items: flex-start; } }
+
+/* Loading com o Duck: abertura em tela cheia e versão compacta (GuIA). Quadro quadrado e arredondado. */
+.abertura {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  background: var(--fundo); transition: opacity .35s ease, visibility .35s;
+}
+.abertura.saindo { opacity: 0; visibility: hidden; pointer-events: none; }
+.duck-loading { display: grid; justify-items: center; gap: 14px; text-align: center; }
+.duck-quadro {
+  width: clamp(160px, 46vw, 200px); aspect-ratio: 1 / 1; border-radius: 20px; overflow: hidden;
+  background: #f3eee4; box-shadow: 0 10px 30px rgba(10, 20, 40, .14), 0 0 0 1px var(--linha);
+}
+.duck-quadro video, .duck-quadro img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* A imagem só aparece quando não há vídeo (movimento reduzido). */
+.duck-quadro video + .duck-img { display: none; }
+.duck-loading p { margin: 0; font-size: 16px; font-weight: 600; color: var(--texto); }
+.duck-loading.compacto { grid-auto-flow: column; justify-content: start; align-items: center; gap: 12px; text-align: left; }
+.duck-loading.compacto .duck-quadro { width: 72px; border-radius: 16px; }
+.duck-loading.compacto p { font-size: 14px; color: var(--suave); }
+@media (prefers-reduced-motion: reduce) { .abertura { transition: none; } }

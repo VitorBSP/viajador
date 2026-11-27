@@ -19,6 +19,28 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Abertura com o Duck enquanto os dados do destino carregam; o app.js tira com transição quando a tela está pronta. -->
+  <div class="abertura" id="abertura" role="status">
+    <div class="duck-loading">
+      <div class="duck-quadro">
+        <video autoplay loop muted playsinline disablepictureinpicture poster="img/duck-loading.webp" aria-hidden="true">
+          <source src="img/duck-loading.webm" type="video/webm">
+          <source src="img/duck-loading.mp4" type="video/mp4">
+        </video>
+        <img class="duck-img" src="img/duck-loading.webp" alt="" aria-hidden="true">
+      </div>
+      <p>Preparando o mapa da viagem…</p>
+    </div>
+  </div>
+  <script>
+    // Sem movimento: fica só a imagem. Segurança: se o app não abrir, a abertura some sozinha em 8 s.
+    (function () {
+      var a = document.getElementById("abertura");
+      if (!a) return;
+      if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { var v = a.querySelector("video"); if (v) v.remove(); }
+      setTimeout(function () { a.classList.add("saindo"); }, 8000);
+    })();
+  </script>
   <a class="pular" href="#conteudo" id="pular">Pular para o conteúdo</a>
   <header class="topo" id="topo">
     <div class="topo-linha">
