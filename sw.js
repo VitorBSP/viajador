@@ -1,6 +1,6 @@
 // Service worker do Viajador: com internet usa sempre a versão nova; sem internet, o cache.
 // Ao adicionar um país (data/<código>.js), inclua-o em NUCLEO e suba VERSAO.
-const VERSAO = "viajador-1.48"; // igual a VERSAO_APP, em app.js
+const VERSAO = "viajador-1.49"; // igual a VERSAO_APP, em app.js
 const NUCLEO = [
   "./",
   "styles.css",
@@ -14,6 +14,7 @@ const NUCLEO = [
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
   "img/duck-loading.webp",
+  "img/duck-loading-poster.webp",
   "img/duck-loading.jpg",
   "img/duck-loading.webm",
   "img/duck-loading.mp4",
