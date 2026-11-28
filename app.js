@@ -37,7 +37,7 @@
   const CHAVE_RANKING = doPais("viajador:ranking");
   const CHAVE_NOME = "viajador:nome";
   // Versão "território.número": 0 = Uruguai, 1 = RS, 2 = o próximo território. O número só cresce (ver docs/VERSOES.md).
-  const VERSAO_APP = "1.49";
+  const VERSAO_APP = "1.50";
   const SUPABASE = window.VIAJADOR_SUPABASE || {};
   const supabaseOnline = () => Boolean(SUPABASE.url && SUPABASE.chave);
   // A tabela em supabase/ranking.sql só aceita os níveis do Uruguai; os outros países ficam com o ranking do aparelho.
@@ -444,6 +444,7 @@
   let secoesAbertas = {};
   // Depois de pedir o GPS pela pílula, cada redesenho devolve o foco a ela (até sair da tela).
   let focarPilulaGps = false;
+  let focarFiltroCidade = false;
   // Ficha do lugar: aba aberta (História, Repare, Frases ou Fontes). Volta a História ao mudar de tela.
   let abaFicha = "historia";
   // Primeiro ano citado no resumo ou na história: aparece como data na ficha.
@@ -1062,6 +1063,8 @@
   }
   let conversa = [];
   let pensando = false;
+  // Todo loading do Duck (abertura e GuIA) fica no mínimo isto na tela, para dar tempo de ver.
+  const LOADING_MINIMO = 1000;
   // Perguntas feitas hoje neste aparelho (o servidor conta em UTC, até 30 por dia).
   const CHAVE_IA_HOJE = "viajador:ia-hoje";
   const LIMITE_IA = 30;
@@ -1140,6 +1143,7 @@
     if (!supabaseOnline()) return avisar("O GuIA Turístico ainda não foi configurado");
     if (!navigator.onLine) return avisar("O GuIA Turístico precisa de internet");
     pensando = true;
+    const inicioEspera = Date.now();
     const historico = conversa.slice(-6).map((m) => ({ papel: m.quem === "eu" ? "user" : "model", texto: m.texto }));
     conversa.push({ quem: "eu", texto: pergunta });
     render();
@@ -1164,6 +1168,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       texto = e && e.name === "TimeoutError" ? "O guia demorou demais para responder. Tente de novo." : "Sem conexão com o guia. Tente de novo.";
       conversa.push({ quem: "erro", texto });
     }
+    // O Duck fica pelo menos 1 s na tela, mesmo quando a resposta chega antes.
+    const falta = LOADING_MINIMO - (Date.now() - inicioEspera);
+    if (falta > 0) await new Promise((ok) => setTimeout(ok, falta));
     pensando = false;
     if (location.hash.startsWith("#/ia")) {
       render();
@@ -1509,14 +1516,19 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
       const totalLugares = pais.lugares.reduce((s, c) => s + c.itens.length, 0);
       const fuiEm = pais.lugares.reduce((s, c) => s + c.itens.filter((l) => jaFui[l.nome]).length, 0);
       const nomeFiltro = semTraducao ? "região" : "cidade";
-      // Foto-first: o nome da tela já está na sub-aba (aqui só para leitor de tela); GPS vira pílula ao lado dos chips.
+      // Foto-first: a tela abre na foto (o título fica só para leitor de tela); GPS e cidade são pílulas sobre a foto.
       const topoTela = `<h1 class="sr">Perto de você: ${pontos().length} lugares com história</h1>`;
       const albumHtml = `<p class="explorar-album">${fuiEm ? `Você já foi a ${fuiEm} de ${totalLugares} lugares ${esc(doNome)}.` : "Marque os lugares onde já foi e complete o seu álbum."} <a href="#/album">Ver ${NOME_ALBUM} →</a></p>`;
       const pilulaGps = `<button class="btn btn-gps-pilula ${posicao ? "ligado" : ""}" id="pilula-gps" data-acao="gps-pilula" aria-label="${posicao ? "GPS ligado: atualizar a localização" : "Usar o GPS para ordenar pelo que está mais perto"}">${posicao ? `<span class="gps-ponto" aria-hidden="true"></span>GPS ligado` : `${ico("localizar")}Usar GPS`}</button>`;
-      const filtrosHtml = `<div class="explorar-linha">${pilulaGps}<div class="filtros rolar" role="group" aria-label="Filtrar por ${nomeFiltro}">${filtros.map(([v, r]) => `
-          <button class="btn ${v === filtroCidade ? "on" : ""}" data-acao="filtro" data-cidade="${esc(v)}" aria-pressed="${v === filtroCidade}">${esc(r)}</button>`).join("")}
-        </div></div>`;
-      if (!pertos.length) return `${topoTela}${filtrosHtml}<p class="vazio">Nenhum lugar nesta ${nomeFiltro}.</p>`;
+      const seletorCidade = `<label class="sr" for="filtro-cidade">Filtrar por ${nomeFiltro}</label><select class="sel-cidade" id="filtro-cidade">${filtros.map(([v, r]) => `
+          <option value="${esc(v)}"${v === filtroCidade ? " selected" : ""}>${v ? esc(r) : semTraducao ? "Todas as regiões" : "Todas as cidades"}</option>`).join("")}</select>`;
+      const controles = `<div class="sobre-foto">${pilulaGps}${seletorCidade}</div>`;
+      // Atalhos para as outras seções do Explorar (no lugar da fileira de sub-abas).
+      const ICONE_SECAO = { lugares: "talheres", historia: "livro", origem: "chapeu", futebol: "bola", quiz: "trofeu" };
+      const atalhosHtml = `<nav class="atalhos-topo" aria-label="Mais do Explorar">${PILARES.explorar
+        .filter(([r]) => r !== "guia" && temSecao[r] !== false)
+        .map(([r, nome]) => `<a href="#/${r}"><span class="atalho-circ" aria-hidden="true">${ico(ICONE_SECAO[r] || "explorar")}</span>${nome}</a>`).join("")}</nav>`;
+      if (!pertos.length) return `${topoTela}<div class="sobre-foto sem-foto">${pilulaGps}${seletorCidade}</div><p class="vazio">Nenhum lugar nesta ${nomeFiltro}.</p>${atalhosHtml}`;
 
       // Longe do destino (ainda em casa, por exemplo), as distâncias aparecem, mas sem "a pé" nem "bate-volta".
       const maisPerto = posicao ? pertos[0] : null;
@@ -1542,7 +1554,8 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
             { id: "outros", titulo: "Mais lugares", sub: "", itens: resto.filter((x) => !obrig(x)) },
           ];
 
-      const detalhe = (x) => (aPe(x) ? minutosAPe(x.km) : x.l.minutos ? `${formatarTempo(x.l.minutos)} de visita` : "");
+      // Card enxuto, para a foto aparecer mais: nome, cidade e, quando dá pra ir a pé, quantos minutos.
+      const detalhe = (x) => (aPe(x) ? minutosAPe(x.km) : "");
       const cartao = (x) => {
         const foto = fotoLugar(x.p.id);
         const quero = queroIr.includes(x.p.lugar);
@@ -1592,8 +1605,9 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         : chegou ? `Você está a ${formatarDist(d.km)}${aPe(d) ? ` · ${minutosAPe(d.km)}` : ""}`
         : posicao ? `A ${formatarDist(d.km)} de você`
         : `${obrig(d) ? "Obrigatório" : "Comece por aqui"} · ${esc(d.l.cidade)}`;
-      const destaqueHtml = `<section class="destaque" aria-labelledby="destaque-titulo" style="--cor:${corDoIndice(d.n)}">
+      const destaqueHtml = `<section class="destaque destaque-alto" aria-labelledby="destaque-titulo" style="--cor:${corDoIndice(d.n)}">
           ${fotoD ? `<img class="destaque-foto" src="${esc(fotoD)}" alt="">` : ""}
+          ${controles}
           <div class="destaque-texto">
             <p class="destaque-olho">${olho}</p>
             <h2 id="destaque-titulo" lang="${LANG}"><a href="#/guia/${d.p.id}">${esc(d.p.lugar)}</a></h2>
@@ -1606,26 +1620,17 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
             </div>
           </div>
         </section>`;
-      const atalhos = [["historia", "livro", "História", "datas e pessoas"], ["futebol", "bola", "Futebol", "clubes e estádios"], ["quiz", "trofeu", "Quiz", "teste o que aprendeu"]]
-        .filter(([rota]) => temSecao[rota]);
-      const atalhosHtml = atalhos.length ? `<section class="secao-explorar" aria-labelledby="entender-titulo">
-          <div class="secao-topo"><h2 id="entender-titulo">Para entender o lugar</h2></div>
-          <div class="atalhos-explorar">${atalhos.map(([rota, icone, titulo, sub]) => `
-            <a class="atalho-explorar" href="#/${rota}"><span class="atalho-circ" aria-hidden="true">${ico(icone)}</span><strong>${titulo}</strong><small>${sub}</small></a>`).join("")}
-          </div>
-        </section>` : "";
       // O GuIA entra depois da primeira seção: perto o bastante para ser visto, sem tirar o lugar do destaque.
       const [primeira, ...outras] = secoes.map(secaoHtml).filter(Boolean);
       return `${topoTela}
-        ${filtrosHtml}
         ${gps}
         ${aqui && aqui !== d ? `<p class="ponto-perto"><span>Está agora em <strong lang="${LANG}">${esc(aqui.p.lugar)}</strong>?</span> <button class="btn" data-acao="fui" data-lugar="${esc(aqui.p.lugar)}">Marcar como visitado</button></p>` : ""}
         ${destaqueHtml}
+        ${atalhosHtml}
         ${albumHtml}
         ${primeira || ""}
         ${chamadaGuia(`Não sabe aonde ir? Pergunte ao Gu<span class="ia">IA</span>`, "Ele sugere o que ver perto de você, com a sua localização.", "O que tem de interessante perto de mim agora?")}
-        ${outras.join("")}
-        ${atalhosHtml}`;
+        ${outras.join("")}`;
     },
     inicio() {
       // Com uma região escolhida, as palavras de todos os temas aparecem juntas, só as daquela região.
@@ -2236,12 +2241,14 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
     const arte = nomeArte && (!pais.capas || pais.capas.includes(nomeArte)) ? nomeArte : "";
     const pilar = termo ? null : pilarDa(rota);
     // Sub-abas só nas telas principais; nas de detalhe (lugar, capítulo, situação…) a barra já marca o pilar e há o "voltar".
-    main.innerHTML = `${param === undefined && pilar ? subabas(pilar, rota) : ""}${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
+    // Perto de você abre direto na foto: as outras seções do Explorar viram atalhos logo abaixo dela.
+    main.innerHTML = `${param === undefined && pilar && rota !== "guia" ? subabas(pilar, rota) : ""}${arte ? capa(arte) : ""}${html}<p class="versao">Viajador · versão ${VERSAO_APP} · <a href="#/creditos">Créditos das imagens</a></p>`;
     if (comemorar && rota === "album") confete();
     recemColado = null;
     comemorar = null;
     direcaoPagina = "";
     if (focarPilulaGps) { const pil = $("#pilula-gps"); if (pil) pil.focus({ preventScroll: true }); }
+    if (focarFiltroCidade) { const sel = $("#filtro-cidade"); if (sel) sel.focus({ preventScroll: true }); focarFiltroCidade = false; }
     // Na fileira de sub-abas que rola no celular, a ativa fica à vista.
     const subAtiva = main.querySelector(".subaba.ativa");
     if (subAtiva) subAtiva.parentElement.scrollLeft = subAtiva.offsetLeft - subAtiva.parentElement.offsetLeft - 16;
@@ -2435,11 +2442,6 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
         navigator.permissions.query({ name: "geolocation" }).then((st) => (st.state === "granted" ? pedirPosicao() : abrirDialogo())).catch(abrirDialogo);
       } else abrirDialogo();
       return;
-    }
-    if (b.dataset.acao === "filtro") {
-      filtroCidade = b.dataset.cidade;
-      secoesAbertas = {};
-      return render();
     }
     // Mostrar mais: o foco vai para o primeiro lugar que apareceu. Mostrar menos: volta ao topo da seção.
     if (b.dataset.acao === "secao-mais") {
@@ -2692,6 +2694,12 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   });
 
   main.addEventListener("change", (e) => {
+    if (e.target.id === "filtro-cidade") {
+      filtroCidade = e.target.value;
+      secoesAbertas = {};
+      focarFiltroCidade = true;
+      return render();
+    }
     if (e.target.id === "moeda-gorjeta" && moedaEst) {
       moedaEst.gorjeta = e.target.checked;
       return atualizarConversorDom();
@@ -2812,15 +2820,13 @@ ${montarContexto(pergunta, historico.slice(-4).map((m) => m.texto).join(" "))}`,
   // Funções puras para os testes (tests/logica.test.mjs). Não muda nada no navegador.
   window.VIAJADOR_INTERNO = { montarRoteiro, diasParaIncluir, lugaresCitados, calcularMoeda, montarContexto, orientacaoDaConversa };
   render();
-  // Abertura do Duck: com tudo já em cache (service worker no controle), sai assim que a tela está pronta;
-  // na primeira visita, fica pelo menos 1 s no ar para dar tempo de ver e de terminar de carregar.
+  // Abertura do Duck: sempre fica pelo menos 1 s no ar (contado desde que a página começou), com ou sem cache.
   const abertura = $("#abertura");
   if (abertura && abertura.classList) {
-    const emCache = Boolean(navigator.serviceWorker && navigator.serviceWorker.controller);
     const agora = window.performance && performance.now ? performance.now() : 0;
     setTimeout(() => {
       abertura.classList.add("saindo");
       setTimeout(() => abertura.remove(), 450);
-    }, emCache ? 0 : Math.max(0, 1000 - agora));
+    }, Math.max(0, LOADING_MINIMO - agora));
   }
 })();
