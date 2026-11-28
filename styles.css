@@ -1193,21 +1193,57 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
   .abas :focus-visible { outline-color: var(--foco); outline-offset: 2px; }
 }
 
-/* Explorar foto-first: pílula de GPS na mesma linha dos chips de cidade, sem card grande antes da foto. */
-.explorar-linha { display: flex; gap: 8px; align-items: center; margin: 0 0 14px; }
-.explorar-linha .filtros { flex: 1; min-width: 0; margin: 0; }
-.btn-gps-pilula { flex: none; gap: 6px; font-weight: 600; background: var(--cartao); }
-.btn-gps-pilula .ico { color: var(--celeste); }
-.btn-gps-pilula.ligado { border-color: var(--verde); color: var(--verde); }
-.btn-gps-pilula .gps-ponto { margin: 0 2px; }
-.explorar-estado { margin: -6px 0 12px; font-size: 13px; color: var(--suave); }
-.explorar-album { margin: -18px 0 24px; font-size: 14px; color: var(--suave); }
-@media (max-width: 699px) {
-  .explorar-linha { margin: 0 -16px 14px; padding-left: 16px; }
-  .explorar-linha .filtros.rolar { margin: 0; padding: 2px 16px 2px 0; }
-  .explorar-linha + .destaque, .explorar-estado + .destaque { margin-top: 0; }
-  .destaque { min-height: 300px; }
+/* Explorar foto-first (v1.50): a tela abre na foto; GPS e cidade ficam em pílulas de vidro sobre ela
+   e as outras seções do Explorar viram atalhos redondos logo abaixo. */
+.sobre-foto { position: absolute; z-index: 2; top: 12px; left: 12px; right: 12px; display: flex; gap: 8px; align-items: center; }
+.destaque-alto::before {
+  content: ""; position: absolute; inset: 0 0 auto; z-index: 1; height: 96px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 14, 26, .5), transparent);
 }
+.btn-gps-pilula, .sel-cidade {
+  flex: none; min-height: 44px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .5);
+  background: rgba(8, 14, 26, .55); color: #fff; font: 600 14px Inter, system-ui, sans-serif;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.btn-gps-pilula { gap: 6px; text-shadow: none; }
+.btn-gps-pilula:hover, .sel-cidade:hover { background: rgba(8, 14, 26, .7); }
+.btn-gps-pilula .ico { color: #fff; }
+.btn-gps-pilula .gps-ponto { margin: 0 2px; background: #3ddc84; box-shadow: 0 0 0 4px rgba(61, 220, 132, .3); }
+.sel-cidade {
+  flex: 0 1 auto; min-width: 0; margin-left: auto; padding: 0 36px 0 14px; cursor: pointer; text-overflow: ellipsis;
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
+}
+.sel-cidade option { background: #fff; color: #1b2433; }
+.sobre-foto :focus-visible, .sobre-foto .sel-cidade:focus-visible { outline: 3px solid #ffc23d; outline-offset: 2px; }
+/* Sem lugar na cidade escolhida: as mesmas pílulas, fora da foto. */
+.sobre-foto.sem-foto { position: static; margin: 0 0 16px; }
+.sem-foto .btn-gps-pilula, .sem-foto .sel-cidade { background-color: var(--topo); border-color: var(--topo); }
+.explorar-estado { margin: 0 0 12px; font-size: 13px; color: var(--suave); }
+.explorar-album { margin: 0 0 24px; font-size: 14px; color: var(--suave); }
+.atalhos-topo { display: flex; gap: 4px; margin: -12px -16px 18px; padding: 4px 16px; overflow-x: auto; scrollbar-width: none; }
+.atalhos-topo::-webkit-scrollbar { display: none; }
+.atalhos-topo a {
+  flex: 1 1 0; min-width: 64px; display: grid; justify-items: center; align-content: start; gap: 6px; padding: 2px 0;
+  font-size: 12.5px; font-weight: 600; line-height: 1.2; text-align: center; text-decoration: none; color: var(--texto);
+}
+.atalhos-topo .atalho-circ { width: 52px; height: 52px; background: var(--cartao); color: var(--acento); box-shadow: var(--sombra); transition: transform .15s; }
+.atalhos-topo .atalho-circ .ico { width: 24px; height: 24px; }
+.atalhos-topo a:hover .atalho-circ { transform: translateY(-2px); }
+/* No celular a foto ocupa quase toda a primeira dobra (deixa os atalhos à vista acima da barra de baixo). */
+@media (max-width: 699px) {
+  .destaque-alto { min-height: max(320px, min(600px, calc(100svh - 316px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)))); }
+  .destaque-alto .destaque-texto { padding-top: 72px; }
+}
+@media (min-width: 700px) {
+  .destaque-alto { min-height: 440px; }
+  .atalhos-topo { margin: -8px 0 22px; padding: 4px 0; justify-content: center; gap: 20px; }
+  .atalhos-topo a { flex: 0 0 96px; font-size: 13px; }
+}
+/* Cards das seções: foto em retrato e texto enxuto. */
+.vitrine .vitrine-foto { aspect-ratio: 3 / 4; }
+@media (min-width: 700px) { .vitrine .vitrine-foto { aspect-ratio: 4 / 5; } }
 
 /* Diálogo leve do GPS. */
 .dialogo-gps {
@@ -1232,7 +1268,6 @@ button.chamada-guia { width: 100%; border: 0; text-align: left; font: inherit; c
 .titulo-com-icone { display: flex; align-items: center; gap: 12px; }
 .titulo-com-icone .titulo-icone { width: 44px; height: 44px; --cor: var(--celeste); }
 .falso-aviso .ico { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
-@media (min-width: 700px) { .explorar-linha { align-items: flex-start; } }
 
 /* Loading com o Duck: abertura em tela cheia e versão compacta (GuIA). Quadro quadrado e arredondado. */
 .abertura {
